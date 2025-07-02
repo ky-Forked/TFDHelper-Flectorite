@@ -67,8 +67,9 @@ If you crash when using this, Try the other version from the other thread, Try t
 Most game updates/hotfixes shouldn't require a cheat update unless they change data offsets as they have every now and then. Blizzie has yet to be banned while making this cheat even while BlackCipher was running for a good while and using it almost since game launch. Cheating, especially using a public cheat, means you are at risk of being banned at any time.
 
 **Credits**
-Original Forum Thread at : [URL="https://www.unknowncheats.me/forum/other-fps-games/658547-descendantinternal-descendant.html"]DescendantInternal for The First Descendant[/URL]
-Everyone in the TFD discussion thread for code examples and their help with my questions: [URL="https://www.unknowncheats.me/forum/other-fps-games/602336-descendant-reversal-structs-offsets.html"]The First Descendant Reversal, Structs and Offsets[/URL]
+Original Forum Thread at : "https://www.unknowncheats.me/forum/other-fps-games/658547-descendantinternal-descendant.html
+
+Everyone in the TFD discussion thread for code examples and their help with my questions: "https://www.unknowncheats.me/forum/other-fps-games/602336-descendant-reversal-structs-offsets.html"
 ***eizzliB*** - Creating the original DescendantInternal and this new version while cleaning up the messy code we kept adding to the older version.
 ***athrun0001*** - Keeping DescendantInternal up-to-date and working while also adding to it and finding new things like spawning Vault Drops. Also will be probably be the one updating faster/better then I.
 
