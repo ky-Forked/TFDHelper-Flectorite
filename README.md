@@ -1,32 +1,37 @@
 # Flectorite - TFDHelpers DescendantInternal Rename.
-<h2>TFD Helper - Flectorite</h2>
+<h1>TFD Helper - Flectorite</h1>
 
-This is just a cleaned up setting, the I changed the name of this version more to be seperate from the still working DescendantInternal Athrun maintains.
+<h5>This is just a cleaned up setting, the I changed the name of this version more to be seperate from the still working DescendantInternal Athrun maintains.
 The biggest difference is this DLL will prevent Black Cipher from launching with the game when started, meaning prior to using this all you need to do is bypass EAC.
-To bypass EAC, open Steam and right click 'The First Descendant', hover over 'Manage' then click 'Browse local files'. Open the folder 'EasyAntiCheat' then open 'Settings.json', there will be 3 IDs in this file. My recommendation is randomly replace a couple of letters with different letters and a couple numbers with different numbers, essentially only CHANGE a letter/number, dont add or subtract from the total count. Safe the 'Settings.json' file and next time the game is launched EAC will not connect to the games servers/run properly.
+To bypass EAC, open Steam and right click 'The First Descendant', hover over 'Manage' then click 'Browse local files'. Open the folder 'EasyAntiCheat' then open 'Settings.json', there will be 3 IDs in this file. My recommendation is randomly replace a couple of letters with different letters and a couple numbers with different numbers, essentially only CHANGE a letter/number, dont add or subtract from the total count. Safe the 'Settings.json' file and next time the game is launched EAC will not connect to the games servers/run properly.</h5>
 
 ***Use Extreme Injector 3.7.2/3.7.3 First, I dont care what Injector you have or use normally, if Extreme Injector Auto Injecting doesnt work its a different issue. If you can use Extreme then use whatever backwoods injector youd like as long as you do it right.
 Open Extreme Injector and open The First Descendant, in Extreme Injector select The First Descendant. Now close The First Descendant. Add the DLL to Extreme Injector and set Extreme Injector to Manual Map + Auto-Inject. This DLL NEEDS to be injected as the game is Opening, attempting to Inject AFTER it started opening will either cause a crash or have nothing happening. Once the DLL is added to Extreme and the settings are correct, re-open The First Descendant. Extreme should close as the game is opening now, it shouldnt be open or anything as the game is loading the title screen. You may get a pop-up when you try to Login In from the title screen saying you were disconnected from the server or couldn't connect but just ignore it and try again.***
+
+
 
 **Frame Generation, NVidia or AMDs, can/will cause problems for this so make sure both are turned off as well before posting about crashing.
 Changing resoltions of the game after injection will result in crashing.
 To my knowledge this also may not work with 4K or Ultra Wide, but im not fully sure. It may just be messy ESPs.
 The config file will be 'cfg.ini' located at "...The First Descendant\M1\Binaries\Win64" after the first time injecting. If you crash once try deleting those.**
 
+
+
 Menu key is INSERT.
 The menu will not function until you're fully in-game.
-[COLOR="Lime"]ImGui is replacing ZeroGui in this version.[/COLOR]
+ImGui is replacing ZeroGui in this version.
 
-[SIZE="2"] [COLOR="Red"]If you crash when using this, Try the other version from the other thread, Try to let me know if only this one isnt working or if its both. If you did use the other version at some point prior to trying this one, delete the cfg file and try again. Old config files and the two being swapped between versions can cause some weird visual things and who knows what else.[/COLOR] [/SIZE]
+If you crash when using this, Try the other version from the other thread, Try to let me know if only this one isnt working or if its both. If you did use the other version at some point prior to trying this one, delete the cfg file and try again. Old config files and the two being swapped between versions can cause some weird visual things and who knows what else.
 
-**--ESP for Players, Enemies, Items, Resources, Coded Vaults--**
+**ESP for Players, Enemies, Items, Resources, Coded Vaults**
 <ol>
   <li>Boxes</li>
   <li>Circles</li>
   <li>Names</li>
   <li>Lines</li>
 </ol>
-**--Aimbot--**
+
+**Aimbot**
 <ol>
   <li>Hold or Toggle Aimbot (Changing Binds to Mouse key currently isnt working, will be fixed in next release)</li>
   <li>Adjustable Targetting Distance</li>
@@ -37,7 +42,8 @@ The menu will not function until you're fully in-game.
   <li>Targets Head and Weakness bones, and *most* invulnerability spheres</li>
   <li>Controller support using Hold mode with Left Trigger</li>
 </ol>
-**--Extras--**
+
+**Extras**
 <ol>
   <li>Spawn Vault Rewards : During Vault MiniGames can be used to get rewards like it was completed on every key press during the Minigame.</li>
   <li>Spawn Generic/World Loot : Will spawn the loot Field Interactables drop, like Vulgus Resource Crates or Void Vessel Containers.</li>
@@ -49,7 +55,8 @@ The menu will not function until you're fully in-game.
   <li>Adjustable Timescale with a Toggle Key</li>
   <li>Not using a Grapple Module or using Mid-Air will let you enable Grapple Mod to set its max range.</li>
 </ol>
-**--Missions--**
+
+**Missions**
 <ol>
 <li>Mission ESP</li>
 <li>Mission Teleport</li>
@@ -59,7 +66,7 @@ The menu will not function until you're fully in-game.
 
 Most game updates/hotfixes shouldn't require a cheat update unless they change data offsets as they have every now and then. Blizzie has yet to be banned while making this cheat even while BlackCipher was running for a good while and using it almost since game launch. Cheating, especially using a public cheat, means you are at risk of being banned at any time.
 
-***Credits***
+**Credits**
 Original Forum Thread at : [URL="https://www.unknowncheats.me/forum/other-fps-games/658547-descendantinternal-descendant.html"]DescendantInternal for The First Descendant[/URL]
 Everyone in the TFD discussion thread for code examples and their help with my questions: [URL="https://www.unknowncheats.me/forum/other-fps-games/602336-descendant-reversal-structs-offsets.html"]The First Descendant Reversal, Structs and Offsets[/URL]
 ***eizzliB*** - Creating the original DescendantInternal and this new version while cleaning up the messy code we kept adding to the older version.
@@ -90,7 +97,7 @@ Source + Precompile DLL : [URL="https://www.unknowncheats.me/forum/downloads.php
 Fixed Black Cipher Bypass (New Sig eizzilB Provided should be a bit more future update proof.)
 Sorry for the delay uploading this, my PC has not been happy with me and tried to lobotomize itself so I had to first.
 
-[SIZE="3"]v1.0.25[/SIZE]
+v1.0.25
 Source + Precompile DLL - [URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266"]https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266[/URL]
 (Compiled and Released June 29th 2025)
 ***CRASH FIX***
