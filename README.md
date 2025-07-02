@@ -1,7 +1,7 @@
 # Flectorite - TFDHelpers DescendantInternal Rename.
 <h1>TFD Helper - Flectorite</h1>
 
-<h5>This is just a cleaned up setting, the I changed the name of this version more to be seperate from the still working DescendantInternal Athrun maintains.
+<h5>This is just a cleaned up setting, I changed the name of this version more to be seperate from the still working DescendantInternal Athrun maintains.
 The biggest difference is this DLL will prevent Black Cipher from launching with the game when started, meaning prior to using this all you need to do is bypass EAC.
 To bypass EAC, open Steam and right click 'The First Descendant', hover over 'Manage' then click 'Browse local files'. Open the folder 'EasyAntiCheat' then open 'Settings.json', there will be 3 IDs in this file. My recommendation is randomly replace a couple of letters with different letters and a couple numbers with different numbers, essentially only CHANGE a letter/number, dont add or subtract from the total count. Safe the 'Settings.json' file and next time the game is launched EAC will not connect to the games servers/run properly.</h5>
 
