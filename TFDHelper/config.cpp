@@ -1,6 +1,11 @@
 #include "config.h"
 #include <iostream>
 
+namespace Menu
+{
+	extern int CurrentStyleIndex;
+	void ApplySelectedStyle(int index);
+}
 
 namespace CFG
 {
@@ -75,6 +80,7 @@ namespace CFG
 	bool		cfg_Hotswap_EnableOverlay = false;
 	int			cfg_Hotswap_PresetSelectKey = VK_F8;
 	int 		cfg_ResearchQuantity = 1;
+	int 		CurrentStyleIndex = 0;
 	//std::vector<int> cfg_Hotswap_Presets = { -1, -1, -1, -1, -1, -1 };
 
 	bool		cfg_Debug_ShowConsole = false;
@@ -154,6 +160,8 @@ namespace CFG
 
 			LoadValue("Hotswap", "EnableOverlay", cfg_Hotswap_EnableOverlay);
 			LoadValue("Hotswap", "PresetSelectKey", cfg_Hotswap_PresetSelectKey);
+			LoadValue("Style", "Index", Menu::CurrentStyleIndex);
+			Menu::ApplySelectedStyle(Menu::CurrentStyleIndex);
 			//LoadValue("Hotswap", "Preset_1", cfg_Hotswap_Presets[0]);
 			//LoadValue("Hotswap", "Preset_2", cfg_Hotswap_Presets[1]);
 			//LoadValue("Hotswap", "Preset_3", cfg_Hotswap_Presets[2]);
