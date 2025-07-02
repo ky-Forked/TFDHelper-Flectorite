@@ -1,41 +1,39 @@
 # Flectorite - TFDHelpers DescendantInternal Rename.
-[SIZE="6"]TFD Helper - DescendantInternal 2.0[/SIZE]
+<h2>TFD Helper - Flectorite</h2>
 
-[SIZE="5"] [COLOR="Lime"]The biggest difference is this DLL will prevent Black Cipher from launching with the game when started, meaning prior to using this all you need to do is bypass EAC. [/COLOR] [/SIZE]
-
+This is just a cleaned up setting, the I changed the name of this version more to be seperate from the still working DescendantInternal Athrun maintains.
+The biggest difference is this DLL will prevent Black Cipher from launching with the game when started, meaning prior to using this all you need to do is bypass EAC.
 To bypass EAC, open Steam and right click 'The First Descendant', hover over 'Manage' then click 'Browse local files'. Open the folder 'EasyAntiCheat' then open 'Settings.json', there will be 3 IDs in this file. My recommendation is randomly replace a couple of letters with different letters and a couple numbers with different numbers, essentially only CHANGE a letter/number, dont add or subtract from the total count. Safe the 'Settings.json' file and next time the game is launched EAC will not connect to the games servers/run properly.
 
-[SIZE="3"] [COLOR="Red"]Use Extreme Injector 3.7.2/3.7.3 First, I dont care what Injector you have or use normally, if Extreme Injector Auto Injecting doesnt work its a different issue. [/COLOR] [/SIZE]
-[SIZE="2"] [COLOR="Red"]Open Extreme Injector and open The First Descendant, in Extreme Injector select The First Descendant. Now close The First Descendant. Add the DLL to Extreme Injector and set Extreme Injector to Manual Map + Auto-Inject. This DLL NEEDS to be injected as the game is Opening, attempting to Inject AFTER it started opening will either cause a crash or have nothing happening. Once the DLL is added to Extreme and the settings are correct, re-open The First Descendant. Extreme should close as the game is opening now, it shouldnt be open or anything as the game is loading the title screen. You may get a pop-up when you try to Login In from the title screen saying you were disconnected from the server or couldn't connect but just ignore it and try again. [/COLOR] [/SIZE]
+Use Extreme Injector 3.7.2/3.7.3 First, I dont care what Injector you have or use normally, if Extreme Injector Auto Injecting doesnt work its a different issue. If you can use Extreme then use whatever backwoods injector youd like as long as you do it right.
+Open Extreme Injector and open The First Descendant, in Extreme Injector select The First Descendant. Now close The First Descendant. Add the DLL to Extreme Injector and set Extreme Injector to Manual Map + Auto-Inject. This DLL NEEDS to be injected as the game is Opening, attempting to Inject AFTER it started opening will either cause a crash or have nothing happening. Once the DLL is added to Extreme and the settings are correct, re-open The First Descendant. Extreme should close as the game is opening now, it shouldnt be open or anything as the game is loading the title screen. You may get a pop-up when you try to Login In from the title screen saying you were disconnected from the server or couldn't connect but just ignore it and try again.
 
 Frame Generation, NVidia or AMDs, can/will cause problems for this so make sure both are turned off as well before posting about crashing.
 Changing resoltions of the game after injection will result in crashing.
 To my knowledge this also may not work with 4K or Ultra Wide, but im not fully sure. It may just be messy ESPs.
 The config file will be 'cfg.ini' located at "...The First Descendant\M1\Binaries\Win64" after the first time injecting. If you crash once try deleting those.
 
-Menu key is [COLOR="Lime"]INSERT[/COLOR].
+Menu key is INSERT.
 The menu will not function until you're fully in-game.
 [COLOR="Lime"]ImGui is replacing ZeroGui in this version.[/COLOR]
 
 [SIZE="2"] [COLOR="Red"]If you crash when using this, Try the other version from the other thread, Try to let me know if only this one isnt working or if its both. If you did use the other version at some point prior to trying this one, delete the cfg file and try again. Old config files and the two being swapped between versions can cause some weird visual things and who knows what else.[/COLOR] [/SIZE]
 
-[SIZE="4"]ESP for Players, Enemies, Items, Resources, Coded Vaults[/SIZE]
+--ESP for Players, Enemies, Items, Resources, Coded Vaults--
+Boxes
+Circles
+Names
+Lines
+--Aimbot--
 [LIST]
-[*]Boxes
-[*]Circles
-[*]Names
-[*]Lines
-[/LIST]
-[SIZE="4"]Aimbot[/SIZE]
-[LIST]
-[*]Hold or Toggle Aimbot (Changing Binds to Mouse key currently isnt working, will be fixed in next release)
-[*]Adjustable Targetting Distance
-[*]Adjustable Aim Smoothing
-[*]No Spread or Recoil
-[*]Instant/Auto Reload (Bullet count hits 3 and will refil to full)
-[*]Rapid Fire (Only works properly with semi-auto weapons, Ghost bullets are common otherwise or too high)
-[*]Targets Head and Weakness bones, and *most* invulnerability spheres
-[*]Controller support using Hold mode with Left Trigger
+Hold or Toggle Aimbot (Changing Binds to Mouse key currently isnt working, will be fixed in next release)
+Adjustable Targetting Distance
+Adjustable Aim Smoothing
+No Spread or Recoil
+Instant/Auto Reload (Bullet count hits 3 and will refil to full)
+Rapid Fire (Only works properly with semi-auto weapons, Ghost bullets are common otherwise or too high)
+Targets Head and Weakness bones, and *most* invulnerability spheres
+Controller support using Hold mode with Left Trigger
 [/LIST]
 [SIZE="4"]Extras[/SIZE]
 [LIST]
