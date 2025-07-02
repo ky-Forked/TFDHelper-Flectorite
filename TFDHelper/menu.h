@@ -11,10 +11,15 @@ namespace Menu
 
 	/* FUNCTIONS */
 	void Init();
+	void Classic();
+	void Moonlight();
+	void DuckRedNope();
+	void Tivmo();
 	void RenderMenu();
 	//void RenderConsole();
 	bool IsCurrentlyBindingKey();
 	void HandleKeybinds();
+	void ApplySelectedStyle(int index);
 
 	extern bool ShowMenu;
 
@@ -31,6 +36,7 @@ namespace Menu
 	extern bool cfg_SpawnVaultRewardKeyState;
 	extern bool cfg_ForceGrappleCallKeyState;
 	extern bool cfg_ForcePullKeyState;
+	extern int  CurrentStyleIndex;
 
 	/* THESE ARE FOR NAME <-> VALUE USED IN THE IMGUI::HOTKEY BUTTON TEXT */
 	static const char* KeyNames[] = {
