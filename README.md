@@ -67,23 +67,24 @@ If you crash when using this, Try the other version from the other thread, Try t
 Most game updates/hotfixes shouldn't require a cheat update unless they change data offsets as they have every now and then. Blizzie has yet to be banned while making this cheat even while BlackCipher was running for a good while and using it almost since game launch. Cheating, especially using a public cheat, means you are at risk of being banned at any time.
 
 **Credits**
-Original Forum Thread at : "https://www.unknowncheats.me/forum/other-fps-games/658547-descendantinternal-descendant.html
+Original Forum Thread at : https://www.unknowncheats.me/forum/other-fps-games/658547-descendantinternal-descendant.html
+Everyone in the TFD discussion thread for code examples and their help with my questions: https://www.unknowncheats.me/forum/other-fps-games/602336-descendant-reversal-structs-offsets.html
 
-Everyone in the TFD discussion thread for code examples and their help with my questions: "https://www.unknowncheats.me/forum/other-fps-games/602336-descendant-reversal-structs-offsets.html"
 ***eizzliB*** - Creating the original DescendantInternal and this new version while cleaning up the messy code we kept adding to the older version.
+
 ***athrun0001*** - Keeping DescendantInternal up-to-date and working while also adding to it and finding new things like spawning Vault Drops. Also will be probably be the one updating faster/better then I.
 
-If you have questions or need help, first read through all the instructions given and maybe check the other forum to see if someone had the same issue at some point. Ill try to respond and help but I am very inconsistent with when I am able to sit down and troubleshoot for hours.
 
+If you have questions or need help, first read through all the instructions given and maybe check the other forum to see if someone had the same issue at some point. Ill try to respond and help but I am very inconsistent with when I am able to sit down and troubleshoot for hours.
 If things aren't working for you, double check things on your side before saying something is broke with the DLL, this version in testing before I uploaded it here had issues but we held back on releasing it until everyone that had issues getting it to work no longer did. Otherwise if an update didnt come out recently, the DLL is most likely working fine for most other people.
 
 Download
 v1.0.21
-Source + Precompile DLL - [URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=50174"]https://www.unknowncheats.me/forum/downloads.php?do=file&id=50174[/URL]
+Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50174
 (Compiled and Released June 21st 2025)
 
 v1.0.23
-Source + Precompile DLL - [URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=50208"]https://www.unknowncheats.me/forum/downloads.php?do=file&id=50208[/URL]
+Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50208
 (Compiled and Released June 24th 2025)
 ***Changes***
 ESP Shapes are fixed to a point I visually am fine with. 
@@ -93,13 +94,13 @@ The range check wont apply unless Multiply is enabled since I thought it really 
 The grapple mod was also cleaned up for now and im done messing with it, it still only works with No Grapple module equipped or the Mid-Air one but when enabled you can choose the range those will fire to, I also made the grapple cast faster but sadly couldn't make it pull faster.
 
 v1.0.24
-Source + Precompile DLL : [URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=50257"]https://www.unknowncheats.me/forum/downloads.php?do=file&id=50257[/URL]
+Source + Precompile DLL : https://www.unknowncheats.me/forum/downloads.php?do=file&id=50257
 (Compiled and Released June 28th 2025)
 Fixed Black Cipher Bypass (New Sig eizzilB Provided should be a bit more future update proof.)
 Sorry for the delay uploading this, my PC has not been happy with me and tried to lobotomize itself so I had to first.
 
 v1.0.25
-Source + Precompile DLL - [URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266"]https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266[/URL]
+Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266
 (Compiled and Released June 29th 2025)
 ***CRASH FIX***
 The Grapple mod was cleaned up, I removed most stuff I was using in testing and left it with just what made it work.
@@ -116,4 +117,4 @@ The static asserts will show as errors but will be valid when compiled so don't 
 To add your own functionality that uses classes/structs/functions that don't already exist in the project then you will need to modify the corresponding areas as I've stripped everything down to the bare minimum for the cheat to work as intended.
 
 If for some reason the game is crashing on load after a game update, there's a chance the No Spread signature will need to be updated. The area I have selected in the image below is what my signature looks for, and then overwrites. Everything else around it has been the same so it shouldn't be hard to find.
-[img]https://i.imgur.com/84pW6Tq.jpeg[/img]
+https://i.imgur.com/84pW6Tq.jpeg
