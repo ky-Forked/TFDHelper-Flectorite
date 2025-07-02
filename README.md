@@ -78,14 +78,19 @@ Everyone in the TFD discussion thread for code examples and their help with my q
 If you have questions or need help, first read through all the instructions given and maybe check the other forum to see if someone had the same issue at some point. Ill try to respond and help but I am very inconsistent with when I am able to sit down and troubleshoot for hours.
 If things aren't working for you, double check things on your side before saying something is broke with the DLL, this version in testing before I uploaded it here had issues but we held back on releasing it until everyone that had issues getting it to work no longer did. Otherwise if an update didnt come out recently, the DLL is most likely working fine for most other people.
 
+
 Download
 v1.0.21
 Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50174
+
 (Compiled and Released June 21st 2025)
+
 
 v1.0.23
 Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50208
+
 (Compiled and Released June 24th 2025)
+
 ***Changes***
 ESP Shapes are fixed to a point I visually am fine with. 
 Mouse Keys can be recorded by ImGui Menu for changing Hotkeys to Mouse keys.
@@ -95,18 +100,24 @@ The grapple mod was also cleaned up for now and im done messing with it, it stil
 
 v1.0.24
 Source + Precompile DLL : https://www.unknowncheats.me/forum/downloads.php?do=file&id=50257
+
 (Compiled and Released June 28th 2025)
+
 Fixed Black Cipher Bypass (New Sig eizzilB Provided should be a bit more future update proof.)
 Sorry for the delay uploading this, my PC has not been happy with me and tried to lobotomize itself so I had to first.
 
 v1.0.25
 Source + Precompile DLL - https://www.unknowncheats.me/forum/downloads.php?do=file&id=50266
+
 (Compiled and Released June 29th 2025)
+
 ***CRASH FIX***
 The Grapple mod was cleaned up, I removed most stuff I was using in testing and left it with just what made it work.
 
 v1.0.27/Flectorite
+
 (Compiled and Released July 2nd 2025, Github link set up so new branch to forget past sins.)
+
 
 Using The Source
 
@@ -117,4 +128,5 @@ The static asserts will show as errors but will be valid when compiled so don't 
 To add your own functionality that uses classes/structs/functions that don't already exist in the project then you will need to modify the corresponding areas as I've stripped everything down to the bare minimum for the cheat to work as intended.
 
 If for some reason the game is crashing on load after a game update, there's a chance the No Spread signature will need to be updated. The area I have selected in the image below is what my signature looks for, and then overwrites. Everything else around it has been the same so it shouldn't be hard to find.
+
 https://i.imgur.com/84pW6Tq.jpeg
