@@ -219,7 +219,7 @@ namespace CFG
 		SaveValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 		SaveValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
 		SaveValue("Aimbot", "EnableModifyGrapple", cfg_Aim_EnableModifyGrapple);
-		SaveValue("Aimbot", "ForceGrappleCallKey", cfg_Aim_GrappleRange);
+		SaveValue("Aimbot", "GrappleRange", cfg_Aim_GrappleRange);
 
 		SaveValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 		SaveValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -233,6 +233,7 @@ namespace CFG
 
 		SaveValue("Hotswap", "EnableOverlay", cfg_Hotswap_EnableOverlay);
 		SaveValue("Hotswap", "PresetSelectKey", cfg_Hotswap_PresetSelectKey);
+		SaveValue("Style", "Index", Menu::CurrentStyleIndex);
 		//SaveValue("Hotswap", "Preset_1", cfg_Hotswap_Presets[0]);
 		//SaveValue("Hotswap", "Preset_2", cfg_Hotswap_Presets[1]);
 		//SaveValue("Hotswap", "Preset_3", cfg_Hotswap_Presets[2]);
