@@ -475,7 +475,7 @@ namespace Menu
 											if (ImGui::Button("Start"))
 											{
 												//Cheat::Missions->TryStartMission(Actor->MissionData->MissionDataRowName);
-												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i]);
+												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i],true);
 											}
 											ImGui::PopID();
 											ImGui::SameLine();
@@ -532,7 +532,18 @@ namespace Menu
 											ImGui::Text(bufferlol);
 											if (ImGui::Button("Restart"))
 											{
-												Cheat::Missions->ServerRestartLastPlayedMission();
+												if (Cheat::Missions->MissionResult->MissionSubType == TFD::EM1MissionSubType::DestructionVulgusPost)
+												{
+													for (TFD::AM1MissionActor* LAMA : Cheat::Missions->LastActivatedMissions)
+													{
+														if (LAMA->MissionData->MissionSubType == Cheat::Missions->MissionResult->MissionSubType)
+														{
+															Cheat::Missions->ServerStartMission(LAMA, true);
+														}
+													}
+												}
+												else
+													Cheat::Missions->ServerRestartLastPlayedMission();
 											}
 										}
 									}

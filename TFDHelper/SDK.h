@@ -2458,6 +2458,16 @@ namespace TFD
 	};
 
 
+	// 0x0330 (0x0358 - 0x0028)
+	class UM1MissionResult final : public UObject
+	{
+	public:
+		uint8                                         Pad_MissionTemplateId[0x10];                       // 0x0028
+		struct FM1TemplateId                          MissionTemplateId;                                 // 0x0038(0x0004)
+		uint8                                         Pad_MissionSubType[0x2D];                          // 0x003C
+		EM1MissionSubType                             MissionSubType;                                    // 0x0069(0x0001)
+		uint8                                         Pad_UM1MissionResult[0x2EE];                       // 0x006A
+	};
 
 	// 0x0730 (0x07D8 - 0x00A8)
 	class UM1MissionControlComponent final : public UActorComponent
@@ -2539,7 +2549,7 @@ namespace TFD
 		void ServerRestartLastPlayedMission();
 		//void ServerRunTaskActor(class AM1MissionTaskActor* InActor);
 		//void ServerSetMissionTimeLimit(float InSecs);
-		void ServerStartMission(class AM1MissionActor* InMission);
+		void ServerStartMission(class AM1MissionActor* InMission, bool InForceStart);
 		void ServerStartMissionByTemplateID(const struct FM1TemplateId& InTemplateId);
 		//void ServerStartReservedMission(const struct FM1TemplateId& ReservedMissionID);
 		void ServerTeleportToBestPlayer(bool bIgnoreDistance);
@@ -3537,7 +3547,9 @@ namespace TFD
 	struct M1MissionControlComponent_ServerStartMission final
 	{
 	public:
-		class AM1MissionActor* InMission;                                         // 0x0000(0x0008)(Parm, ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		class AM1MissionActor* InMission;                                         // 0x0000(0x0008)
+		bool                                          InForceStart;                                      // 0x0008(0x0001)
+		uint8                                         Pad_M1MissionControlComponent_ServerStartMission[0x7];// 0x0009
 	};
 
 	struct M1MissionControlComponent_ServerStartMissionByTemplateID final

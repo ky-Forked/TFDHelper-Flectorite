@@ -825,7 +825,7 @@ namespace TFD
 		Func->FunctionFlags = Flgs;
 	}
 
-	void UM1MissionControlComponent::ServerStartMission(class AM1MissionActor* InMission)
+	void UM1MissionControlComponent::ServerStartMission(class AM1MissionActor* InMission, bool InForceStart)
 	{
 		static class UFunction* Func = nullptr;
 
@@ -835,6 +835,7 @@ namespace TFD
 		M1MissionControlComponent_ServerStartMission Parms{};
 
 		Parms.InMission = InMission;
+		Parms.InForceStart = InForceStart;
 
 		auto Flgs = Func->FunctionFlags;
 		Func->FunctionFlags |= 0x400;

@@ -1431,8 +1431,22 @@ namespace Cheat
 			if (ElapsedSeconds >= CFG::cfg_Mission_MissionAutoRestartDelay)
 			{
 				// Reset the flag
-				Missions->ServerRestartLastPlayedMission();
-				bMissionCompleted = false;
+				if (Missions->MissionResult->MissionSubType == TFD::EM1MissionSubType::DestructionVulgusPost)
+				{
+					for (TFD::AM1MissionActor* LAMA : Missions->LastActivatedMissions)
+					{
+						if (LAMA->MissionData->MissionSubType == Missions->MissionResult->MissionSubType)
+						{
+							Missions->ServerStartMission(LAMA, true);
+							bMissionCompleted = false;
+						}
+					}
+				}
+				else
+				{
+					Missions->ServerRestartLastPlayedMission();
+					bMissionCompleted = false;
+				}
 			}
 		}
 	}
