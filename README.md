@@ -93,7 +93,7 @@ The included source code should allow you to build the solution without any init
 * **eizzliB:** For creating the original DescendantInternal and this cleaner version.
 * **athrun0001:** For Maintaining and updating DescendantInternal.
 * **Tivmo:** Maintaning and updating Flectorite.
-* **Sinnisterly:** Helping with Discord and Github (Creator of this ReadMe)
+* **Sinnisterly:** Helping with Discord and Github (Creator of this ReadMe and TFD Helper Bot)
 
 
 If you have questions or need help, first read through all the instructions given and maybe check the other forum to see if someone had the same issue at some point. Ill try to respond and help but I am very inconsistent with when I am able to sit down and troubleshoot for hours.
