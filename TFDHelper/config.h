@@ -28,7 +28,6 @@ namespace CFG
 	extern bool		cfg_Loot_DrawItemBoxes;
 	extern bool     cfg_Loot_DrawItemCircles;
 	extern bool		cfg_Loot_DrawItemNames;
-	//extern bool		cfg_Loot_DrawItemLines;
 	extern bool		cfg_Loot_DrawVaults;
 	extern bool		cfg_Loot_DrawSupplyResources;
 	extern bool		cfg_Loot_DrawVoidVesselBox;
@@ -42,6 +41,7 @@ namespace CFG
 	extern float    cfg_Loot_ContainerDropRange;
 	extern float	cfg_Loot_DrawHPThreshold;
 	extern float	cfg_Loot_DrawMPThreshold;
+	extern float    cfg_Loot_HPToRestock;
 
 	extern bool		cfg_Aim_EnableAimbot;
 	extern bool		cfg_Aim_EnableAimbotHold;
@@ -51,15 +51,19 @@ namespace CFG
 	extern bool		cfg_Aim_AimbotUseController;
 	extern float	cfg_Aim_AimbotFOV;
 	extern float	cfg_Aim_AimbotSpeed;
-	//extern bool		cfg_Aim_NoSpread;
-	//extern bool		cfg_Aim_NoRecoil;
 	extern bool		cfg_Aim_NoRecoilAndSpread;
 	extern bool		cfg_Aim_NoReload;
-	extern bool		cfg_Aim_EnableModifyGrapple;
-	extern float    cfg_Aim_GrappleRange;
-	
 	extern bool		cfg_Aim_RapidFire;
 	extern float	cfg_Aim_FireRate;
+
+	extern bool		cfg_Abilities_EnableModifyGrapple;
+	extern float    cfg_Abilities_GrappleRange;
+	extern bool     cfg_Abilities_AutoRestock;
+	extern bool     cfg_Abilities_ResetCooldowns;
+	extern int		cfg_Abilities_Ability1Key;
+	extern int		cfg_Abilities_Ability2Key;
+	extern int		cfg_Abilities_Ability3Key;
+	extern int		cfg_Abilities_Ability4Key;
 	
 	extern float	cfg_Extra_TimeScale;
 	extern int		cfg_Extra_TimeScaleKey;
@@ -72,13 +76,15 @@ namespace CFG
 	extern int		cfg_Mission_MissionAutoRestartKey;
 	extern int		cfg_Mission_MissionTeleportKey;
 	extern bool		cfg_Mission_EnableInstantInfiltration;
-	//extern bool		cfg_Mission_EnableAutoInstantInfiltration;
 	extern int		cfg_Mission_InstantInfiltrationKey;
 
 	extern bool		cfg_Hotswap_EnableOverlay;
 	extern int		cfg_Hotswap_PresetSelectKey;
 	extern int		cfg_ResearchQuantity;
 	//extern std::vector<int>		cfg_Hotswap_Presets;
+	//extern bool		cfg_Aim_NoSpread;
+	//extern bool		cfg_Aim_NoRecoil;
+	//extern bool		cfg_Mission_EnableAutoInstantInfiltration;
 
 	/*
 	* cfg_HotSwapOverlay = ini.GetBoolValue("Preset", "HotSwapOverlay", cfg_HotSwapOverlay);
