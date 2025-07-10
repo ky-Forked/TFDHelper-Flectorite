@@ -30,7 +30,6 @@ namespace CFG
 	bool		cfg_Loot_DrawItemBoxes = false;
 	bool        cfg_Loot_DrawItemCircles = false;
 	bool		cfg_Loot_DrawItemNames = false;
-	//bool		cfg_Loot_DrawItemLines = false;
 	bool		cfg_Loot_DrawVaults = false;
 	bool		cfg_Loot_DrawSupplyResources = false;
 	bool		cfg_Loot_DrawVoidVesselBox = false;
@@ -44,6 +43,7 @@ namespace CFG
 	int			cfg_Loot_SpawnCount = 1;
 	float		cfg_Loot_DrawHPThreshold = 50.0f;
 	float		cfg_Loot_DrawMPThreshold = 50.0f;
+	float       cfg_Loot_HPToRestock = 50.0f;
 
 	bool		cfg_Aim_EnableAimbot = false;
 	bool		cfg_Aim_EnableAimbotHold = true;
@@ -54,14 +54,19 @@ namespace CFG
 	float		cfg_Aim_AimbotFOV = 140.0f;
 	float		cfg_Aim_AimbotSpeed = 36.0f;
 	bool		cfg_Aim_AimbotLineOfSight = false;
-	//bool		cfg_Aim_NoSpread = false;
-	//bool		cfg_Aim_NoRecoil = false;
 	bool		cfg_Aim_NoRecoilAndSpread = false;
 	bool		cfg_Aim_NoReload = false;
 	bool		cfg_Aim_RapidFire = false;
 	float		cfg_Aim_FireRate = 1.0f;
-	bool		cfg_Aim_EnableModifyGrapple = false;
-	float 		cfg_Aim_GrappleRange = 10000.0f;
+
+	bool		cfg_Abilities_EnableModifyGrapple = false;
+	float 		cfg_Abilities_GrappleRange = 10000.0f;
+	bool        cfg_Abilities_AutoRestock = false;
+	bool        cfg_Abilities_ResetCooldowns = false;
+	int			cfg_Abilities_Ability1Key = 0x51;
+	int			cfg_Abilities_Ability2Key = 0x43;
+	int			cfg_Abilities_Ability3Key = 0x56;
+	int			cfg_Abilities_Ability4Key = 0x5A;
 
 	float		cfg_Extra_TimeScale = 2.0f;
 	int			cfg_Extra_TimeScaleKey = VK_F2;
@@ -75,15 +80,18 @@ namespace CFG
 	int			cfg_Mission_MissionTeleportKey = VK_F4;
 	bool		cfg_Mission_EnableInstantInfiltration = false;
 	int			cfg_Mission_InstantInfiltrationKey = VK_F7;
-	//bool		cfg_Mission_EnableAutoInstantInfiltration = false;
 
 	bool		cfg_Hotswap_EnableOverlay = false;
 	int			cfg_Hotswap_PresetSelectKey = VK_F8;
 	int 		cfg_ResearchQuantity = 1;
 	int 		CurrentStyleIndex = 0;
-	//std::vector<int> cfg_Hotswap_Presets = { -1, -1, -1, -1, -1, -1 };
 
 	bool		cfg_Debug_ShowConsole = false;
+
+	//std::vector<int> cfg_Hotswap_Presets = { -1, -1, -1, -1, -1, -1 };
+	//bool		cfg_Aim_NoSpread = false;
+	//bool		cfg_Aim_NoRecoil = false;
+	//bool		cfg_Mission_EnableAutoInstantInfiltration = false;
 
 	void LoadCFG()
 	{
@@ -145,8 +153,15 @@ namespace CFG
 			LoadValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 			LoadValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 			LoadValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
-			LoadValue("Aimbot", "EnableModifyGrapple", cfg_Aim_EnableModifyGrapple);
-			LoadValue("Aimbot", "ForceGrappleCallKey", cfg_Aim_GrappleRange);
+
+			LoadValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
+			LoadValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
+			LoadValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
+			LoadValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
+			LoadValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
+			LoadValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
+			LoadValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);
+			LoadValue("Abilities", "Ability4Key", cfg_Abilities_Ability4Key);
 
 			LoadValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 			LoadValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -218,8 +233,15 @@ namespace CFG
 		SaveValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 		SaveValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 		SaveValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
-		SaveValue("Aimbot", "EnableModifyGrapple", cfg_Aim_EnableModifyGrapple);
-		SaveValue("Aimbot", "GrappleRange", cfg_Aim_GrappleRange);
+
+		SaveValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
+		SaveValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
+		SaveValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
+		SaveValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
+		SaveValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
+		SaveValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
+		SaveValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);
+		SaveValue("Abilities", "Ability4Key", cfg_Abilities_Ability4Key);
 
 		SaveValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 		SaveValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
