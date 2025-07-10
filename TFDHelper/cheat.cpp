@@ -48,6 +48,8 @@ namespace Cheat
 	std::unordered_map<int, std::string> IDNameMap = { };
 	std::unordered_map<int, std::string> PresetsMap = { };
 	int CurrentPresetIndex = 0;
+	std::vector<int> HotSwapPreset = { -1, -1, -1, -1, -1, -1 };
+	int HotSwapIndex = 0;
 
 	TFD::FVector RotatorToVector(const TFD::FRotator& R)
 	{
@@ -124,6 +126,13 @@ namespace Cheat
 		if (CFG::cfg_Mission_EnableMissionAutoRestart)
 			AutoRestartMission();
 
+		if (CFG::cfg_Abilities_ResetCooldowns && (IsKeyPressed(CFG::cfg_Abilities_Ability1Key) || IsKeyPressed(CFG::cfg_Abilities_Ability2Key) || IsKeyPressed(CFG::cfg_Abilities_Ability3Key) || IsKeyPressed(CFG::cfg_Abilities_Ability4Key)))
+		{
+			PresetActivate();
+		}
+
+		if (CFG::cfg_Abilities_AutoRestock)
+			AutoRestock();
 
 		if (CFG::cfg_Loot_EnableItemESP || CFG::cfg_Loot_EnableLootVacuum || TrySpawnGenericLoot || TrySpawnVaultLoot)
 			Loot();
@@ -131,7 +140,7 @@ namespace Cheat
 		if (CFG::cfg_Aim_EnableAimbot)
 			Aimbot();
 
-		if (CFG::cfg_Aim_EnableModifyGrapple)
+		if (CFG::cfg_Abilities_EnableModifyGrapple)
 			ModifyGrapple();
 
 		/*if (CFG::cfg_Aim_NoReload)
@@ -1545,11 +1554,11 @@ namespace Cheat
 				continue;
 			auto* WireAbility = static_cast<TFD::UM1WireSkillAbility*>(Ability);
 
-			if (WireAbility->FireMaxDistance != CFG::cfg_Aim_GrappleRange)
+			if (WireAbility->FireMaxDistance != CFG::cfg_Abilities_GrappleRange)
 			{
 				Caster->bValidLandingSpot = true;
 				WireAbility->FireMinDistance = 0.0f;
-				WireAbility->FireMaxDistance = CFG::cfg_Aim_GrappleRange;
+				WireAbility->FireMaxDistance = CFG::cfg_Abilities_GrappleRange;
 				WireAbility->bAllowedAirDestination = true;
 			}
 		}
@@ -1642,7 +1651,34 @@ namespace Cheat
 				}
 			}
 		}
+	}
 
+	void AutoRestock()
+	{
+		if (!LocalPlayerController || !LocalPlayerController->PrivateOnlineServiceComponent || !LocalPlayerCharacter)
+			return;
+
+		float currenthp = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_CurrentHp).Value / 10000.0f;
+		float maxhp = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_MaxHp).Value / 10000.0f;
+
+		if (currenthp < (maxhp * (CFG::cfg_Loot_HPToRestock / 100.0f)))
+		{
+			PresetActivate();
+		}
+		else if (LocalPlayerCharacter->WeaponSlotControl)
+		{
+			if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
+			{
+				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
+				{
+					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 1)
+					{
+						PresetActivate();
+
+					}
+				}
+			}
+		}
 	}
 
 	void InstantInfiltration()
