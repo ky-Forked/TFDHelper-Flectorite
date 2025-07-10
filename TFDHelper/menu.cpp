@@ -24,6 +24,11 @@ namespace Menu
 	bool cfg_SpawnVaultRewardKeyState = false;
 	bool cfg_HotswapKeyState = false;
 	int CurrentStyleIndex = 0;
+	bool cfg_Abilities_Ability1KeyState = false;
+	bool cfg_Abilities_Ability2KeyState = false;
+	bool cfg_Abilities_Ability3KeyState = false;
+	bool cfg_Abilities_Ability4KeyState = false;
+
 
 	void HandleKeybinds()
 	{
@@ -400,12 +405,52 @@ namespace Menu
 								ImGui::TableNextColumn();
 								ImGui::Text("Enable Modify Grapples: ");
 								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EMG", &CFG::cfg_Aim_EnableModifyGrapple);
+								ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
 								ImGui::Text("Grapple Range: ");
 								ImGui::TableNextColumn();
-								ImGui::SliderFloat("##GRM", &CFG::cfg_Aim_GrappleRange, 1000.0f, 50000.0f);
+								ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
+								ImGui::TableNextRow();
+								ImGui::TableNextColumn();
+								if (ImGui::CollapsingHeader("Abilties/HP/Ammo", NULL))
+								{
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Enable Auto Restock: ");
+									ImGui::TableNextColumn();
+									ImGui::Checkbox("##EAAR", &CFG::cfg_Abilities_AutoRestock);
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Enable Infinite Abilities: ");
+									ImGui::TableNextColumn();
+									ImGui::Checkbox("##EAIA", &CFG::cfg_Abilities_ResetCooldowns);
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Auto Restock HP Below %: ");
+									ImGui::TableNextColumn();
+									ImGui::SliderFloat("##ARHP", &CFG::cfg_Loot_HPToRestock, 1.0f, 100.0f);
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Ability 1 (Q): ");
+									ImGui::TableNextColumn();
+									ImGui::Hotkey("##A1QK", &CFG::cfg_Abilities_Ability1Key, cfg_Abilities_Ability1KeyState, ImVec2(180, 24));
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Ability 2 (C): ");
+									ImGui::TableNextColumn();
+									ImGui::Hotkey("##A2CK", &CFG::cfg_Abilities_Ability2Key, cfg_Abilities_Ability2KeyState, ImVec2(180, 24));
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Ability 3 (V): ");
+									ImGui::TableNextColumn();
+									ImGui::Hotkey("##A3VK", &CFG::cfg_Abilities_Ability3Key, cfg_Abilities_Ability3KeyState, ImVec2(180, 24));
+									ImGui::TableNextRow();
+									ImGui::TableNextColumn();
+									ImGui::Text("Ability 4 (Z): ");
+									ImGui::TableNextColumn();
+									ImGui::Hotkey("##A4ZK", &CFG::cfg_Abilities_Ability4Key, cfg_Abilities_Ability4KeyState, ImVec2(180, 24));
+								}
 								ImGui::EndTable();
 							}
 						}
