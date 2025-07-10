@@ -61,14 +61,15 @@ namespace Cheat
 	
 
 
-	bool IsMovingByWire();
-	bool IsInAir();
+	//bool IsMovingByWire();
+	//bool IsInAir();
 	void PlayerEnemyESP();
 	void Loot();
 	void Aimbot();
 	void PresetOverlay();
 	void PresetRefresh();
 	void PresetActivate();
+	void AutoRestock();
 	void ResearchBookmarkedItems();
 	void InstantInfiltration();
 	TFD::AActor* GetClosestEnemy(int& id);
