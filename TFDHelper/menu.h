@@ -37,6 +37,10 @@ namespace Menu
 	extern bool cfg_ForceGrappleCallKeyState;
 	extern bool cfg_ForcePullKeyState;
 	extern int  CurrentStyleIndex;
+	extern bool cfg_Abilities_Ability1KeyState;
+	extern bool cfg_Abilities_Ability2KeyState;
+	extern bool cfg_Abilities_Ability3KeyState;
+	extern bool cfg_Abilities_Ability4KeyState;
 
 	/* THESE ARE FOR NAME <-> VALUE USED IN THE IMGUI::HOTKEY BUTTON TEXT */
 	static const char* KeyNames[] = {
