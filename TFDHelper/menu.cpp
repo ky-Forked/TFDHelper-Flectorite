@@ -675,6 +675,7 @@ namespace Menu
 								ApplySelectedStyle(CurrentStyleIndex);
 							}
 						}
+						ImGui::EndTabItem();
 					}
 
 
