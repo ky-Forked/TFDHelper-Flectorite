@@ -419,7 +419,7 @@ namespace Menu
 									ImGui::TableNextColumn();
 									ImGui::Text("Enable Auto Restock: ");
 									ImGui::TableNextColumn();
-									ImGui::Checkbox("##EAAR", &CFG::cfg_Abilities_AutoRestock);
+									ImGui::Checkbox("##AEAR", &CFG::cfg_Abilities_AutoRestock);
 									ImGui::TableNextRow();
 									ImGui::TableNextColumn();
 									ImGui::Text("Enable Infinite Abilities: ");
