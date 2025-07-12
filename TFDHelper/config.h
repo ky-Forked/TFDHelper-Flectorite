@@ -99,6 +99,21 @@ namespace CFG
 
 	extern bool		cfg_Debug_ShowConsole;
 
+	extern bool		cfg_Customize_EnableCustomizationBypass;
+	extern bool		cfg_Customize_EnableAutoApplyCustomization;
+	// 0 Head, 1 Body, 2 Back, 3 Chest, 4 Spawn, 5 Makeup
+	struct CustomizeSlots
+	{
+		int CharacterID = 0;
+		int Head = 0;
+		int Body = 0;
+		int Back = 0;
+		int Chest = 0;
+		int Spawn = 0;
+		int Makeup = 0;
+	};
+	extern CustomizeSlots cfg_Customize_SaveSlots[3];
+
 	template <typename T>
 	void SaveValue(const char* Section, const char* Name, T &Value);
 	template <typename T>

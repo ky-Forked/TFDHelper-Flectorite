@@ -989,7 +989,43 @@ namespace TFD
 		uint8 Pad_UM1AccountCharacter[0x90]; // 0x0060
 	};
 
-	// 0x03C0 (0x03E8 - 0x0028)
+	enum class EM1CustomizingCharacterSkinType : uint8
+	{
+		None = 0,
+		Head = 1,
+		Body = 2,
+		BackAttachment = 3,
+		ChestAttachment = 4,
+		Makeup = 5,
+		Spawn = 6,
+		EM1CustomizingCharacterSkinType_MAX = 7,
+	};
+
+	struct FM1CustomizeCharacterInfo final
+	{
+	public:
+		struct FM1TemplateId                          CharacterTid;                                      // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_4[0x4];                                        // 0x0004(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+		TMap<EM1CustomizingCharacterSkinType, struct FM1TemplateId> SkinTids;                                          // 0x0008(0x0050)(NativeAccessSpecifierPublic)
+	};
+
+	struct FM1CustomizeInfos final
+	{
+	public:
+		TMap<struct FM1TemplateId, struct FM1CustomizeCharacterInfo> Characters;                                        // 0x0000(0x0050)(NativeAccessSpecifierPublic)
+	};
+
+	class UM1AccountInventoryBase : public UObject
+	{
+	};
+
+	class UM1AccountInventory final : public UM1AccountInventoryBase
+	{
+	public:
+		uint8 Pad_CustomizeEquipped[0x60];
+		struct FM1CustomizeInfos                      CustomizeEquipped;                                 // 0x0088(0x0330)(NativeAccessSpecifierPrivate)
+	};
+
 	class UM1Account : public UObject
 	{
 	public:
@@ -1015,14 +1051,15 @@ namespace TFD
 		bool bCreator;
 		bool bJoinedGame;
 		bool bJustFinishedPrologue;
-		uint8 Pad_123[0x5]; // 0x0123
 		TMap<FM1TemplateId, UM1AccountCharacter*> AllCharacters;
 		UM1AccountCharacter* SelectedCharacter;
-		__int64 ExtendedCharacterSlotCount; // 0x180
-		uint8 Pad_UM1AccountPreset[0x170];	// 0x188
+		__int64 ExtendedCharacterSlotCount;		// 0x180
+		class UM1AccountInventory* Inventory;	// 0x0188(0x0008)
+		uint8 Pad_UM1AccountPreset[0x168];		// 0x190
 		UM1AccountPreset* Preset; // 0x2F8
-		uint8 Pad_UM1Account[0xE8];	// 0x0300
 	};
+
+
 
 	// 0x0020 (0x00C8 - 0x00A8)
 	class UM1ActorComponent : public UActorComponent
@@ -1030,6 +1067,72 @@ namespace TFD
 	public:
 		uint8 Pad_UM1ActorComp_Class[0x20];
 	};
+
+	enum class EM1PlayerCustomizeType : uint8
+	{
+		Beard = 0,
+		Eyebrow = 1,
+		EM1PlayerCustomizeType_MAX = 2,
+	};
+
+	struct FM1PlayerCustomizeInfo final
+	{
+	public:
+		EM1PlayerCustomizeType                        Type;                                              // 0x0000(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_1[0x7];                                        // 0x0001(0x0007)(Fixing Size After Last Property [ Dumper-7 ])
+		TArray<struct FM1TemplateId>                  PaintArray;                                        // 0x0008(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+	};
+
+	struct FM1CustomizeEtcSkinData final
+	{
+	public:
+		struct FM1TemplateId                          CustomizingTemplateId;                             // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		bool                                          bInitialSetup;                                     // 0x0004(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_5[0x3];                                        // 0x0005(0x0003)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	// 0x0080 (0x0080 - 0x0000)
+	struct FM1CustomizeSkinInfo final
+	{
+	public:
+		struct FM1TemplateId                          SkinTid;                                           // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_4[0x4];                                        // 0x0004(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+		TArray<struct FM1TemplateId>                  PaintArray;                                        // 0x0008(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  GlassPaintArray;                                   // 0x0018(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  EmissivePaintArray;                                // 0x0028(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  SubPaintArray;                                     // 0x0038(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  SubGlassPaintArray;                                // 0x0048(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  SubEmissivePaintArray;                             // 0x0058(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1TemplateId>                  HairPaintArray;                                    // 0x0068(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		int32                                         EvolutionIdx;                                      // 0x0078(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_7C[0x4];                                       // 0x007C(0x0004)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	struct FM1CustomizeCharacterSkinData final
+	{
+	public:
+		struct FM1TemplateId                          CharacterTid;                                      // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_4[0x4];                                        // 0x0004(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+		TArray<struct FM1CustomizeSkinInfo>           CustomizeSkinInfoArray;                            // 0x0008(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		TArray<struct FM1PlayerCustomizeInfo>         CharacterCustomizeInfoArray;                       // 0x0018(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		bool                                          bInitialSetup;                                     // 0x0028(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		bool                                          bVisiblePartsOff;                                  // 0x0029(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_2A[0x6];                                       // 0x002A(0x0006)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	enum class EM1CharacterMeshSlotType : uint8
+	{
+		None = 0,
+		Head = 1,
+		Body = 2,
+		Face = 3,
+		Back = 4,
+		Chest = 5,
+		SubBody = 6,
+		EM1CharacterMeshSlotType_MAX = 7,
+	};
+
+	
 
 	// 0x0018 (0x0040 - 0x0028)
 	class UM1PrivateOnlineSubService : public UObject
@@ -1224,6 +1327,9 @@ namespace TFD
 	//static_assert(offsetof(AM1Character, InfoWidgetComponent) == 0x7C8, "Bad alignment");
 	//static_assert(offsetof(AM1Character, CharacterId) == 0x9F0, "Bad alignment");
 
+	// 0x0208 (0x02D8 - 0x00D0)
+
+
 	// 0x0770 (0x13D0 - 0x0C60)
 	class AM1Player : public AM1Character
 	{
@@ -1234,7 +1340,9 @@ namespace TFD
 		class UM1WeaponSlotControlComponent* WeaponSlotControl; // 0x0F28(0x0008) Need this
 		uint8 Pad_RoundsComponent[0x38]; // 0x0F30
 		class UM1PlayerRoundsComponent* RoundsComponent; // 0x0F68(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		uint8 Pad_WireCaster[0x40];	// 0x0F70
+		uint8 Pad_CustomizeComponent[0x10];	// 0x0F70
+		class UM1PlayerCustomizeComponent* CustomizeComponent; // 0x0F80(0x0008)
+		uint8 Pad_WireCaster[0x28];	// 0x0F88
 		class AM1WireCaster* WireCaster; // 0x0FB0(0x0008)(Net, ZeroConstructor, RepNotify, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		class FString PlayerName; // 0x0FB8(0x0010)
 		uint8 Pad_bInAir[0x2E];	// 0x0FC8
@@ -1467,6 +1575,21 @@ namespace TFD
 	{
 	public:
 		class AM1Character* Character_Owner;
+	};
+
+	class UM1PlayerCustomizeComponent final : public UM1CharacterComponent
+	{
+	public:
+		FMulticastInlineDelegateProperty_             OnCustomizingPlayerInfoUpdated;                    // 0x00D0(0x0010)(ZeroConstructor, InstancedReference, BlueprintAssignable, NativeAccessSpecifierPublic)
+		class AM1Player* Player_Owner;                                      // 0x00E0(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		struct FM1CustomizeEtcSkinData                EciveSkinData;                                     // 0x00E8(0x0008)(Net, RepNotify, NoDestructor, NativeAccessSpecifierPrivate)
+		struct FM1CustomizeCharacterSkinData          CustomizeCharacterSkinData;                        // 0x00F0(0x0030)(Net, RepNotify, NativeAccessSpecifierPrivate)
+		bool bTeleportSkinAssetLoaded;
+		bool bCharacterSkinAssetLoaded;
+		bool bUpdateCustomizeInfoInProgress;
+		bool bInitWorkDone;
+		uint8 Pad_CustSkinComps[0x4];
+		TMap<EM1CharacterMeshSlotType, UMeshComponent*> CustomizingSkinComps;
 	};
 
 	// Class M1.M1AbilityComponent
@@ -3279,6 +3402,360 @@ namespace TFD
 			return GetDefaultObjImpl<UM1PlayerStatComponent>();
 		}
 	};
+
+	class UDataTable : public UObject
+	{
+	public:
+		class UScriptStruct* RowStruct;                                         // 0x0028(0x0008)(Edit, ZeroConstructor, EditConst, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		TMap<class FName, uint8*>                     RowMap;                                            // 0x0030(0x0050)(So, here's a RowMap. Good luck with it.)
+		uint8                                         bStripFromClientBuilds : 1;                        // 0x0080(0x0001)(BitIndex: 0x00, PropSize: 0x0001 (Edit, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic))
+		uint8                                         bIgnoreExtraFields : 1;                            // 0x0080(0x0001)(BitIndex: 0x01, PropSize: 0x0001 (Edit, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic))
+		uint8                                         bIgnoreMissingFields : 1;                          // 0x0080(0x0001)(BitIndex: 0x02, PropSize: 0x0001 (Edit, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic))
+		uint8                                         Pad_81[0x7];                                       // 0x0081(0x0007)(Fixing Size After Last Property [ Dumper-7 ])
+		class FString                                 ImportKeyField;                                    // 0x0088(0x0010)(Edit, ZeroConstructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_98[0x18];                                      // 0x0098(0x0018)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	struct FM1CustomizingItemBase : public FTableRowBase
+	{
+	public:
+		struct FM1TemplateId                          TemplateId;                                        // 0x0008(0x0004)(Edit, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		class FName                                   StringId;                                          // 0x000C(0x0008)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_14[0x4];                                       // 0x0014(0x0004)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	enum class EM1CustomizingItemCategoryType : uint8
+	{
+		None = 0,
+		CharacterHeadSkin = 1,
+		CharacterBodySkin = 2,
+		CharacterBackAttachment = 3,
+		CharacterChestAttachment = 4,
+		CharacterMakeupSkin = 5,
+		CharacterSpawnSkin = 6,
+		WeaponSkin = 100,
+		Paint = 110,
+		HairPaint = 120,
+		GrapplingHookSkin = 200,
+		SpawnSkin = 201,
+		UITheme = 202,
+		UINameCard = 203,
+		LobbyMotion = 204,
+		Ecive = 205,
+		EmotionSocialMotion = 206,
+		EmotionSpray = 207,
+		EmotionFellowship = 208,
+		FellowBodySkin = 220,
+		FellowPatternSkin = 221,
+		FellowHeadAttachment = 222,
+		FellowBodyAttachment = 223,
+		FellowSpawnSkin = 224,
+		PhotoFrame = 240,
+		PhotoSticker = 241,
+		EM1CustomizingItemCategoryType_MAX = 242,
+	};
+
+	// ScriptStruct M1Data.M1CustomizingItemData
+	// 0x00C0 (0x00D8 - 0x0018)
+	struct FM1CustomizingItemData final : public FM1CustomizingItemBase
+	{
+	public:
+		EM1CustomizingItemCategoryType                Category;                                          // 0x0018(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_Fuck[0xBF];
+		//bool                                          bEvolvable;                                        // 0x0019(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//EM1ItemTierType                               TierType;                                          // 0x001A(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//uint8                                         Pad_1B[0x5];                                       // 0x001B(0x0005)(Fixing Size After Last Property [ Dumper-7 ])
+		//TArray<class FString>                         AssetDataParams;                                   // 0x0020(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPublic)
+		//struct FM1CustomizingAbilityDataLink          AbilityParam;                                      // 0x0030(0x0030)(Edit, NativeAccessSpecifierPublic)
+		//struct FM1CustomizingCondition                Condition;                                         // 0x0060(0x0018)(Edit, NativeAccessSpecifierPublic)
+		//EM1CustomizingConditionType                   ConditionType;                                     // 0x0078(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//bool                                          bCommonItem;                                       // 0x0079(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//uint8                                         Pad_7A[0x6];                                       // 0x007A(0x0006)(Fixing Size After Last Property [ Dumper-7 ])
+		//TArray<struct FM1CustomizingCommonSkinData>   CommonSkinList;                                    // 0x0080(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPublic)
+		//TArray<struct FM1CustomizingEvolutionInfo>    EvolutionInfos;                                    // 0x0090(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPublic)
+		//TArray<struct FM1RewardType>                  DuplicatedRewards;                                 // 0x00A0(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPublic)
+		//int32                                         MasteryLevel;                                      // 0x00B0(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//int32                                         MaxStackCount;                                     // 0x00B4(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//TArray<EM1LoginPlatformTypes>                 PlatformTypes;                                     // 0x00B8(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPublic)
+		//EM1ImportanceType                             ImportanceType;                                    // 0x00C8(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//bool                                          IsTemporary;                                       // 0x00C9(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//bool                                          bShowOnlyIfOwned;                                  // 0x00CA(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//uint8                                         Pad_CB[0x1];                                       // 0x00CB(0x0001)(Fixing Size After Last Property [ Dumper-7 ])
+		//int32                                         SortId;                                            // 0x00CC(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//EM1ItemAcquireType                            AcquireType;                                       // 0x00D0(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		//uint8                                         Pad_D1[0x7];                                       // 0x00D1(0x0007)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	class UM1DataTable : public UDataTable
+	{
+	public:
+		TArray<class FString>                         FilePaths;                                         // 0x00B0(0x0010)(ZeroConstructor, NativeAccessSpecifierPublic)
+		bool                                          bDirty;                                            // 0x00C0(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_C1[0x5F];                                      // 0x00C1(0x005F)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
+	};
+
+	struct FM1TypedDataTableBase
+	{
+		UM1DataTable* TableObject;
+	};
+
+	struct TM1DataTable : FM1TypedDataTableBase
+	{
+	};
+
+
+
+	struct FM1CustomizingItemInfo final
+	{
+	public:
+		struct FM1TemplateId                          Tid;                                               // 0x0000(0x0004)(Edit, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		int32                                         EvolutionIdx;                                      // 0x0004(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		int32                                         EvolutionComplete;                                 // 0x0008(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		int32                                         StackCount;                                        // 0x000C(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	};
+
+	struct FM1CustomizingInfoWrapper final
+	{
+	public:
+		struct FM1CustomizingItemInfo                 CustomizingItemInfo;                               // 0x0000(0x0010)(NoDestructor, NativeAccessSpecifierPublic)
+		bool                                          bNewItem;                                          // 0x0010(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_11[0x3];                                       // 0x0011(0x0003)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+	class UM1InventoryItem : public UObject
+	{
+	public:
+		int64                                         Quantity;                                          // 0x0028(0x0008)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		int64                                         QuantityChanges;                                   // 0x0030(0x0008)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		int64                                         ItemUniqueID;                                      // 0x0038(0x0008)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		struct FM1TemplateId                          TemplateId;                                        // 0x0040(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		EM1ItemType                                   ItemType;                                          // 0x0044(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		bool                                          bDummyItem;                                        // 0x0045(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		byte										  TagStatus;                                         // 0x0046(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		byte										  ItemStatus;                                        // 0x0047(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		bool                                          bFavorite;                                         // 0x0048(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_49[0x4F];                                      // 0x0049(0x004F)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1InventoryItem">();
+		}
+		static class UM1InventoryItem* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<UM1InventoryItem>();
+		}
+	};
+
+	class UM1UIData : public UObject
+	{
+	public:
+		TArray<class UM1UIWidget*>                    ReferenceWidgets;                                  // 0x0028(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+
+	};
+
+	class UM1UIDataItemInfo : public UM1UIData
+	{
+	public:
+		class UM1InventoryItem* ItemData;                                          // 0x0038(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_40[0x4];                                       // 0x0040(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+		int32                                         RewardProbability;                                 // 0x0044(0x0004)(ZeroConstructor, Transient, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//struct FM1ItemProbabilityInfo                 ProbabilityInfo;                                   // 0x0048(0x000C)(Transient, NoDestructor, NativeAccessSpecifierPrivate)
+		//struct FM1ShopDisplayInfo                     ShopDisplayInfo;                                   // 0x0054(0x0010)(Transient, NoDestructor, NativeAccessSpecifierPublic)
+		uint8                                         Pad_64[0x20];                                       // 0x0064(0x0004)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	};
+
+
+	class UM1UIDataItemInfo_Customizing final : public UM1UIDataItemInfo
+	{
+	public:
+		uint8 Pad_Locked[0x4];
+		bool bLocked;
+		bool bDifferOriginToTarget;
+		FM1TemplateId OwnerActorTemplateId;
+		FM1TemplateId OwnerSkinTemplateId;
+		int OwnerSkinEvolutionIndex;
+	};
+
+	class UM1UICustomizePageBase : public UM1UIWidget
+	{
+	public:
+		uint8_t Pad_PageBase[0x1F0];
+		/*void BP_OnEquippedCustomizingItemChanged(bool bEquipped);
+		void BP_SwitchToPreviewMode(bool bPreview);
+		void OnCancelClicked(class UM1UIWidget* InWidget);
+		void OnCompleteEvolutionCharacterCustomizing(const struct FM1TemplateId& InSkinTid, int32 InEvolutionIdx);
+		void OnDimmedClicked_LoadoutTabButton(class UM1UIWidget* InWidget);*/
+		//void OnEquipCustomizedCharacterSkin(const struct FM1TemplateId& InCharacterId, const struct FM1TemplateId& InSkinTid, bool bEquipped);
+		/*void OnEquipCustomizedFellowSkin(const struct FM1TemplateId& InFellowId, const struct FM1TemplateId& InSkinTid, bool bEquipped);
+		void OnEquipEvolutionCharacterCustomizing(const struct FM1TemplateId& InSkinTid, int32 InEvolutionIdx);
+		void OnEventCompleteEvolutionCustomizeSkin(const struct FM1TemplateId& InSkinTid, int32 InEvolutionIdx);
+		void OnEventCustomizeLoadoutSlotTabButtonSelected(int32 InTabIndex, bool bSelectionChanged);
+		void OnEventEquipCustomizeEtc(const struct FM1TemplateId& InItemTid, bool bEquipped);
+		void OnEventEquipEvolutionCustomizeSkin(const struct FM1TemplateId& InSkinTid, int32 InEvolutionIdx);
+		void OnEventEvolutionButtonClicked(class UM1UIWidget* InWidget);
+		void OnEventEvolutionCursorEntered(class UM1UIWidget* InWidget);
+		void OnEventEvolutionCursorLeft(class UM1UIWidget* InWidget);
+		void OnEventEvolutionLevelChanged(class UM1UIWidget* InWidget);
+		void OnEventEvolutionRightMouseButtonUp(class UM1UIWidget* InWidget);
+		void OnEventItemClicked(class UM1UIWidget* InWidget);
+		void OnEventItemCursorEntered(class UM1UIWidget* InWidget);
+		void OnEventItemCursorLeft(class UM1UIWidget* InWidget);
+		void OnEventItemRightMouseButtonUp(class UM1UIWidget* InWidget);
+		void OnEventPreviewClicked(class UM1UIWidget* InWidget);
+		void OnEventQuestComplete(const struct FM1TemplateId& InQuestTid);
+		void OnItemChangeColorClicked(class UM1UIWidget* InWidget);
+		void OnPreviewClicked(class UM1UIWidget* InWidget);
+		void OnPreviewEvoltionClicked(class UM1UIWidget* InWidget);
+		void OnPurchasePaintClicked(class UM1UIWidget* InWidget);
+		void OnSlotExpansionClicked(class UM1UIWidget* InWidget);
+		void OnUnequipClicked(class UM1UIWidget* InWidget);
+		void OnUpdateCharacterPaintByLoadoutSlotIndex(int32 InLoadoutSlotIndex);
+		void OnUpdateCustomizeLoadoutInGS();
+		void OnUpdateCustomizeLoadoutSlot();
+		void OnUseInformationClicked(class UM1UIWidget* InWidget);
+		void ShowCharacterEvolutionEffect(bool bFirst);*/
+
+	};
+	class UM1UICustomizeCharacterPaintSlots final : public UM1UIWidget
+	{
+	public:
+		uint8                                         Pad_728[0x78];                                     // 0x0728(0x0078)(Fixing Size After Last Property [ Dumper-7 ])
+		class UPanelWidget* Panel_PaintSlots;                                  // 0x07A0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UPanelWidget* Panel_Slots;                                       // 0x07A8(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UPanelWidget* Panel_HairPaintSlots;                              // 0x07B0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UPanelWidget* Panel_Beard;                                       // 0x07B8(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UPanelWidget* Panel_Eyebrow;                                     // 0x07C0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UWidgetSwitcher* WS_State;                                          // 0x07C8(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		bool                                          bShouldShowUpDownButton;                           // 0x07D0(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		uint8                                         Pad_7D1[0x7];                                      // 0x07D1(0x0007)(Fixing Size After Last Property [ Dumper-7 ])
+		TArray<class UM1UIWidget*>                    PaintSlots;                                        // 0x07D8(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+		TArray<class UM1UIWidget*>                    HairPaintSlots;                                    // 0x07E8(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+		TArray<class UM1UIWidget*>                    BeardPaintSlots;                                   // 0x07F8(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+		TArray<class UM1UIWidget*>                    EyebrowPaintSlots;                                 // 0x0808(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+		TArray<bool>                                  bPaintSlotsPreview;                                // 0x0818(0x0010)(ZeroConstructor, Transient, NativeAccessSpecifierPrivate)
+		TArray<bool>                                  bHairPaintSlotsPreview;                            // 0x0828(0x0010)(ZeroConstructor, Transient, NativeAccessSpecifierPrivate)
+		TArray<bool>                                  bEyebrowPaintSlotsPreview;                         // 0x0838(0x0010)(ZeroConstructor, Transient, NativeAccessSpecifierPrivate)
+		TArray<bool>                                  bBeardPaintSlotsPreview;                           // 0x0848(0x0010)(ZeroConstructor, Transient, NativeAccessSpecifierPrivate)
+
+	};
+	class UM1UICustomizeCharacterPaintInven final : public UM1UICustomizePageBase
+	{
+	public:
+		class UM1UIWidget* CurrentEmphasizedPaintSlot;                        // 0x0918(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		void* UI_SkinSlots;                                      // 0x0920(0x0008)(BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UM1UICustomizeCharacterPaintSlots* UI_PaintSlots;                                     // 0x0928(0x0008)(BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+	};
+
+	class UM1PrivateOnlineServiceCustomize final : public UM1PrivateOnlineSubService
+	{
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1PrivateOnlineServiceCustomize">();
+		}
+	};
+
+	enum class EM1CustomizeReason : uint32
+	{
+		Failed = 0,
+		Success = 1,
+		SuccessWithEquip = 2,
+		InvalidData = 3,
+		Duplicate = 4,
+		AccountNotExists = 5,
+		NotFound = 6,
+		OverPaintIndex = 7,
+		NeedEvolution = 8,
+		NotEnoughCondition = 9,
+		NotAbleEvolution = 10,
+		OverEvolution = 11,
+		FullLoadoutSlot = 12,
+		NotEnoughRequireItemLoadoutSlot = 13,
+		NotEnoughLoadoutSlot = 14,
+		DisabledCharacter = 15,
+		EM1CustomizeReason_MAX = 16,
+	};
+
+	enum class EM1CustomizeSkinNormalPaintType : uint8
+	{
+		None = 0,
+		NormalPaint = 1,
+		GlassPaint = 2,
+		EmissivePaint = 3,
+		SubBodyNormalPaint = 4,
+		SubBodyGlassPaint = 5,
+		SubBodyEmissivePaint = 6,
+		EM1CustomizeSkinNormalPaintType_MAX = 7,
+	};
+
+	//__int64 __fastcall FMemory::Malloc(unsigned __int64 Count, unsigned int Alignment)
+	typedef __int64(__fastcall* tFMemMalloc)(unsigned __int64 Count, unsigned int Alignment);
+	extern tFMemMalloc native_FMemMalloc;
+	static const char* FMemMalloc_Sig = "\x48\x89\x5C\x24\x08\x57\x48\x83\xEC\x00\x48\x8B\x05\x27\x72";
+	static const char* FMemMalloc_Mask = "xxxxxxxxx?xxxxx";
+
+	// M1::Data::FindTable<FM1CustomizingItemData> !!!! This function is a literal copy/paste almost of every other FindTable. Signature is for a CALL instruction in a different function that calls the one we want to use
+	typedef TM1DataTable* (__fastcall* tGetCustomizationTable)(bool bAllowDerivedTable);
+	extern tGetCustomizationTable native_GetCustomizationTable;
+	static const char* M1DataFindTable_Sig = "\xE8\x00\x00\x00\x00\x48\x85\xC0\x74\x00\x48\x8B\x08\x48\x8D\x54\x24\x20\x00\x00\x00\x00\x48";
+	static const char* M1DataFindTable_Mask = "x????xxxx?xxxxxxxx????x";
+
+	//void __fastcall UDataTable::GetAllRows<FM1CustomizingItemData>(UDataTable* this, const wchar_t* Context ,TArray<TObjectPtr<UToolTarget>, TSizedDefaultAllocator<32> >* OutRowArray) !!! Same as above...
+	typedef void(__fastcall* tGetTableData)(UObject* DataTable, FString* Context, TArray<FM1CustomizingItemData*>* OutRows);
+	extern tGetTableData native_GetCustomizationData;
+	static const char* UDataTableGetAllRows_Sig = "\xE8\x00\x00\x00\x00\x48\x8D\x4D\xC7\xE8\x00\x00\x00\x00\x48\x8B\x5D\x9F";
+	static const char* UDataTableGetAllRows_Mask = "x????xxxxx????xxxx";
+
+	// void __fastcall UM1AccountInventory::SetCustomizingItemList(UM1AccountInventory* this, TArray<FM1CustomizingInfoWrapper>* InItems)
+	typedef void(__fastcall* tSetCustomizingItemList)(UM1AccountInventory* This, TArray<FM1CustomizingInfoWrapper>* InItems);
+	extern tSetCustomizingItemList native_SetCustomizingItemList;
+	static const char* SetCustomizingItemList_Sig = "\x48\x89\x5C\x24\x18\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x8D\xAC\x24\x70\xFF\xFF\xFF\x48\x81\xEC\x90\x01\x00\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC4\x48\x89\x85\x80\x00\x00\x00\x48\x63\x7A\x08";
+	static const char* SetCustomizingItemList_Mask = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxxxx";
+
+	// void __fastcall UM1AccountInventory::AddOrUpdateCustomizingItems(UM1AccountInventory* this, const TArray<FM1CustomizingInfoWrapper, TSizedDefaultAllocator<32> >* InItems, bool bNewlyAcquired)
+	typedef void(__fastcall* tAddOrUpdateCustomizingItems)(UM1AccountInventory* This, TArray<FM1CustomizingInfoWrapper>* InItems, bool NewlyAcquired);
+	extern tAddOrUpdateCustomizingItems native_AddOrUpdateCustomizingItems;
+	static const char* AddOrUpdateCustomizingItems_Sig = "\x40\x53\x41\x56\x41\x57\x48\x83\xEC\x00\x33\xC0\x48\x8B\xDA";
+	static const char* AddOrUpdateCustomizingItems_Mask = "xxxxxxxxx?xxxxx";
+
+	// __int64 __fastcall UM1AccountInventory::GetSkinEvolutionIdx(UM1AccountInventory *this, const FM1TemplateId InSkinTid)
+	typedef int(__fastcall* tGetSkinEvolutionIdx)(UM1AccountInventory* This, const  FM1TemplateId ItemID);
+	extern tGetSkinEvolutionIdx native_GetSkinEvolutionIdx;
+	static const char* GetSkinEvolutionIdx_Sig = "\x40\x53\x48\x83\xEC\x20\x4C\x63\xC2\xB2\x07\xE8\x00\x00\x00\x00\x48\x8B\xD8\x48\x85\xC0\x74\x2F";
+	static const char* GetSkinEvolutionIdx_Mask = "xxxxxxxxxxxx????xxxxxxxx";
+
+	////void __fastcall UM1UICustomizeCharacterPaintInven::EquipCustomizedCharacterSkinPaint_Internal(UM1UICustomizeCharacterPaintInven* this,FM1TemplateId InSkinTid,FM1TemplateId InPaintTid,int InIndex,EM1CustomizingItemCategoryType InCategoryType,bool bEquipped)
+	//typedef void(__fastcall* tEquipCustomizedCharacterSkinPaint)(UM1UICustomizeCharacterPaintInven* This, FM1TemplateId InSkinTid, FM1TemplateId InPaintTid, int InIndex, EM1CustomizingItemCategoryType InCategoryType, bool bEquipped);
+	//extern tEquipCustomizedCharacterSkinPaint native_EquipCustomizedCharacterSkinPaint;
+	//void __fastcall hkEquipCustomizedCharacterSkinPaint(UM1UICustomizeCharacterPaintInven* This, FM1TemplateId InSkinTid, FM1TemplateId InPaintTid, int InIndex, EM1CustomizingItemCategoryType InCategoryType, bool bEquipped);
+	//static const char* EquipCustomizedCharacterSkinPaint_Sig = "";
+	//static const char* EquipCustomizedCharacterSkinPaint_Mask = "";
+
+	////void __fastcall UM1PrivateOnlineServiceCustomize::ReceiveCustomizingSkinPaintsImpl(UM1PrivateOnlineServiceCustomize* this,FM1TemplateId InTargetTid,FM1TemplateId InSkinTid,EM1CustomizeReason InReason)
+	//typedef void(__fastcall* tReceiveCustomizingSkinPaints)(UM1PrivateOnlineServiceCustomize* This, FM1TemplateId InTargetTid, FM1TemplateId InSkinTid, EM1CustomizeReason InReason);
+	//extern tReceiveCustomizingSkinPaints native_ReceiveCustomizingSkinPaints;
+	//static const char* ReceiveCustomizingSkinPaintsImpl_Sig = "";
+	//static const char* ReceiveCustomizingSkinPaintsImpl_Mask = "";
+
+	//void __fastcall UM1PrivateOnlineServiceCustomize::ReceiveCustomizingCharacterSkinImpl(UM1PrivateOnlineServiceCustomize* this, FM1TemplateId InCharacterTid, FM1TemplateId InSkinTid, bool bEquip, EM1CustomizeReason InReason)
+	typedef void(__fastcall* tReceiveCustomizingCharacterSkin)(UM1PrivateOnlineServiceCustomize* This, FM1TemplateId InTargetCharacterTid, FM1TemplateId InSkinTid, bool bEquip, EM1CustomizeReason InReason);
+	extern tReceiveCustomizingCharacterSkin native_ReceiveCustomizingCharacterSkin;
+	static const char* ReceiveCustomizingCharacterSkinImpl_Sig = "\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x57\x48\x83\xEC\x00\x41\x0F\xB6\xE9\x41";
+	static const char* ReceiveCustomizingCharacterSkinImpl_Mask = "xxxxxxxxxxxxxxxxxxx?xxxxx";
+
+	//void __fastcall UM1AccountInventory::EquipCustomizeCharacterSkin(	UM1AccountInventory* this,FM1TemplateId InCharacterTid,FM1TemplateId InSkinTid,bool InEquipped)
+	typedef void(__fastcall* tAccountEquipCustomizeCharacterSkin)(UM1AccountInventory* This, FM1TemplateId InCharacterTid, FM1TemplateId InSkinTid, bool InEquipped);
+	extern tAccountEquipCustomizeCharacterSkin native_AccountEquipCustomizeCharacterSkin;
+	static const char* EquipCustomizeCharacterSkin_Sig = "\x44\x00\x00\x00\x00\x00\x00\x00\x00\x53\x56\x57\x48\x83";
+	static const char* EquipCustomizeCharacterSkin_Mask = "x????????xxxxx";
+
+	// void __fastcall UM1PlayerCustomizeComponent::OnRep_CustomizeCharacterSkinData(UM1PlayerCustomizeComponent *this)
+	typedef void(__fastcall* tOnRep_CustomizeCharacterSkinData)(UM1PlayerCustomizeComponent* This);
+	extern tOnRep_CustomizeCharacterSkinData native_OnRep_CustomizeCharacterSkinData;
+	static const char* CustomizeCharacterSkinData_Sig = "\x40\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8B\x05\xA8\x08";
+	static const char* CustomizeCharacterSkinData_Mask = "xxxxx????xxxxx";
 
 
 	struct M1PrivateOnlineServiceComponent_ServerChangePlayer final

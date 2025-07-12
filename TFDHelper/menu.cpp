@@ -598,6 +598,81 @@ namespace Menu
 						}
 						ImGui::EndTabItem();
 					}
+					if (ImGui::BeginTabItem("Customization"))
+					{
+						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("'Unlock' All Customization Items: ");
+							ImGui::TableNextColumn();
+							if (ImGui::Button("Unlock!"))
+							{
+								Cheat::AddAllCustomizationItems();
+							}
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Enable Customization Equip Bypass: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##CECB", &CFG::cfg_Customize_EnableCustomizationBypass);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Enable Customization Auto-Equip: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##CECAE", &CFG::cfg_Customize_EnableAutoApplyCustomization);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Auto-Equip will equip the data from the first saved slot that matches your current character.");
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							static int SaveSlot = 0;
+							if (ImGui::Button("<"))
+							{
+								if (SaveSlot != 0)
+									SaveSlot--;
+							}
+							ImGui::SameLine();
+							ImGui::Text(std::format("Slot {}", SaveSlot).c_str());
+							ImGui::SameLine();
+							if (ImGui::Button(">"))
+							{
+								if (SaveSlot != 2)
+									SaveSlot++;
+							}
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Save current customization to selected slot: ");
+							ImGui::TableNextColumn();
+							if (ImGui::Button("Save"))
+							{
+								// 282000003 - 282100000 = Head		// Slot 0
+				// 282100001 - 282200000 = Body		// Slot 1
+				// 282400001 - 282500000 = Back		// Slot 2
+				// 282500001 - 282600000 = Front	// Slot 3
+				// 282600002 - 282700000 = Makeup	// Slot 5
+				// 283000001 - 283000090 = Character Paint
+				// 283100001 - 283100060 = Hair Paint
+				// 284100001 - 284100029 = Spawn	// Slot 4
+				// 282009001 - 282109000 = Default Head
+				// 282109001 - 282109110 = Default Body
+								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterID = Cheat::LocalPlayerCharacter->CharacterId.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Head = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Body = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Back = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Chest = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Spawn = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID;
+								CFG::cfg_Customize_SaveSlots[SaveSlot].Makeup = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID;
+							}
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							if (ImGui::Button("Manually Load Customization"))
+							{
+								Cheat::TryEquipState = true;
+							}
+							ImGui::EndTable();
+						}
+						ImGui::EndTabItem();
+					}
 					if (ImGui::BeginTabItem("Extra"))
 					{
 						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))

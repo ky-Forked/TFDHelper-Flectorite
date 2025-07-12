@@ -13,6 +13,19 @@ namespace TFD
 
 	tUMPOSCGetAccount native_GetUM1Account = nullptr;
 
+	tGetCustomizationTable native_GetCustomizationTable = nullptr;
+	tGetTableData native_GetCustomizationData = nullptr;
+	tSetCustomizingItemList native_SetCustomizingItemList = nullptr;
+	tAddOrUpdateCustomizingItems native_AddOrUpdateCustomizingItems = nullptr;
+	tFMemMalloc native_FMemMalloc = nullptr;
+	tReceiveCustomizingCharacterSkin native_ReceiveCustomizingCharacterSkin = nullptr;
+	tGetSkinEvolutionIdx native_GetSkinEvolutionIdx = nullptr;
+	//tEquipCustomizedCharacterSkinPaint native_EquipCustomizedCharacterSkinPaint = nullptr;
+	//tReceiveCustomizingSkinPaints native_ReceiveCustomizingSkinPaints = nullptr;
+	tAccountEquipCustomizeCharacterSkin native_AccountEquipCustomizeCharacterSkin = nullptr;
+
+	tOnRep_CustomizeCharacterSkinData native_OnRep_CustomizeCharacterSkinData = nullptr;
+
 	uintptr_t BASE = 0x0;
 	uintptr_t SIZE = 0x0;
 

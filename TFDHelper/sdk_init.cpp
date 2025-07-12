@@ -89,41 +89,6 @@ namespace TFD
 				Sleep(1);
 			}
 
-
-
-			/* NOSPREAD AND RECOIL CAN BE REPLACED WITH THE CODE NOOBGUNNER SHARED IN DISCORD */
-//			uintptr_t SpreadPtr = SearchSignature(procID, moduleBase, moduleSize, NoSpreadSig, NoSpreadMask);
-//			if (!SpreadPtr)
-//			{
-//#ifdef IS_DEBUG_VERSION
-//				std::cout << "[Cheat] Failed to find NoSpread.\n";
-//#endif
-//			}
-//			else
-//			{
-//				SpreadPtr = moduleBase + SpreadPtr;
-//				NoSpreadAddress = (reinterpret_cast<uint8_t*>(SpreadPtr) - 0x9);
-//#ifdef IS_DEBUG_VERSION
-//				std::cout << "[Cheat] Found NoSpread: " << std::hex << SpreadPtr << std::dec << "\n";
-//				//Sleep(1000);
-//#endif
-//			}
-//			uintptr_t RecoilPtr = SearchSignature(procID, moduleBase, moduleSize, NoRecoilSig, NoRecoilMask);
-//			if (!RecoilPtr)
-//			{
-//#ifdef IS_DEBUG_VERSION
-//				std::cout << "[Cheat] Failed to find NoRecoil.\n";
-//#endif
-//			}
-//			else
-//			{
-//				RecoilPtr = moduleBase + RecoilPtr;
-//				NoRecoilAddress = reinterpret_cast<uint8_t*>(RecoilPtr + 2);
-//#ifdef IS_DEBUG_VERSION
-//				std::cout << "[Cheat] Found NoRecoil: " << std::hex << RecoilPtr << std::dec << "\n";
-//#endif
-//			}
-
 #ifdef IS_DEBUG_VERSION
 			std::cout << "[Cheat] Searching for GWorld.\n";
 #endif
@@ -139,30 +104,6 @@ namespace TFD
 			
 
 			/* NATIVE TFD GAME FUNCTIONS NOT EXPOSED BY SDK*/
-			/*uintptr_t FindFuncPtr = moduleBase + 0x419D8B0;
-			TFD::native_FindFunctionChecked = (TFD::tFindFunctionChecked)FindFuncPtr;
-
-			uintptr_t NativeFunc = moduleBase + 0x34765B0;
-			TFD::native_InitCheatManager = (TFD::tInitCheatManager)NativeFunc;
-
-			uintptr_t CreateCheatWidgetPtr = moduleBase + 0x3950D70;
-			TFD::native_CreateCheatWidget = (TFD::tCreateCheatWidget)CreateCheatWidgetPtr;
-
-			uintptr_t ActorMiniGameBeginPlayPtr = SearchSignature(procID, moduleBase, moduleSize, ActorMiniGamePlaySig, ActorMiniGamePlayMask);
-			if (ActorMiniGameBeginPlayPtr)
-			{
-				std::cout << "[Cheat] Found MinigamePlay\n";
-				TFD::native_ActorMiniGameBeginPlay = (TFD::tActorMiniGameBeginPlay)(moduleBase + ActorMiniGameBeginPlayPtr);
-			}
-
-			uintptr_t CanInteractPtr = SearchSignature(procID, moduleBase, moduleSize, CanInteractSig, CanInteractMask);
-			if (CanInteractPtr)
-			{
-				CanInteractPtr = moduleBase + CanInteractPtr;
-				if (MH_CreateHook(reinterpret_cast<void*>(CanInteractPtr), &hook_InteractableActorCanActivate, reinterpret_cast<void**>(&native_oInteractableActorCanActivate)) || MH_EnableHook(reinterpret_cast<void*>(CanInteractPtr)) != MH_OK) {
-					std::cout << "[Cheat] Failed to hook CanInteract\n";
-				}
-			}*/
 			uintptr_t GetAccountPtr = SearchSignature(procID, moduleBase, moduleSize, UMPOSCGetAccountSig, UMPOSCGetAccountMask);
 			if (GetAccountPtr)
 			{
@@ -171,6 +112,112 @@ namespace TFD
 			}
 			else
 				std::cout << "[Cheat] Failed to get UM1PrivateOnlineServiceComponent::GetAccount from pattern. \n";
+
+			// FMemory::Malloc(..)
+			//native_FMemMalloc = (tFMemMalloc)(moduleBase + 0x4092780);
+			uintptr_t FMemMalloc = SearchSignature(procID, moduleBase, moduleSize, FMemMalloc_Sig, FMemMalloc_Mask);
+			if (FMemMalloc)
+			{
+				//std::cout << std::hex << (void*)FMemMalloc << std::dec << std::endl;
+				FMemMalloc = moduleBase + FMemMalloc;
+				native_FMemMalloc = (tFMemMalloc)FMemMalloc;
+			}
+			else
+				std::cout << "[Cheat] Failed to find FMemory::Malloc! \n";
+
+			// M1::Data::FindTable<FM1CustomizingItemData>(..)
+			//native_GetCustomizationTable = (tGetCustomizationTable)(moduleBase + 0x341AB10);
+			uintptr_t FindTable = SearchSignature(procID, moduleBase, moduleSize, M1DataFindTable_Sig, M1DataFindTable_Mask);
+			if (FindTable)
+			{
+				FindTable = moduleBase + FindTable;
+				uintptr_t targetFunction = FindTable + 5 + *(int32_t*)(FindTable + 1);
+				native_GetCustomizationTable = (tGetCustomizationTable)targetFunction;
+			}
+			else
+				std::cout << "[Cheat] Failed to find M1::Data::FindTable<FM1CustomizingItemData>! \n";
+			// GetAllRows<FM1CustomizingItemData>(..)
+			//native_GetCustomizationData = (tGetTableData)(moduleBase + 0x36C5DE0);
+			uintptr_t GetCustomizationData = SearchSignature(procID, moduleBase, moduleSize, UDataTableGetAllRows_Sig, UDataTableGetAllRows_Mask);
+			if (GetCustomizationData)
+			{
+				GetCustomizationData = moduleBase + GetCustomizationData;
+				uintptr_t targetFunction = GetCustomizationData + 5 + *(int32_t*)(GetCustomizationData + 1);
+				native_GetCustomizationData = (tGetTableData)targetFunction;
+			}
+			else
+				std::cout << "[Cheat] Failed to find GetAllRows<FM1CustomizingItemData>! \n";
+
+			// UM1AccountInventory::SetCustomizingItemList(..)
+			//native_SetCustomizingItemList = (tSetCustomizingItemList)(moduleBase + 0x36B1130);
+			uintptr_t SetCustomizingItemList = SearchSignature(procID, moduleBase, moduleSize, SetCustomizingItemList_Sig, SetCustomizingItemList_Mask);
+			if (SetCustomizingItemList)
+			{
+				SetCustomizingItemList = moduleBase + SetCustomizingItemList;
+				native_SetCustomizingItemList = (tSetCustomizingItemList)SetCustomizingItemList;
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1AccountInventory::SetCustomizingItemList! \n";
+
+			// UM1AccountInventory::AddOrUpdateCustomizingItems(..)
+			//native_AddOrUpdateCustomizingItems = (tAddOrUpdateCustomizingItems)(moduleBase + 0x36B1F50);
+			uintptr_t AddOrUpdateCustomizingItems = SearchSignature(procID, moduleBase, moduleSize, AddOrUpdateCustomizingItems_Sig, AddOrUpdateCustomizingItems_Mask);
+			if (AddOrUpdateCustomizingItems)
+			{
+				AddOrUpdateCustomizingItems = moduleBase + AddOrUpdateCustomizingItems;
+				native_AddOrUpdateCustomizingItems = (tAddOrUpdateCustomizingItems)AddOrUpdateCustomizingItems;
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1AccountInventory::AddOrUpdateCustomizingItems! \n";
+
+			// UM1AccountInventory::GetSkinEvolutionIdx(..)
+			//native_GetSkinEvolutionIdx = (tGetSkinEvolutionIdx)(moduleBase + 0x36BA650);
+			uintptr_t GetSkinEvolutionIdx = SearchSignature(procID, moduleBase, moduleSize, GetSkinEvolutionIdx_Sig, GetSkinEvolutionIdx_Mask);
+			if (GetSkinEvolutionIdx)
+			{
+				GetSkinEvolutionIdx = moduleBase + GetSkinEvolutionIdx;
+				native_GetSkinEvolutionIdx = (tGetSkinEvolutionIdx)GetSkinEvolutionIdx;
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1AccountInventory::GetSkinEvolutionIdx! \n";
+
+			// UM1PrivateOnlineServiceCustomize::ReceiveCustomizingCharacterSkinImpl(..)
+			//native_ReceiveCustomizingCharacterSkin = (tReceiveCustomizingCharacterSkin)(moduleBase + 0x3929940);
+			//uintptr_t ReceiveCustomizingCharacterSkin = moduleBase + 0x3929940;
+			uintptr_t ReceiveCustomizingCharacterSkin = SearchSignature(procID, moduleBase, moduleSize, ReceiveCustomizingCharacterSkinImpl_Sig, ReceiveCustomizingCharacterSkinImpl_Mask);
+			if (ReceiveCustomizingCharacterSkin)
+			{
+				ReceiveCustomizingCharacterSkin = moduleBase + ReceiveCustomizingCharacterSkin;
+				if (MH_CreateHook(reinterpret_cast<void*>(ReceiveCustomizingCharacterSkin), &Cheat::hkReceiveCustomizingCharacterSkin, reinterpret_cast<void**>(&native_ReceiveCustomizingCharacterSkin)) == MH_OK)
+				{
+					MH_EnableHook(reinterpret_cast<void*>(ReceiveCustomizingCharacterSkin));
+				}
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1PrivateOnlineServiceCustomize::ReceiveCustomizingCharacterSkinImpl! \n";
+
+
+			//void __fastcall UM1AccountInventory::EquipCustomizeCharacterSkin
+			//native_AccountEquipCustomizeCharacterSkin = (tAccountEquipCustomizeCharacterSkin)(moduleBase + 0x36B2E50);
+			uintptr_t AccountEquipCustomizeCharacterSkin = SearchSignature(procID, moduleBase, moduleSize, EquipCustomizeCharacterSkin_Sig, EquipCustomizeCharacterSkin_Mask);
+			if (AccountEquipCustomizeCharacterSkin)
+			{
+				AccountEquipCustomizeCharacterSkin = moduleBase + AccountEquipCustomizeCharacterSkin;
+				native_AccountEquipCustomizeCharacterSkin = (tAccountEquipCustomizeCharacterSkin)AccountEquipCustomizeCharacterSkin;
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1AccountInventory::EquipCustomizeCharacterSkin! \n";
+
+			//UM1PlayerCustomizeComponent::OnRep_CustomizeCharacterSkinData
+			//uintptr_t OnRep_CustomizeCharacterSkinData = moduleBase + 0x34E8490;
+			uintptr_t OnRep_CustomizeCharacterSkinData = SearchSignature(procID, moduleBase, moduleSize, CustomizeCharacterSkinData_Sig, CustomizeCharacterSkinData_Mask);
+			if (OnRep_CustomizeCharacterSkinData)
+			{
+				OnRep_CustomizeCharacterSkinData = moduleBase + OnRep_CustomizeCharacterSkinData;
+				native_OnRep_CustomizeCharacterSkinData = (tOnRep_CustomizeCharacterSkinData)OnRep_CustomizeCharacterSkinData;
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1PlayerCustomizeComponent::OnRep_CustomizeCharacterSkinData! \n";
 
 			Sleep(1000);
 

@@ -88,6 +88,12 @@ namespace CFG
 
 	bool		cfg_Debug_ShowConsole = false;
 
+	bool		cfg_Customize_EnableCustomizationBypass = false;
+	bool		cfg_Customize_EnableAutoApplyCustomization = false;
+	// 0 Head, 1 Body, 2 Back, 3 Chest, 4 Spawn, 5 Makeup
+
+	CustomizeSlots cfg_Customize_SaveSlots[3];
+
 	//std::vector<int> cfg_Hotswap_Presets = { -1, -1, -1, -1, -1, -1 };
 	//bool		cfg_Aim_NoSpread = false;
 	//bool		cfg_Aim_NoRecoil = false;
@@ -183,6 +189,40 @@ namespace CFG
 			//LoadValue("Hotswap", "Preset_4", cfg_Hotswap_Presets[3]);
 			//LoadValue("Hotswap", "Preset_5", cfg_Hotswap_Presets[4]);
 			//LoadValue("Hotswap", "Preset_6", cfg_Hotswap_Presets[5]);
+
+			LoadValue("Customize", "EnableCustomizationBypass", cfg_Customize_EnableCustomizationBypass);
+			LoadValue("Customize", "EnableAutoApplyCustomization", cfg_Customize_EnableAutoApplyCustomization);
+
+			LoadValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
+			if (cfg_Customize_SaveSlots[0].CharacterID != -1)
+			{
+				LoadValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
+				LoadValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
+				LoadValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
+				LoadValue("Customize", "SaveSlot0_Chest", cfg_Customize_SaveSlots[0].Chest);
+				LoadValue("Customize", "SaveSlot0_Spawn", cfg_Customize_SaveSlots[0].Spawn);
+				LoadValue("Customize", "SaveSlot0_Makeup", cfg_Customize_SaveSlots[0].Makeup);
+			}
+			LoadValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
+			if (cfg_Customize_SaveSlots[1].CharacterID != -1)
+			{
+				LoadValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
+				LoadValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
+				LoadValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
+				LoadValue("Customize", "SaveSlot1_Chest", cfg_Customize_SaveSlots[1].Chest);
+				LoadValue("Customize", "SaveSlot1_Spawn", cfg_Customize_SaveSlots[1].Spawn);
+				LoadValue("Customize", "SaveSlot1_Makeup", cfg_Customize_SaveSlots[1].Makeup);
+			}
+			LoadValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
+			if (cfg_Customize_SaveSlots[2].CharacterID != -1)
+			{
+				LoadValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
+				LoadValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
+				LoadValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
+				LoadValue("Customize", "SaveSlot2_Chest", cfg_Customize_SaveSlots[2].Chest);
+				LoadValue("Customize", "SaveSlot2_Spawn", cfg_Customize_SaveSlots[2].Spawn);
+				LoadValue("Customize", "SaveSlot2_Makeup", cfg_Customize_SaveSlots[2].Makeup);
+			}
 		}
 	}
 
@@ -262,6 +302,31 @@ namespace CFG
 		//SaveValue("Hotswap", "Preset_4", cfg_Hotswap_Presets[3]);
 		//SaveValue("Hotswap", "Preset_5", cfg_Hotswap_Presets[4]);
 		//SaveValue("Hotswap", "Preset_6", cfg_Hotswap_Presets[5]);
+
+		SaveValue("Customize", "EnableCustomizationBypass", cfg_Customize_EnableCustomizationBypass);
+		SaveValue("Customize", "EnableAutoApplyCustomization", cfg_Customize_EnableAutoApplyCustomization);
+
+		SaveValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
+		SaveValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
+		SaveValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
+		SaveValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
+		SaveValue("Customize", "SaveSlot0_Chest", cfg_Customize_SaveSlots[0].Chest);
+		SaveValue("Customize", "SaveSlot0_Spawn", cfg_Customize_SaveSlots[0].Spawn);
+		SaveValue("Customize", "SaveSlot0_Makeup", cfg_Customize_SaveSlots[0].Makeup);
+		SaveValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
+		SaveValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
+		SaveValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
+		SaveValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
+		SaveValue("Customize", "SaveSlot1_Chest", cfg_Customize_SaveSlots[1].Chest);
+		SaveValue("Customize", "SaveSlot1_Spawn", cfg_Customize_SaveSlots[1].Spawn);
+		SaveValue("Customize", "SaveSlot1_Makeup", cfg_Customize_SaveSlots[1].Makeup);
+		SaveValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
+		SaveValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
+		SaveValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
+		SaveValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
+		SaveValue("Customize", "SaveSlot2_Chest", cfg_Customize_SaveSlots[2].Chest);
+		SaveValue("Customize", "SaveSlot2_Spawn", cfg_Customize_SaveSlots[2].Spawn);
+		SaveValue("Customize", "SaveSlot2_Makeup", cfg_Customize_SaveSlots[2].Makeup);
 
 		ini.SaveFile("cfg.ini");
 	}

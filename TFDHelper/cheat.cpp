@@ -93,10 +93,21 @@ namespace Cheat
 			return oPostRender(self, canvas);
 		}
 
+		static bool TryEquipCustomization = true;
 		if ((int)(static_cast<TFD::UM1GameInstance*>(GWorld->OwningGameInstance)->ConnectionState) != 10)
 		{
 			Render::R_End();
+			WeaponSlot = nullptr;
+			if (CFG::cfg_Customize_EnableAutoApplyCustomization && TryEquipCustomization == false)
+				TryEquipCustomization = true;
 			return oPostRender(self, canvas);
+		}
+
+		if (CFG::cfg_Customize_EnableAutoApplyCustomization && TryEquipCustomization)
+		{
+
+			if (TryEquipSavedCustomization())
+				TryEquipCustomization = false;
 		}
 
 		ScreenMiddle.X = (Canvas->SizeX / 2.0f) / (Canvas->SizeX / Canvas->ClipX);
@@ -887,7 +898,7 @@ namespace Cheat
 							else if (Item->IsA(TFD::ABP_AmmoEnhancedDroppedItem_C::StaticClass()))
 							{
 								Text = "Enhanced Ammo";
-								if(GetSpareRounds(TFD::EM1RoundsType::EnhancedRounds,120))
+								if (GetSpareRounds(TFD::EM1RoundsType::EnhancedRounds, 120))
 									shouldVacuum = true;
 							}
 							else if (Item->IsA(TFD::ABP_AmmoGeneralDroppedItem_C::StaticClass()))
@@ -1995,4 +2006,212 @@ namespace Cheat
 			}
 		}
 	}*/
+
+	// Customization functions
+	void AddAllCustomizationItems()
+	{
+		static bool RunOnlyOnce = true;
+		if (RunOnlyOnce)
+		{
+			RunOnlyOnce = false;
+			// Get ALL customization tIDs
+			TFD::TM1DataTable* CustomizationTable = TFD::native_GetCustomizationTable(false);
+			if (!CustomizationTable)
+				return;
+
+			SDK::TArray<TFD::FM1CustomizingItemData*> Data;
+			static SDK::FString Context(L"UM1AccountInventory");
+			TFD::native_GetCustomizationData(CustomizationTable->TableObject, &Context, &Data);
+
+			// If you want to dump them all to a file, uncomment this block
+			std::ofstream outFile("customization_data.txt");
+			if (outFile.is_open())
+			{
+				for (int i = 0; i < Data.Num(); i++)
+				{
+					TFD::FM1CustomizingItemData* itm = Data[i];
+					std::string text = std::format("[{}] - tID: {} - Name: {}", (int)itm->Category, itm->TemplateId.ID, itm->StringId.ToString().c_str());
+					outFile << text << "\n";
+				}
+				outFile.close();
+			}
+
+			// We need to make our own TArray, so count every item of type CharacterBodySkin so we can properly set the TArray size
+			// Without the CharacterBodySkin we can add every single type of customization, but their equip functions are not all bypassed yet.
+
+			int Count = 0;
+			for (int i = 0; i < Data.Num(); i++)
+			{
+				//if (Data[i]->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
+				//{
+				Count++;
+				//}
+			}
+			if (Count > 0)
+			{
+				static TFD::TArray<TFD::FM1CustomizingInfoWrapper> Items;
+				Items.Data = (TFD::FM1CustomizingInfoWrapper*)TFD::native_FMemMalloc(20 * Count, 0);
+				Items.NumElements = 0;
+				Items.MaxElements = Count;
+				//SDK::TArray<TFD::FM1CustomizingInfoWrapper> Items(Count);
+				if (!LocalPlayerController->PrivateOnlineServiceComponent)
+					return;
+				static TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+				for (int i = 0; i < Data.Num(); i++)
+				{
+					TFD::FM1CustomizingItemData* itm = Data[i];
+					//if (itm->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
+					//{
+					TFD::FM1CustomizingInfoWrapper ItemWrapper = {};
+					ItemWrapper.bNewItem = true;
+					ItemWrapper.CustomizingItemInfo = {};
+					ItemWrapper.CustomizingItemInfo.StackCount = 1;
+					ItemWrapper.CustomizingItemInfo.Tid = itm->TemplateId;
+					ItemWrapper.CustomizingItemInfo.EvolutionComplete = false;
+					ItemWrapper.CustomizingItemInfo.EvolutionIdx = TFD::native_GetSkinEvolutionIdx(Account->Inventory, itm->TemplateId);
+					Items.Add(ItemWrapper);
+					//}
+				}
+				TFD::native_AddOrUpdateCustomizingItems(Account->Inventory, &Items, true);
+			}
+		}
+	}
+	bool TryEquipState = false;
+	bool TryEquipSavedCustomization()
+	{
+
+		if (!Cheat::LocalPlayerCharacter)
+			return false;
+		if (!Cheat::LocalPlayerCharacter->CustomizeComponent)
+			return false;
+		if (!Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray.IsValid())
+			return false;
+		if (Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray.Num() != 6)
+			return false;
+
+		static TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+		if (Account)
+		{
+			int SaveSlot = -1;
+			for (int i = 0; i < 3; i++)
+				if (CFG::cfg_Customize_SaveSlots[i].CharacterID == LocalPlayerCharacter->CharacterId.ID)
+				{
+					SaveSlot = i;
+					break;
+				}
+
+			if (SaveSlot != -1)
+			{
+				std::cout << SaveSlot << std::endl;
+				// 282000003 - 282100000 = Head		// Slot 0
+				// 282100001 - 282200000 = Body		// Slot 1
+				// 282400001 - 282500000 = Back		// Slot 2
+				// 282500001 - 282600000 = Front	// Slot 3
+				// 282600002 - 282700000 = Makeup	// Slot 5
+				// 283000001 - 283000090 = Character Paint
+				// 283100001 - 283100060 = Hair Paint
+				// 284100001 - 284100029 = Spawn	// Slot 4
+				// 282009001 - 282109000 = Default Head
+				// 282109001 - 282109110 = Default Body
+
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Body != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Body }, true);
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Head != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Head }, true);
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Chest != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Chest }, true);
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Makeup != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Makeup }, true);
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Back != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Back }, true);
+				if (CFG::cfg_Customize_SaveSlots[SaveSlot].Spawn != 0)
+					TFD::native_AccountEquipCustomizeCharacterSkin(Account->Inventory, LocalPlayerCharacter->CharacterId, TFD::FM1TemplateId{ CFG::cfg_Customize_SaveSlots[SaveSlot].Spawn }, true);
+
+
+
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Head;
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Body;
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Back;
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Chest;
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Spawn;
+				Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = CFG::cfg_Customize_SaveSlots[SaveSlot].Makeup;
+
+
+				//TFD::native_SetCharacterCustomizingAsInventory(LocalPlayerCharacter->Mesh, &LocalPlayerCharacter->CustomizeComponent->CustomizingSkinComps, LocalPlayerCharacter->CharacterId, Account->Inventory);
+				TFD::native_OnRep_CustomizeCharacterSkinData(Cheat::LocalPlayerCharacter->CustomizeComponent);
+				return true;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void __fastcall hkReceiveCustomizingCharacterSkin(TFD::UM1PrivateOnlineServiceCustomize* This, TFD::FM1TemplateId InTargetCharacterTid, TFD::FM1TemplateId InSkinTid, bool bEquip, TFD::EM1CustomizeReason InReason)
+	{
+		//std::cout << "Equip: " << bEquip << " - " << (int)InReason << std::endl;
+		//InReason = EM1CustomizeReason::Success;
+		// 282000003 - 282100000 = Head		// Slot 0
+		// 282100001 - 282200000 = Body		// Slot 1
+		// 282400001 - 282500000 = Back		// Slot 2
+		// 282500001 - 282600000 = Front	// Slot 3
+		// 282600002 - 282700000 = Makeup	// Slot 5
+		// 283000001 - 283000090 = Character Paint
+		// 283100001 - 283100060 = Hair Paint
+		// 284100001 - 284100029 = Spawn	// Slot 4
+		// 282009001 - 282109000 = Default Head
+		// 282109001 - 282109110 = Default Body
+
+		if (CFG::cfg_Customize_EnableCustomizationBypass)
+		{
+			if ((InSkinTid.ID >= 282000003 && InSkinTid.ID < 282100000) || (InSkinTid.ID >= 282009001 && InSkinTid.ID < 282109000)) // Head
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = 0;
+			}
+			else if ((InSkinTid.ID >= 282100001 && InSkinTid.ID < 282200000) || (InSkinTid.ID >= 282109001 && InSkinTid.ID < 282109110)) // Body
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = 0;
+			}
+			else if (InSkinTid.ID >= 282400001 && InSkinTid.ID < 282500000) // Back
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = 0;
+			}
+			else if (InSkinTid.ID >= 282500001 && InSkinTid.ID < 282600000) // Front
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = 0;
+			}
+			else if (InSkinTid.ID >= 284100001 && InSkinTid.ID < 284100030) // Spawn
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = 0;
+			}
+			else if (InSkinTid.ID >= 282600002 && InSkinTid.ID < 282700000) // Makeup
+			{
+				if (bEquip)
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = InSkinTid.ID;
+				else
+					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = 0;
+			}
+			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, TFD::EM1CustomizeReason::Success);
+			TFD::native_OnRep_CustomizeCharacterSkinData(Cheat::LocalPlayerCharacter->CustomizeComponent);
+		}
+		else
+			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, InReason);
+	}
 }
