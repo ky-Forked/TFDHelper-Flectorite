@@ -105,6 +105,7 @@ namespace CFG
 	struct CustomizeSlots
 	{
 		int CharacterID = 0;
+		std::string CharacterName = "None";
 		int Head = 0;
 		int Body = 0;
 		int Back = 0;

@@ -13,6 +13,9 @@ namespace TFD
 
 	tUMPOSCGetAccount native_GetUM1Account = nullptr;
 
+	tSpeedHackDetecting native_SpeedHackDetecting = nullptr;
+	tGetCharacterName native_GetCharacterName = nullptr;
+
 	tGetCustomizationTable native_GetCustomizationTable = nullptr;
 	tGetTableData native_GetCustomizationData = nullptr;
 	tSetCustomizingItemList native_SetCustomizingItemList = nullptr;

@@ -196,6 +196,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
 			if (cfg_Customize_SaveSlots[0].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot0_Name", cfg_Customize_SaveSlots[0].CharacterName);
 				LoadValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
 				LoadValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
 				LoadValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
@@ -206,6 +207,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
 			if (cfg_Customize_SaveSlots[1].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot1_Name", cfg_Customize_SaveSlots[1].CharacterName);
 				LoadValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
 				LoadValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
 				LoadValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
@@ -216,6 +218,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
 			if (cfg_Customize_SaveSlots[2].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot2_Name", cfg_Customize_SaveSlots[2].CharacterName);
 				LoadValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
 				LoadValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
 				LoadValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
@@ -307,6 +310,7 @@ namespace CFG
 		SaveValue("Customize", "EnableAutoApplyCustomization", cfg_Customize_EnableAutoApplyCustomization);
 
 		SaveValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
+		SaveValue("Customize", "SaveSlot0_Name", cfg_Customize_SaveSlots[0].CharacterName);
 		SaveValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
 		SaveValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
 		SaveValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
@@ -314,6 +318,7 @@ namespace CFG
 		SaveValue("Customize", "SaveSlot0_Spawn", cfg_Customize_SaveSlots[0].Spawn);
 		SaveValue("Customize", "SaveSlot0_Makeup", cfg_Customize_SaveSlots[0].Makeup);
 		SaveValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
+		SaveValue("Customize", "SaveSlot1_Name", cfg_Customize_SaveSlots[1].CharacterName);
 		SaveValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
 		SaveValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
 		SaveValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
@@ -321,6 +326,7 @@ namespace CFG
 		SaveValue("Customize", "SaveSlot1_Spawn", cfg_Customize_SaveSlots[1].Spawn);
 		SaveValue("Customize", "SaveSlot1_Makeup", cfg_Customize_SaveSlots[1].Makeup);
 		SaveValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
+		SaveValue("Customize", "SaveSlot2_Name", cfg_Customize_SaveSlots[2].CharacterName);
 		SaveValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
 		SaveValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
 		SaveValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
@@ -347,6 +353,10 @@ namespace CFG
 		{
 			ini.SetDoubleValue(Section, Name, Value);
 		}
+		else if constexpr (std::is_same_v<T, std::string>)
+		{
+			ini.SetValue(Section, Name, std::string(Value).c_str());
+		}
 	}
 
 	template <typename T>
@@ -363,6 +373,10 @@ namespace CFG
 		else if constexpr (std::is_same_v<T, float>)
 		{
 			Value = (float)ini.GetDoubleValue(Section, Name, Value);
+		}
+		else if constexpr (std::is_same_v<T, std::string>)
+		{
+			Value = std::string(ini.GetValue(Section, Name, "None"));
 		}
 	}
 }

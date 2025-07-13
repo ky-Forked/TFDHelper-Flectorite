@@ -21,6 +21,20 @@ namespace TFD
 	static const char* UMPOSCGetAccountMask = "xxxxxxxxxx????xxxxxxxxxx";
 	typedef UObject* (__fastcall* tUMPOSCGetAccount)(UObject* PrivateOnlineServiceComponent);
 	extern tUMPOSCGetAccount native_GetUM1Account;
+
+	//void __fastcall UM1SpeedHackDetectorSubSystem::SpeedHackDetecting(UM1SpeedHackDetectorSubSystem* this,float InDeltaTime)
+	typedef void(__fastcall* tSpeedHackDetecting)(void* This, float InDeltaTime);
+	extern tSpeedHackDetecting native_SpeedHackDetecting;
+	static const char* SpeedHackDetecting_Sig = "\x40\x53\x56\x41\x54\x41\x56\x48\x83\xEC\x00\xF3";
+	static const char* SpeedHackDetecting_Mask = "xxxxxxxxxx?x";
+
+
+	// FString *__fastcall AM1Character::GetStringId(AM1Character *this, FString *result)
+	typedef FString* (__fastcall* tGetCharacterName)(UObject* Character, FString* result);
+	extern tGetCharacterName native_GetCharacterName;
+	static const char* GetCharacterName_Sig = "\x48\x89\x5C\x24\x08\x57\x48\x83\xEC\x00\x8B\x99\x00\x00\x00\x00\x48\x8B\xFA";
+	static const char* GetCharacterName_Mask = "xxxxxxxxx?xx????xxx";
+
 	// 40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8B C8 48 8B 10 FF 92 18 03
 
 	//static const char* ActorMiniGamePlaySig = "\x40\x53\x48\x83\xEC\x30\x48\x8B\xD9\xE8\x00\x00\x00\x00\x48\x8B\xCB\xE8\x00\x00\x00\x00\x48\x8B\x03\x48\x8D\x54\x24\x20\x48\x8B\xCB\xC6\x44\x24\x20\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\xFF\x90\x08\x07\x00\x00\x48\x8B";

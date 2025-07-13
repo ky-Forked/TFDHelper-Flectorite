@@ -92,10 +92,12 @@ namespace Cheat
 	void CreateCheatManager();
 	void ToggleCheatUI();
 
+	extern bool TryAddAllItems;
+
 	void AddAllCustomizationItems();
 	extern bool TryEquipState;
 	bool TryEquipSavedCustomization();
 	void __fastcall hkReceiveCustomizingCharacterSkin(TFD::UM1PrivateOnlineServiceCustomize* This, TFD::FM1TemplateId InTargetCharacterTid, TFD::FM1TemplateId InSkinTid, bool bEquip, TFD::EM1CustomizeReason InReason);
 
-
+	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime);
 }

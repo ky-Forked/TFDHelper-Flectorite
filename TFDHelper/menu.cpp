@@ -282,7 +282,7 @@ namespace Menu
 								ImGui::TableNextColumn();
 								ImGui::Text("Loot Container Range Check: ");
 								ImGui::TableNextColumn();
-								ImGui::SliderFloat("##LCRC", &CFG::cfg_Loot_ContainerDropRange, 250.0f, 2000.0f);
+								ImGui::SliderFloat("##LCRC", &CFG::cfg_Loot_ContainerDropRange, 250.0f, 80000.0f);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
 								ImGui::Text("Enable Multiply Drops: ");
@@ -608,7 +608,7 @@ namespace Menu
 							ImGui::TableNextColumn();
 							if (ImGui::Button("Unlock!"))
 							{
-								Cheat::AddAllCustomizationItems();
+								Cheat::TryAddAllItems = true;
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
@@ -632,7 +632,7 @@ namespace Menu
 									SaveSlot--;
 							}
 							ImGui::SameLine();
-							ImGui::Text(std::format("Slot {}", SaveSlot).c_str());
+							ImGui::Text(std::format("Slot {} - {}", SaveSlot, CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterName).c_str());
 							ImGui::SameLine();
 							if (ImGui::Button(">"))
 							{
@@ -646,16 +646,21 @@ namespace Menu
 							if (ImGui::Button("Save"))
 							{
 								// 282000003 - 282100000 = Head		// Slot 0
-				// 282100001 - 282200000 = Body		// Slot 1
-				// 282400001 - 282500000 = Back		// Slot 2
-				// 282500001 - 282600000 = Front	// Slot 3
-				// 282600002 - 282700000 = Makeup	// Slot 5
-				// 283000001 - 283000090 = Character Paint
-				// 283100001 - 283100060 = Hair Paint
-				// 284100001 - 284100029 = Spawn	// Slot 4
-				// 282009001 - 282109000 = Default Head
-				// 282109001 - 282109110 = Default Body
+								// 282100001 - 282200000 = Body		// Slot 1
+								// 282400001 - 282500000 = Back		// Slot 2
+								// 282500001 - 282600000 = Front	// Slot 3
+								// 282600002 - 282700000 = Makeup	// Slot 5
+								// 283000001 - 283000090 = Character Paint
+								// 283100001 - 283100060 = Hair Paint
+								// 284100001 - 284100029 = Spawn	// Slot 4
+								// 282009001 - 282109000 = Default Head
+								// 282109001 - 282109110 = Default Body
 								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterID = Cheat::LocalPlayerCharacter->CharacterId.ID;
+								static TFD::FString CharacterName;
+								CharacterName = *TFD::native_GetCharacterName(Cheat::LocalPlayerCharacter, &CharacterName);
+								std::string fmtName = CharacterName.ToString();
+								fmtName = fmtName.substr(fmtName.find_last_of("_")+1);
+								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterName = fmtName;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Head = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Body = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Back = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID;
@@ -665,7 +670,7 @@ namespace Menu
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							if (ImGui::Button("Manually Load Customization"))
+							if (ImGui::Button("Equip Selected Save Slot"))
 							{
 								Cheat::TryEquipState = true;
 							}

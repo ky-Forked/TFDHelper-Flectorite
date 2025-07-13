@@ -219,6 +219,35 @@ namespace TFD
 			else
 				std::cout << "[Cheat] Failed to find UM1PlayerCustomizeComponent::OnRep_CustomizeCharacterSkinData! \n";
 
+			//void __fastcall UM1SpeedHackDetectorSubSystem::SpeedHackDetecting(UM1SpeedHackDetectorSubSystem* this,float InDeltaTime)
+			uintptr_t SpeedHackDetecting = SearchSignature(procID, moduleBase, moduleSize, SpeedHackDetecting_Sig, SpeedHackDetecting_Mask);
+			if (SpeedHackDetecting)
+			{
+				SpeedHackDetecting = moduleBase + SpeedHackDetecting;
+				if (MH_CreateHook(reinterpret_cast<void*>(SpeedHackDetecting), &Cheat::hkSpeedHackDetecting, reinterpret_cast<void**>(&native_SpeedHackDetecting)) == MH_OK)
+				{
+					MH_EnableHook(reinterpret_cast<void*>(SpeedHackDetecting));
+				}
+			}
+			else
+				std::cout << "[Cheat] Failed to find UM1SpeedHackDetectorSubSystem::SpeedHackDetecting! \n";
+
+
+
+			// FString *__fastcall AM1Character::GetStringId(AM1Character *this, FString *result)
+			uintptr_t GetStringId = SearchSignature(procID, moduleBase, moduleSize, GetCharacterName_Sig, GetCharacterName_Mask);
+			if (GetStringId)
+			{
+				GetStringId = moduleBase + GetStringId;
+				native_GetCharacterName = (tGetCharacterName)GetStringId;
+			}
+			else
+				std::cout << "[Cheat] Failed to find AM1Character::GetStringId! \n";
+
+
+
+
+
 			Sleep(1000);
 
 			//SDK::Offsets::GWorld = GWorldPtr;

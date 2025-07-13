@@ -64,6 +64,8 @@ namespace Cheat
 	bool TrySpawnGenericLoot = false;
 	bool TrySpawnVaultLoot = false;
 
+	bool TryAddAllItems = false;
+
 	__int64 PostRender(void* self, void* canvas)
 	{
 		//std::cout << "PostRender called" << std::endl;
@@ -108,6 +110,12 @@ namespace Cheat
 
 			if (TryEquipSavedCustomization())
 				TryEquipCustomization = false;
+		}
+
+		if (TryAddAllItems)
+		{
+			TryAddAllItems = false;
+			AddAllCustomizationItems();
 		}
 
 		ScreenMiddle.X = (Canvas->SizeX / 2.0f) / (Canvas->SizeX / Canvas->ClipX);
@@ -375,28 +383,13 @@ namespace Cheat
 							{
 								if (!IDNameMap.contains(p->CharacterId.ID))
 								{
-									if (!p->InfoWidgetComponent || !p->InfoWidgetComponent->ActorWidget.Get())
-										continue;
-									TFD::UM1UIActorWidget* Base = p->InfoWidgetComponent->ActorWidget.Get();
-									if (Base)
-									{
-										if (Base->IsA(TFD::UM1UICharacterInfoBase::StaticClass()))
-										{
-											TFD::UM1UICharacterInfoBase* Info = static_cast<TFD::UM1UICharacterInfoBase*>(Base);
-											if (Info)
-											{
-												if (Info->TB_Name && Info->TB_Name->Text.TextData && Info->TB_Name->Text.TextData->TextSource)
-												{
-													//std::cout << std::hex << Info->TB_Name->Text.TextData->TextSource << std::dec << std::endl;
-													std::string name = Info->TB_Name->Text.TextData->TextSource.ToString();
-													int id = p->CharacterId.ID;
-													IDNameMap.insert({ id, name });
-													UpdateCache = true;
-												}
-											}
-										}
-
-									}
+									static TFD::FString CharacterName;
+									CharacterName = *TFD::native_GetCharacterName(p, &CharacterName);
+									std::string fmtName = CharacterName.ToString();
+									fmtName = fmtName.substr(fmtName.find_last_of("_") + 1);
+									int id = p->CharacterId.ID;
+									IDNameMap.insert({ id, fmtName });
+									UpdateCache = true;
 								}
 								else
 								{
@@ -2010,10 +2003,10 @@ namespace Cheat
 	// Customization functions
 	void AddAllCustomizationItems()
 	{
-		static bool RunOnlyOnce = true;
-		if (RunOnlyOnce)
+		static TFD::UM1Account* Account;
+		static TFD::TArray<TFD::FM1CustomizingInfoWrapper> Items;
+		if (Items.NumElements == 0)
 		{
-			RunOnlyOnce = false;
 			// Get ALL customization tIDs
 			TFD::TM1DataTable* CustomizationTable = TFD::native_GetCustomizationTable(false);
 			if (!CustomizationTable)
@@ -2024,7 +2017,7 @@ namespace Cheat
 			TFD::native_GetCustomizationData(CustomizationTable->TableObject, &Context, &Data);
 
 			// If you want to dump them all to a file, uncomment this block
-			std::ofstream outFile("customization_data.txt");
+			/*std::ofstream outFile("customization_data.txt");
 			if (outFile.is_open())
 			{
 				for (int i = 0; i < Data.Num(); i++)
@@ -2034,34 +2027,24 @@ namespace Cheat
 					outFile << text << "\n";
 				}
 				outFile.close();
-			}
-
-			// We need to make our own TArray, so count every item of type CharacterBodySkin so we can properly set the TArray size
-			// Without the CharacterBodySkin we can add every single type of customization, but their equip functions are not all bypassed yet.
+			}*/
 
 			int Count = 0;
 			for (int i = 0; i < Data.Num(); i++)
 			{
-				//if (Data[i]->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
-				//{
 				Count++;
-				//}
 			}
 			if (Count > 0)
 			{
-				static TFD::TArray<TFD::FM1CustomizingInfoWrapper> Items;
 				Items.Data = (TFD::FM1CustomizingInfoWrapper*)TFD::native_FMemMalloc(20 * Count, 0);
 				Items.NumElements = 0;
 				Items.MaxElements = Count;
-				//SDK::TArray<TFD::FM1CustomizingInfoWrapper> Items(Count);
 				if (!LocalPlayerController->PrivateOnlineServiceComponent)
 					return;
-				static TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+				Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
 				for (int i = 0; i < Data.Num(); i++)
 				{
 					TFD::FM1CustomizingItemData* itm = Data[i];
-					//if (itm->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
-					//{
 					TFD::FM1CustomizingInfoWrapper ItemWrapper = {};
 					ItemWrapper.bNewItem = true;
 					ItemWrapper.CustomizingItemInfo = {};
@@ -2070,10 +2053,15 @@ namespace Cheat
 					ItemWrapper.CustomizingItemInfo.EvolutionComplete = false;
 					ItemWrapper.CustomizingItemInfo.EvolutionIdx = TFD::native_GetSkinEvolutionIdx(Account->Inventory, itm->TemplateId);
 					Items.Add(ItemWrapper);
-					//}
 				}
-				TFD::native_AddOrUpdateCustomizingItems(Account->Inventory, &Items, true);
 			}
+		}
+		if (Items.NumElements > 0)
+		{
+			if (!LocalPlayerController->PrivateOnlineServiceComponent)
+				return;
+			Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+			TFD::native_AddOrUpdateCustomizingItems(Account->Inventory, &Items, true);
 		}
 	}
 	bool TryEquipState = false;
@@ -2214,4 +2202,13 @@ namespace Cheat
 		else
 			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, InReason);
 	}
+
+
+	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime)
+	{
+#ifdef IS_DEBUG_VERSION
+		std::cout << "UM1SpeedHackDetectorSubSystem::SpeedHackDetecting was triggered.\n";
+#endif
+	}
+
 }

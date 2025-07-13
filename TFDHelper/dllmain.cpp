@@ -7,8 +7,6 @@
 #include <iostream>
 #include <fstream>
 
-
-
 //#define IS_DEBUG_VERSION
 
 
