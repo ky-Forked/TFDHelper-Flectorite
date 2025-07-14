@@ -63,6 +63,7 @@ namespace CFG
 	float 		cfg_Abilities_GrappleRange = 10000.0f;
 	bool        cfg_Abilities_AutoRestock = false;
 	bool        cfg_Abilities_ResetCooldowns = false;
+	int			cfg_Abilities_ResetCooldownsKey = 0x6;
 	int			cfg_Abilities_Ability1Key = 0x51;
 	int			cfg_Abilities_Ability2Key = 0x43;
 	int			cfg_Abilities_Ability3Key = 0x56;
@@ -144,6 +145,7 @@ namespace CFG
 			LoadValue("Loot", "SpawnVaultRewardKey", cfg_Loot_SpawnVaultRewardKey);
 			LoadValue("Loot", "HPThreshold", cfg_Loot_DrawHPThreshold);
 			LoadValue("Loot", "MPThreshold", cfg_Loot_DrawMPThreshold);
+			LoadValue("Loot", "ContainerDropRange", cfg_Loot_ContainerDropRange);
 
 			LoadValue("Aimbot", "EnableAimbot", cfg_Aim_EnableAimbot);
 			LoadValue("Aimbot", "EnableAimbotHold", cfg_Aim_EnableAimbotHold);
@@ -164,6 +166,7 @@ namespace CFG
 			LoadValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
 			LoadValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
 			LoadValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
+			LoadValue("Abilities", "ResetCooldownsKey", cfg_Abilities_ResetCooldownsKey);
 			LoadValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
 			LoadValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
 			LoadValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);
@@ -260,6 +263,8 @@ namespace CFG
 		SaveValue("Loot", "SpawnVaultRewardKey", cfg_Loot_SpawnVaultRewardKey);
 		SaveValue("Loot", "HPThreshold", cfg_Loot_DrawHPThreshold);
 		SaveValue("Loot", "MPThreshold", cfg_Loot_DrawMPThreshold);
+		SaveValue("Loot", "ContainerDropRange", cfg_Loot_ContainerDropRange);
+		
 
 
 		SaveValue("Aimbot", "EnableAimbot", cfg_Aim_EnableAimbot);
@@ -281,6 +286,7 @@ namespace CFG
 		SaveValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
 		SaveValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
 		SaveValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
+		SaveValue("Abilities", "ResetCooldownsKey", cfg_Abilities_ResetCooldownsKey);
 		SaveValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
 		SaveValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
 		SaveValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);

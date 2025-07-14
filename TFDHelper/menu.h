@@ -41,6 +41,7 @@ namespace Menu
 	extern bool cfg_Abilities_Ability2KeyState;
 	extern bool cfg_Abilities_Ability3KeyState;
 	extern bool cfg_Abilities_Ability4KeyState;
+	extern bool cfg_Abilities_CooldownsKeyState;
 
 	/* THESE ARE FOR NAME <-> VALUE USED IN THE IMGUI::HOTKEY BUTTON TEXT */
 	static const char* KeyNames[] = {
@@ -379,4 +380,10 @@ namespace Menu
 		0xA4,
 		0xA5
 	};
+
+	void Classic();
+	void Moonlight();
+	void DuckRedNope();
+	void Tivmo();
+
 }

@@ -60,6 +60,7 @@ namespace CFG
 	extern float    cfg_Abilities_GrappleRange;
 	extern bool     cfg_Abilities_AutoRestock;
 	extern bool     cfg_Abilities_ResetCooldowns;
+	extern int		cfg_Abilities_ResetCooldownsKey;
 	extern int		cfg_Abilities_Ability1Key;
 	extern int		cfg_Abilities_Ability2Key;
 	extern int		cfg_Abilities_Ability3Key;

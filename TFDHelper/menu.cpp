@@ -28,7 +28,7 @@ namespace Menu
 	bool cfg_Abilities_Ability2KeyState = false;
 	bool cfg_Abilities_Ability3KeyState = false;
 	bool cfg_Abilities_Ability4KeyState = false;
-
+	bool cfg_Abilities_CooldownsKeyState = false;
 
 	void HandleKeybinds()
 	{
@@ -85,7 +85,7 @@ namespace Menu
 				Cheat::PresetActivate();
 
 			if (ImGui::IsKeyPressed(VK_UP))
-				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex - 1 < 0 ? (Cheat::PresetsMap.size()-1) : Cheat::CurrentPresetIndex - 1;
+				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex - 1 < 0 ? (Cheat::PresetsMap.size() - 1) : Cheat::CurrentPresetIndex - 1;
 
 			if (ImGui::IsKeyPressed(VK_DOWN))
 				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex + 1 > (Cheat::PresetsMap.size() - 1) ? 0 : Cheat::CurrentPresetIndex + 1;
@@ -287,7 +287,7 @@ namespace Menu
 								ImGui::TableNextColumn();
 								ImGui::Text("Enable Multiply Drops: ");
 								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EMD", &CFG::cfg_Loot_MultiplyDrops); 
+								ImGui::Checkbox("##EMD", &CFG::cfg_Loot_MultiplyDrops);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
 								ImGui::Text("Multiply Drop Count: ");
@@ -302,11 +302,11 @@ namespace Menu
 								ImGui::TableNextColumn();
 								ImGui::Text("Adjust Quantity:");
 								ImGui::TableNextColumn();
-								if (ImGui::Button("-1", ImVec2(30, 30)))
+								if (ImGui::Button("-1", ImVec2(60, 30)))
 									CFG::cfg_ResearchQuantity = (CFG::cfg_ResearchQuantity > 2) ? CFG::cfg_ResearchQuantity - 1 : 1;
 
 								ImGui::SameLine();
-								if (ImGui::Button("+1", ImVec2(30, 30)))
+								if (ImGui::Button("+1", ImVec2(60, 30)))
 									CFG::cfg_ResearchQuantity = (CFG::cfg_ResearchQuantity < 2000) ? CFG::cfg_ResearchQuantity + 1 : 2000;
 
 								ImGui::TableNextRow();
@@ -403,56 +403,54 @@ namespace Menu
 								ImGui::SliderFloat("##RFR", &CFG::cfg_Aim_FireRate, 1.0f, 100.0f);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								ImGui::Text("Enable Modify Grapples: ");
+								ImGui::Text("Enable Auto Restock: ");
 								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
+								ImGui::Checkbox("##AEAR", &CFG::cfg_Abilities_AutoRestock);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								ImGui::Text("Grapple Range: ");
+								ImGui::Text("Auto Restock HP Below %: ");
 								ImGui::TableNextColumn();
-								ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
-								ImGui::TableNextRow();
-								ImGui::TableNextColumn();
-								if (ImGui::CollapsingHeader("Abilties/HP/Ammo", NULL))
-								{
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Enable Auto Restock: ");
-									ImGui::TableNextColumn();
-									ImGui::Checkbox("##AEAR", &CFG::cfg_Abilities_AutoRestock);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Enable Infinite Abilities: ");
-									ImGui::TableNextColumn();
-									ImGui::Checkbox("##EAIA", &CFG::cfg_Abilities_ResetCooldowns);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Auto Restock HP Below %: ");
-									ImGui::TableNextColumn();
-									ImGui::SliderFloat("##ARHP", &CFG::cfg_Loot_HPToRestock, 1.0f, 100.0f);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 1 (Q): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A1QK", &CFG::cfg_Abilities_Ability1Key, cfg_Abilities_Ability1KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 2 (C): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A2CK", &CFG::cfg_Abilities_Ability2Key, cfg_Abilities_Ability2KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 3 (V): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A3VK", &CFG::cfg_Abilities_Ability3Key, cfg_Abilities_Ability3KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 4 (Z): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A4ZK", &CFG::cfg_Abilities_Ability4Key, cfg_Abilities_Ability4KeyState, ImVec2(180, 24));
-								}
+								ImGui::SliderFloat("##ARHP", &CFG::cfg_Loot_HPToRestock, 1.0f, 100.0f);
 								ImGui::EndTable();
 							}
+						}
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Abilities"))
+					{
+						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Enable Infinite Abilities: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##EAIA", &CFG::cfg_Abilities_ResetCooldowns);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Infinite Abilities Hotkey: ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##IAKEY", &CFG::cfg_Abilities_ResetCooldownsKey, cfg_Abilities_CooldownsKeyState, ImVec2(180, 24));
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Ability 1 (Q): ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##A1QK", &CFG::cfg_Abilities_Ability1Key, cfg_Abilities_Ability1KeyState, ImVec2(180, 24));
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Ability 2 (C): ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##A2CK", &CFG::cfg_Abilities_Ability2Key, cfg_Abilities_Ability2KeyState, ImVec2(180, 24));
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Ability 3 (V): ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##A3VK", &CFG::cfg_Abilities_Ability3Key, cfg_Abilities_Ability3KeyState, ImVec2(180, 24));
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Ability 4 (Z): ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##A4ZK", &CFG::cfg_Abilities_Ability4Key, cfg_Abilities_Ability4KeyState, ImVec2(180, 24));
+							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
 					}
@@ -520,7 +518,7 @@ namespace Menu
 											if (ImGui::Button("Start"))
 											{
 												//Cheat::Missions->TryStartMission(Actor->MissionData->MissionDataRowName);
-												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i],true);
+												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i], true);
 											}
 											ImGui::PopID();
 											ImGui::SameLine();
@@ -659,7 +657,7 @@ namespace Menu
 								static TFD::FString CharacterName;
 								CharacterName = *TFD::native_GetCharacterName(Cheat::LocalPlayerCharacter, &CharacterName);
 								std::string fmtName = CharacterName.ToString();
-								fmtName = fmtName.substr(fmtName.find_last_of("_")+1);
+								fmtName = fmtName.substr(fmtName.find_last_of("_") + 1);
 								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterName = fmtName;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Head = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Body = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID;
@@ -728,6 +726,25 @@ namespace Menu
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
+							ImGui::Text("Enable Modify Grapples: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Grapple Range: ");
+							ImGui::TableNextColumn();
+							ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
+
+							ImGui::EndTable();
+						}
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Appearance"))
+					{
+						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
 							ImGui::Text("ESP Shape Size: ");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##ESPSS", &CFG::cfg_ESP_ShapeSize, 5.0f, 80.0f);
@@ -735,25 +752,26 @@ namespace Menu
 							ImGui::TableNextColumn();
 							ImGui::Text("Adjust Size: ");
 							ImGui::TableNextColumn();
-							if (ImGui::Button("-1", ImVec2(30, 30)))
+							if (ImGui::Button("-1", ImVec2(60, 30)))
 								CFG::cfg_ESP_ShapeSize = (CFG::cfg_ESP_ShapeSize > 5.0f) ? CFG::cfg_ESP_ShapeSize - 1.0f : 5.0f;
 							ImGui::SameLine();
-							if (ImGui::Button("+1", ImVec2(30, 30)))
+							if (ImGui::Button("+1", ImVec2(60, 30)))
 								CFG::cfg_ESP_ShapeSize = (CFG::cfg_ESP_ShapeSize < 80.0f) ? CFG::cfg_ESP_ShapeSize + 1.0f : 80.0f;
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
 							ImGui::Text("ESP Shape Distance Scale: ");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##ESPSDS", &CFG::cfg_ESP_ShapeDistanceScale, 1.0f, 800.0f);
-							ImGui::EndTable();
-						}
-						if (ImGui::CollapsingHeader("Style", NULL))
-						{
-							const char* styleNames[] = { "Init", "Classic", "Moonlight", "DuckRedNope", "Tivmo"};
-							if (ImGui::Combo("UI Theme", &CurrentStyleIndex, styleNames, IM_ARRAYSIZE(styleNames)))
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Cheat Menu Theme: ");
+							ImGui::TableNextColumn();
+							const char* styleNames[] = { "Init", "Classic", "Moonlight", "DuckRedNope", "Tivmo" };
+							if (ImGui::Combo("##MTHEME", &CurrentStyleIndex, styleNames, IM_ARRAYSIZE(styleNames)))
 							{
 								ApplySelectedStyle(CurrentStyleIndex);
 							}
+							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
 					}
@@ -826,11 +844,6 @@ namespace Menu
 			return true;
 		return false;
 	}
-
-	void Classic();
-	void Moonlight();
-	void DuckRedNope();
-	void Tivmo();
 
 	void Classic()
 	{
