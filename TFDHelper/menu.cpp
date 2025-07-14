@@ -89,6 +89,9 @@ namespace Menu
 
 			if (ImGui::IsKeyPressed(VK_DOWN))
 				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex + 1 > (Cheat::PresetsMap.size() - 1) ? 0 : Cheat::CurrentPresetIndex + 1;
+
+			if (ImGui::IsKeyPressed(CFG::cfg_Abilities_ResetCooldownsKey))
+				CFG::cfg_Abilities_ResetCooldowns = !CFG::cfg_Abilities_ResetCooldowns;
 		}
 	}
 
