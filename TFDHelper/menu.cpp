@@ -28,6 +28,13 @@ namespace Menu
 
 	int CurrentStyleIndex = 0;
 
+	const char* giftNames[] = 
+	{
+	"|Health|",
+	"|Health/Mana/Ammo/Abilities|",
+	"|Mana/Ammo|"
+	};
+
 	void HandleKeybinds()
 	{
 		//Need to add a check to see if the game window has focus too... also the imgui console... zzz
@@ -867,12 +874,6 @@ namespace Menu
 			return true;
 		return false;
 	}
-
-	const char* giftNames[] = {
-	"|Health|",
-	"|Health/Mana/Ammo/Abilities|",
-	"|Mana/Ammo|"
-	};
 
 	void Classic()
 	{
