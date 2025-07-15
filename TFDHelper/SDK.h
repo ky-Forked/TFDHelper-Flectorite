@@ -1227,14 +1227,21 @@ namespace TFD
 	};
 
 
+	// Class M1.M1PlayerControllerInGame  															
 	// 0x04A8 (0x0DB8 - 0x0910)
 	class AM1PlayerControllerInGame : public AM1PlayerController
 	{
 	public:
-		uint8 Pad_Heartbeat[0x208]; //0x0910
-		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent; // 0x0B18(0x0008)
-		uint8 Pad_AM1PlayerControllerInGame[0x298]; //0x0B20
+		uint8 Pad_0910[0x080]; // 0x0910
+		class UM1OutOfPlayableAreaEffectComponent* OutOfPlayableAreaEffectComponent;  // 0x0990 //uint8 Pad_0B20[0x160];class UM1InstanceDungeonComponent* InstanceDungeonComponent;uint8 Pad_0C88[0x130];
+		class UM1MultiSuppliierObtainComponent* MultiSupplierObtainComponent;        // 0x0998
+		uint8 Pad_09A0[0x178]; // 0x09A0
+		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent;                // 0x0B18
+		uint8 Pad_0B20[0x322]; // 0x0B20
+	public:
 		void ServerRequestFieldObjectDropItems(class AM1FieldInteractableActor* InActor);
+		//class UM1DroppedItemObtainComponent* GetDroppedItemObtainComponent() const;
+		class UM1MultiSuppliierObtainComponent* GetMultiSupplierObtainComponent() const;
 	public:
 		static class UClass* StaticClass()
 		{
@@ -1341,7 +1348,38 @@ namespace TFD
 	//static_assert(offsetof(AM1Character, InfoWidgetComponent) == 0x7C8, "Bad alignment");
 	//static_assert(offsetof(AM1Character, CharacterId) == 0x9F0, "Bad alignment");
 
-	// 0x0208 (0x02D8 - 0x00D0)
+	// ScriptStruct M1.InteractionCoolTimeInfo
+	// 0x0010 (0x0010 - 0x0000)
+	struct FInteractionCoolTimeInfo final
+	{
+	public:
+		struct FM1TemplateId                          MultiSupplyId;                                     // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint32                                        ObjectUniqueID;                                    // 0x0004(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		struct FDateTime                              NextCooltime;                                      // 0x0008(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	};
+
+	// Class M1.M1MultiSuppliierObtainComponent
+	// 0x0028 (0x00F0 - 0x00C8)
+	class UM1MultiSuppliierObtainComponent final : public UM1ActorComponent
+	{
+	public:
+		TArray<struct FInteractionCoolTimeInfo>       NextInteractionCoolTimes;                          // 0x00C8(0x0010)(Net, ZeroConstructor, Transient, RepNotify, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_D8[0x18];                                      // 0x00D8(0x0018)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
+	public:
+		//void OnRep_NextInteractionCoolTimes();
+		void ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID);
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1MultiSuppliierObtainComponent">();
+		}
+		static class UM1MultiSuppliierObtainComponent* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<UM1MultiSuppliierObtainComponent>();
+		}
+	};
 
 
 	// 0x0770 (0x13D0 - 0x0C60)
@@ -1619,8 +1657,8 @@ namespace TFD
 		uint8                                         Pad_208[0x18];                                     // 0x0208(0x0018)(Fixing Struct Size After Last Property [ Dumper-7 ])
 
 	public:
-		void NetMulticast_SpawnFXsForAbility(const class UM1Ability* InAbilityCDO, class AActor* InAbilityInstigator, const TArray<class AActor*>& InTargets, class FName InName, const struct FM1FXParam& InFXParam, const struct FTransform& InTransform, float InAOEScaleMultiplier);
-		void ServerCancelAbility(const struct FM1AbilityId& Handle);
+		//void NetMulticast_SpawnFXsForAbility(const class UM1Ability* InAbilityCDO, class AActor* InAbilityInstigator, const TArray<class AActor*>& InTargets, class FName InName, const struct FM1FXParam& InFXParam, const struct FTransform& InTransform, float InAOEScaleMultiplier);
+		//void ServerCancelAbility(const struct FM1AbilityId& Handle);
 
 	public:
 		static class UClass* StaticClass()

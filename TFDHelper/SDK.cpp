@@ -1469,4 +1469,18 @@ namespace TFD
 		Func->FunctionFlags = Flgs;
 		return Parms.ReturnValue;
 	}
+
+	void UM1MultiSuppliierObtainComponent::ServerRequestProcessInteraction(const TFD::FM1TemplateId& InTemplateId, uint32 InObjectUniqueID)
+	{
+		static UFunction* Func = nullptr;
+		if (!Func)
+			Func = Class->GetFunction("M1MultiSuppliierObtainComponent", "ServerRequestProcessInteraction");
+		M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction Params;
+		Params.InTemplateId = InTemplateId;
+		Params.InObjectUniqueID = InObjectUniqueID;
+		auto Flags = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+		UObject::ProcessEvent(Func, &Params);
+		Func->FunctionFlags = Flags;
+	}
 }

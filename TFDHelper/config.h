@@ -36,12 +36,12 @@ namespace CFG
 	extern int		cfg_Loot_LootVacuumKey;
 	extern int		cfg_Loot_SpawnLootKey;
 	extern int		cfg_Loot_SpawnVaultRewardKey;
+	extern int      cfg_Loot_RestartDecodingKey;
 	extern bool		cfg_Loot_MultiplyDrops;
 	extern int		cfg_Loot_SpawnCount;
 	extern float    cfg_Loot_ContainerDropRange;
 	extern float	cfg_Loot_DrawHPThreshold;
 	extern float	cfg_Loot_DrawMPThreshold;
-	extern float    cfg_Loot_HPToRestock;
 
 	extern bool		cfg_Aim_EnableAimbot;
 	extern bool		cfg_Aim_EnableAimbotHold;
@@ -59,12 +59,10 @@ namespace CFG
 	extern bool		cfg_Abilities_EnableModifyGrapple;
 	extern float    cfg_Abilities_GrappleRange;
 	extern bool     cfg_Abilities_AutoRestock;
-	extern bool     cfg_Abilities_ResetCooldowns;
-	extern int		cfg_Abilities_ResetCooldownsKey;
-	extern int		cfg_Abilities_Ability1Key;
-	extern int		cfg_Abilities_Ability2Key;
-	extern int		cfg_Abilities_Ability3Key;
-	extern int		cfg_Abilities_Ability4Key;
+	extern int      cfg_Abilities_EyesInTheSkyKey;
+	extern float    cfg_Abilities_LowHealthSave;
+	extern bool		cfg_Abilities_EnableTimedRestock;
+	extern float	cfg_Abilities_TimedRestockDelay;
 	
 	extern float	cfg_Extra_TimeScale;
 	extern int		cfg_Extra_TimeScaleKey;
@@ -120,4 +118,8 @@ namespace CFG
 	void SaveValue(const char* Section, const char* Name, T &Value);
 	template <typename T>
 	void LoadValue(const char* Section, const char* Name, T &Value);
+	//smeaky shtuff hiding from the UC Monitization monkeys
+	extern int      BaseEyeID;
+	extern int      CurrentEyeID;
+	extern int      GiftOffset;
 }

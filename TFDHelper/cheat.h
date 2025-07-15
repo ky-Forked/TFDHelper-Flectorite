@@ -30,6 +30,7 @@ namespace Cheat
 
 	extern bool TrySpawnGenericLoot;
 	extern bool TrySpawnVaultLoot;
+	extern bool RestartDecoding;
 	extern float BoundsScale;
 	extern int CurrentPresetIndex;
 
@@ -69,7 +70,6 @@ namespace Cheat
 	void PresetOverlay();
 	void PresetRefresh();
 	void PresetActivate();
-	void AutoRestock();
 	void ResearchBookmarkedItems();
 	void InstantInfiltration();
 	TFD::AActor* GetClosestEnemy(int& id);
@@ -83,10 +83,7 @@ namespace Cheat
 	void ModifyGrapple();
 	void MultiplyDrops(TFD::AActor* Actor, int Amount, bool isVault);
 	bool GetSpareRounds(TFD::EM1RoundsType RoundsType, int RoundsPerLoot);
-
-	//void RapidFire();
-	//void InstantReload();
-	//void NoRecoilAndSpread();
+	void Restock(bool Auto);
 
 	void CreateConsole();
 	void CreateCheatManager();
