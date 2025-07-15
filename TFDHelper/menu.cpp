@@ -141,7 +141,7 @@ namespace Menu
 	{
 		if (ShowMenu)
 		{
-			if (ImGui::Begin("Flectorite - v1.0.28", &ShowMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+			if (ImGui::Begin("Flectorite - v1.0.33", &ShowMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 			{
 				if (ImGui::BeginTabBar("Tabs"))
 				{
