@@ -3210,7 +3210,7 @@ namespace TFD
 		FName AttachedToWireCasterSocket;			 // 0x0030(0x0008)
 		TSubclassOf<AActor> HookClass;				 // 0x0038(0x0008)
 		TSubclassOf<AActor> DestPointClass;			 // 0x0040(0x0008)
-		uint8 Pad_48[0x30];							 // 0x0048–0x0078
+		uint8 Pad_48[0x30];							 // 0x0048Â–0x0078
 		float CablePlusLengthAtFiring;				 // 0x0078(0x0004)
 		float CablePlusLengthAtPulling;				 // 0x007C(0x0004)
 		float CablePlusLengthAtBacking;				 // 0x0080(0x0004)
@@ -3232,7 +3232,7 @@ namespace TFD
 		float CorrectSweepDistance;                  // 0x00CC(0x0004)
 		float CameraTurnScale;                       // 0x00D0(0x0004)
 		float CameraLookUpScale;                     // 0x00D4(0x0004)
-		uint8 Pad_D8[0x10];                          // 0x00D8–0x00E8
+		uint8 Pad_D8[0x10];                          // 0x00D8Â–0x00E8
 	public:
 		static class UClass* StaticClass()
 		{
@@ -4288,5 +4288,12 @@ namespace TFD
 	public:
 		struct FVector                                InLocation;                                        // 0x0000(0x000C)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 		struct FRotator                               InRotation;                                        // 0x000C(0x000C)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, NativeAccessSpecifierPublic)
+	};
+
+	struct M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction final
+	{
+	public:
+		FM1TemplateId					InTemplateId;
+		uint32						InObjectUniqueID;
 	};
 }
