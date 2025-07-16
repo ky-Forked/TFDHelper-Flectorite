@@ -13,6 +13,9 @@ namespace TFD
 
 	tUMPOSCGetAccount native_GetUM1Account = nullptr;
 
+	tSpeedHackDetecting native_SpeedHackDetecting = nullptr;
+	tGetCharacterName native_GetCharacterName = nullptr;
+
 	tGetCustomizationTable native_GetCustomizationTable = nullptr;
 	tGetTableData native_GetCustomizationData = nullptr;
 	tSetCustomizingItemList native_SetCustomizingItemList = nullptr;
@@ -1465,5 +1468,19 @@ namespace TFD
 		UObject::ProcessEvent(Func, &Parms);
 		Func->FunctionFlags = Flgs;
 		return Parms.ReturnValue;
+	}
+
+	void UM1MultiSuppliierObtainComponent::ServerRequestProcessInteraction(const TFD::FM1TemplateId& InTemplateId, uint32 InObjectUniqueID)
+	{
+		static UFunction* Func = nullptr;
+		if (!Func)
+			Func = Class->GetFunction("M1MultiSuppliierObtainComponent", "ServerRequestProcessInteraction");
+		M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction Params;
+		Params.InTemplateId = InTemplateId;
+		Params.InObjectUniqueID = InObjectUniqueID;
+		auto Flags = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+		UObject::ProcessEvent(Func, &Params);
+		Func->FunctionFlags = Flags;
 	}
 }

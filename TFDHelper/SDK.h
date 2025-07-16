@@ -21,6 +21,20 @@ namespace TFD
 	static const char* UMPOSCGetAccountMask = "xxxxxxxxxx????xxxxxxxxxx";
 	typedef UObject* (__fastcall* tUMPOSCGetAccount)(UObject* PrivateOnlineServiceComponent);
 	extern tUMPOSCGetAccount native_GetUM1Account;
+
+	//void __fastcall UM1SpeedHackDetectorSubSystem::SpeedHackDetecting(UM1SpeedHackDetectorSubSystem* this,float InDeltaTime)
+	typedef void(__fastcall* tSpeedHackDetecting)(void* This, float InDeltaTime);
+	extern tSpeedHackDetecting native_SpeedHackDetecting;
+	static const char* SpeedHackDetecting_Sig = "\x40\x53\x56\x41\x54\x41\x56\x48\x83\xEC\x00\xF3";
+	static const char* SpeedHackDetecting_Mask = "xxxxxxxxxx?x";
+
+
+	// FString *__fastcall AM1Character::GetStringId(AM1Character *this, FString *result)
+	typedef FString* (__fastcall* tGetCharacterName)(UObject* Character, FString* result);
+	extern tGetCharacterName native_GetCharacterName;
+	static const char* GetCharacterName_Sig = "\x48\x89\x5C\x24\x08\x57\x48\x83\xEC\x00\x8B\x99\x00\x00\x00\x00\x48\x8B\xFA";
+	static const char* GetCharacterName_Mask = "xxxxxxxxx?xx????xxx";
+
 	// 40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8B C8 48 8B 10 FF 92 18 03
 
 	//static const char* ActorMiniGamePlaySig = "\x40\x53\x48\x83\xEC\x30\x48\x8B\xD9\xE8\x00\x00\x00\x00\x48\x8B\xCB\xE8\x00\x00\x00\x00\x48\x8B\x03\x48\x8D\x54\x24\x20\x48\x8B\xCB\xC6\x44\x24\x20\x00\x48\xC7\x44\x24\x28\x00\x00\x00\x00\xFF\x90\x08\x07\x00\x00\x48\x8B";
@@ -1213,14 +1227,21 @@ namespace TFD
 	};
 
 
+	// Class M1.M1PlayerControllerInGame  															
 	// 0x04A8 (0x0DB8 - 0x0910)
 	class AM1PlayerControllerInGame : public AM1PlayerController
 	{
 	public:
-		uint8 Pad_Heartbeat[0x208]; //0x0910
-		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent; // 0x0B18(0x0008)
-		uint8 Pad_AM1PlayerControllerInGame[0x298]; //0x0B20
+		uint8 Pad_0910[0x080]; // 0x0910
+		class UM1OutOfPlayableAreaEffectComponent* OutOfPlayableAreaEffectComponent;  // 0x0990 //uint8 Pad_0B20[0x160];class UM1InstanceDungeonComponent* InstanceDungeonComponent;uint8 Pad_0C88[0x130];
+		class UM1MultiSuppliierObtainComponent* MultiSupplierObtainComponent;        // 0x0998
+		uint8 Pad_09A0[0x178]; // 0x09A0
+		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent;                // 0x0B18
+		uint8 Pad_0B20[0x322]; // 0x0B20
+	public:
 		void ServerRequestFieldObjectDropItems(class AM1FieldInteractableActor* InActor);
+		//class UM1DroppedItemObtainComponent* GetDroppedItemObtainComponent() const;
+		class UM1MultiSuppliierObtainComponent* GetMultiSupplierObtainComponent() const;
 	public:
 		static class UClass* StaticClass()
 		{
@@ -1327,7 +1348,38 @@ namespace TFD
 	//static_assert(offsetof(AM1Character, InfoWidgetComponent) == 0x7C8, "Bad alignment");
 	//static_assert(offsetof(AM1Character, CharacterId) == 0x9F0, "Bad alignment");
 
-	// 0x0208 (0x02D8 - 0x00D0)
+	// ScriptStruct M1.InteractionCoolTimeInfo
+	// 0x0010 (0x0010 - 0x0000)
+	struct FInteractionCoolTimeInfo final
+	{
+	public:
+		struct FM1TemplateId                          MultiSupplyId;                                     // 0x0000(0x0004)(NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint32                                        ObjectUniqueID;                                    // 0x0004(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		struct FDateTime                              NextCooltime;                                      // 0x0008(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	};
+
+	// Class M1.M1MultiSuppliierObtainComponent
+	// 0x0028 (0x00F0 - 0x00C8)
+	class UM1MultiSuppliierObtainComponent final : public UM1ActorComponent
+	{
+	public:
+		TArray<struct FInteractionCoolTimeInfo>       NextInteractionCoolTimes;                          // 0x00C8(0x0010)(Net, ZeroConstructor, Transient, RepNotify, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_D8[0x18];                                      // 0x00D8(0x0018)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
+	public:
+		//void OnRep_NextInteractionCoolTimes();
+		void ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID);
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1MultiSuppliierObtainComponent">();
+		}
+		static class UM1MultiSuppliierObtainComponent* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<UM1MultiSuppliierObtainComponent>();
+		}
+	};
 
 
 	// 0x0770 (0x13D0 - 0x0C60)
@@ -1605,8 +1657,8 @@ namespace TFD
 		uint8                                         Pad_208[0x18];                                     // 0x0208(0x0018)(Fixing Struct Size After Last Property [ Dumper-7 ])
 
 	public:
-		void NetMulticast_SpawnFXsForAbility(const class UM1Ability* InAbilityCDO, class AActor* InAbilityInstigator, const TArray<class AActor*>& InTargets, class FName InName, const struct FM1FXParam& InFXParam, const struct FTransform& InTransform, float InAOEScaleMultiplier);
-		void ServerCancelAbility(const struct FM1AbilityId& Handle);
+		//void NetMulticast_SpawnFXsForAbility(const class UM1Ability* InAbilityCDO, class AActor* InAbilityInstigator, const TArray<class AActor*>& InTargets, class FName InName, const struct FM1FXParam& InFXParam, const struct FTransform& InTransform, float InAOEScaleMultiplier);
+		//void ServerCancelAbility(const struct FM1AbilityId& Handle);
 
 	public:
 		static class UClass* StaticClass()
@@ -3158,7 +3210,7 @@ namespace TFD
 		FName AttachedToWireCasterSocket;			 // 0x0030(0x0008)
 		TSubclassOf<AActor> HookClass;				 // 0x0038(0x0008)
 		TSubclassOf<AActor> DestPointClass;			 // 0x0040(0x0008)
-		uint8 Pad_48[0x30];							 // 0x0048–0x0078
+		uint8 Pad_48[0x30];							 // 0x0048Â–0x0078
 		float CablePlusLengthAtFiring;				 // 0x0078(0x0004)
 		float CablePlusLengthAtPulling;				 // 0x007C(0x0004)
 		float CablePlusLengthAtBacking;				 // 0x0080(0x0004)
@@ -3180,7 +3232,7 @@ namespace TFD
 		float CorrectSweepDistance;                  // 0x00CC(0x0004)
 		float CameraTurnScale;                       // 0x00D0(0x0004)
 		float CameraLookUpScale;                     // 0x00D4(0x0004)
-		uint8 Pad_D8[0x10];                          // 0x00D8–0x00E8
+		uint8 Pad_D8[0x10];                          // 0x00D8Â–0x00E8
 	public:
 		static class UClass* StaticClass()
 		{
@@ -4236,5 +4288,12 @@ namespace TFD
 	public:
 		struct FVector                                InLocation;                                        // 0x0000(0x000C)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 		struct FRotator                               InRotation;                                        // 0x000C(0x000C)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, NativeAccessSpecifierPublic)
+	};
+
+	struct M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction final
+	{
+	public:
+		FM1TemplateId					InTemplateId;
+		uint32						InObjectUniqueID;
 	};
 }

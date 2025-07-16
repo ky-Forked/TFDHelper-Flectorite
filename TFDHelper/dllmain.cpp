@@ -7,8 +7,6 @@
 #include <iostream>
 #include <fstream>
 
-
-
 //#define IS_DEBUG_VERSION
 
 
@@ -26,25 +24,43 @@ DWORD WINAPI MainThread(LPVOID lpParameter) {
 	//freopen_s(nullptr, "TFD_Log_In.log", "r", stdin);
 #endif
 
-	int procID = GetCurrentProcessId();
-	HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procID);
-	MODULEENTRY32 mEntry;
-	mEntry.dwSize = sizeof(mEntry);
 	uintptr_t moduleBase = 0x0;
 	uintptr_t moduleSize = 0x0;
-	do
+	int procID = 0;
+	while (moduleBase == 0 || moduleSize == 0)
 	{
-		if (!strcmp(mEntry.szModule, "M1-Win64-Shipping.exe"))
+		static int Tries = 0;
+		procID = GetCurrentProcessId();
+		HANDLE hModule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procID);
+		MODULEENTRY32 mEntry;
+		mEntry.dwSize = sizeof(mEntry);
+
+		do
 		{
-			moduleBase = (uintptr_t)mEntry.hModule;
-			moduleSize = mEntry.modBaseSize;
-		}
-	} while (Module32Next(hModule, &mEntry));
-	CloseHandle(hModule);
+			if (!strcmp(mEntry.szModule, "M1-Win64-Shipping.exe"))
+			{
+				moduleBase = (uintptr_t)mEntry.hModule;
+				moduleSize = mEntry.modBaseSize;
+			}
+		} while (Module32Next(hModule, &mEntry));
+		CloseHandle(hModule);
+
+		if (moduleBase == 0 || moduleSize == 0)
+			Tries++;
+		if (Tries > 100)
+			break;
+	}
+	if (moduleBase == 0 || moduleSize == 0)
+	{
+		MessageBoxW(NULL, L"There was an issue getting the module for M1-Win64-Shipping.exe!\nPlease check your injector settings.\n\nThe process has been terminated for safety.", L"Flectorite", MB_OK | MB_ICONWARNING);
+		ExitProcess(0);
+		return 0;
+	}
 
 	uintptr_t NGSPtr = TFD::SearchSignature(procID, moduleBase, moduleSize, TFD::NGSSig, TFD::NGSMask);
 	if (!NGSPtr)
 	{
+		MessageBoxW(NULL, L"There was an issue bypassing BlackCipher!\nThe process BlackCipher.aes will launch during the following loading screens!\nIf you do not kill that process, you are at risk of getting banned.", L"Flectorite", MB_OK | MB_ICONWARNING);
 #ifdef IS_DEBUG_VERSION
 		std::cout << "[Cheat] Failed to find NGS bypass.\n";
 #endif

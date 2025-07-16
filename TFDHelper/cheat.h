@@ -30,6 +30,7 @@ namespace Cheat
 
 	extern bool TrySpawnGenericLoot;
 	extern bool TrySpawnVaultLoot;
+	extern bool RestartDecoding;
 	extern float BoundsScale;
 	extern int CurrentPresetIndex;
 
@@ -69,7 +70,6 @@ namespace Cheat
 	void PresetOverlay();
 	void PresetRefresh();
 	void PresetActivate();
-	void AutoRestock();
 	void ResearchBookmarkedItems();
 	void InstantInfiltration();
 	TFD::AActor* GetClosestEnemy(int& id);
@@ -83,19 +83,20 @@ namespace Cheat
 	void ModifyGrapple();
 	void MultiplyDrops(TFD::AActor* Actor, int Amount, bool isVault);
 	bool GetSpareRounds(TFD::EM1RoundsType RoundsType, int RoundsPerLoot);
-
-	//void RapidFire();
-	//void InstantReload();
-	//void NoRecoilAndSpread();
+	void AutoResupply();
 
 	void CreateConsole();
 	void CreateCheatManager();
 	void ToggleCheatUI();
+
+	extern bool TryAddAllItems;
 
 	void AddAllCustomizationItems();
 	extern bool TryEquipState;
 	bool TryEquipSavedCustomization();
 	void __fastcall hkReceiveCustomizingCharacterSkin(TFD::UM1PrivateOnlineServiceCustomize* This, TFD::FM1TemplateId InTargetCharacterTid, TFD::FM1TemplateId InSkinTid, bool bEquip, TFD::EM1CustomizeReason InReason);
 
+	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime);
 
+	extern bool TryResetAbilities;
 }

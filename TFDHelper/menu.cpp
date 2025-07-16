@@ -22,13 +22,18 @@ namespace Menu
 	bool cfg_InstantInfiltrationKeyState = false;
 	bool cfg_SpawnLootKeyState = false;
 	bool cfg_SpawnVaultRewardKeyState = false;
+	bool cfg_RestartDecodingKeyState = false;
 	bool cfg_HotswapKeyState = false;
-	int CurrentStyleIndex = 0;
-	bool cfg_Abilities_Ability1KeyState = false;
-	bool cfg_Abilities_Ability2KeyState = false;
-	bool cfg_Abilities_Ability3KeyState = false;
-	bool cfg_Abilities_Ability4KeyState = false;
+	bool cfg_AutomaticResupplyKeyState = false;
 
+	int CurrentStyleIndex = 0;
+
+	const char* giftNames[] = 
+	{
+	"Health Only",
+	"Health & Mana & Ammo & Abilities",
+	"Mana & Ammo"
+	};
 
 	void HandleKeybinds()
 	{
@@ -81,14 +86,34 @@ namespace Menu
 			else
 				Cheat::TrySpawnVaultLoot = false;
 
+			if (ImGui::IsKeyDown(CFG::cfg_Loot_RestartDecodingKey))
+				Cheat::RestartDecoding = true;
+			else
+				Cheat::RestartDecoding = false;
+
 			if (ImGui::IsKeyPressed(CFG::cfg_Hotswap_PresetSelectKey))
 				Cheat::PresetActivate();
 
 			if (ImGui::IsKeyPressed(VK_UP))
-				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex - 1 < 0 ? (Cheat::PresetsMap.size()-1) : Cheat::CurrentPresetIndex - 1;
+				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex - 1 < 0 ? (Cheat::PresetsMap.size() - 1) : Cheat::CurrentPresetIndex - 1;
 
 			if (ImGui::IsKeyPressed(VK_DOWN))
 				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex + 1 > (Cheat::PresetsMap.size() - 1) ? 0 : Cheat::CurrentPresetIndex + 1;
+
+			if (ImGui::IsKeyPressed(CFG::cfg_Abilities_AutomaticResupplyKey))
+				CFG::cfg_Abilities_EnableAutomaticResupply = !CFG::cfg_Abilities_EnableAutomaticResupply;
+
+			if (CFG::cfg_Abilities_EnableAutomaticResupply)
+			{
+				if (ImGui::IsKeyPressed(0x51) || ImGui::IsKeyDown(0x51)) // Q
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x43) || ImGui::IsKeyDown(0x43)) // C
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x56) || ImGui::IsKeyDown(0x56)) // V
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x5A) || ImGui::IsKeyDown(0x5A)) // Z
+					Cheat::TryResetAbilities = true;
+			}
 		}
 	}
 
@@ -103,7 +128,9 @@ namespace Menu
 			|| cfg_MissionAutoRestartKeyState
 			|| cfg_MissionTeleportKeyState
 			|| cfg_SpawnLootKeyState
-			|| cfg_SpawnVaultRewardKeyState)
+			|| cfg_SpawnVaultRewardKeyState
+			|| cfg_RestartDecodingKeyState
+			|| cfg_AutomaticResupplyKeyState)
 			return true;
 		return false;
 	}
@@ -126,7 +153,7 @@ namespace Menu
 	{
 		if (ShowMenu)
 		{
-			if (ImGui::Begin("Flectorite - v1.0.28", &ShowMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+			if (ImGui::Begin("Flectorite - v1.0.33", &ShowMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 			{
 				if (ImGui::BeginTabBar("Tabs"))
 				{
@@ -212,12 +239,6 @@ namespace Menu
 								ImGui::Checkbox("##EINESP", &CFG::cfg_Loot_DrawItemNames);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								/*ImGui::Text("Enable Item Lines: ");
-								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EILESP", &CFG::cfg_Loot_DrawItemLines);
-								ImGui::TableNextRow();
-								ImGui::TableNextColumn();*/
-
 								ImGui::Text("Vaults: ");
 								ImGui::TableNextColumn();
 								ImGui::Checkbox("##EVESP", &CFG::cfg_Loot_DrawVaults);
@@ -280,17 +301,22 @@ namespace Menu
 								ImGui::Hotkey("##IVRKEY", &CFG::cfg_Loot_SpawnVaultRewardKey, cfg_SpawnVaultRewardKeyState, ImVec2(180, 24));
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
+								ImGui::Text("Restart Vault Timer:");
+								ImGui::TableNextColumn();
+								ImGui::Hotkey("##RVETKEY", &CFG::cfg_Loot_RestartDecodingKey, cfg_RestartDecodingKeyState, ImVec2(180, 24));
+								ImGui::TableNextRow();
+								ImGui::TableNextColumn();
 								ImGui::Text("Loot Container Range Check: ");
 								ImGui::TableNextColumn();
-								ImGui::SliderFloat("##LCRC", &CFG::cfg_Loot_ContainerDropRange, 250.0f, 2000.0f);
+								ImGui::SliderFloat("##LCRC", &CFG::cfg_Loot_ContainerDropRange, 250.0f, 80000.0f);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
 								ImGui::Text("Enable Multiply Drops: ");
 								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EMD", &CFG::cfg_Loot_MultiplyDrops); 
+								ImGui::Checkbox("##EMD", &CFG::cfg_Loot_MultiplyDrops);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								ImGui::Text("Multiply Drop Count: ");
+								ImGui::Text("Multiply Drops By Amount: ");
 								ImGui::TableNextColumn();
 								ImGui::SliderInt("##MDC", &CFG::cfg_Loot_SpawnCount, 1, 100);
 								ImGui::TableNextRow();
@@ -302,11 +328,11 @@ namespace Menu
 								ImGui::TableNextColumn();
 								ImGui::Text("Adjust Quantity:");
 								ImGui::TableNextColumn();
-								if (ImGui::Button("-1", ImVec2(30, 30)))
+								if (ImGui::Button("-1", ImVec2(60, 30)))
 									CFG::cfg_ResearchQuantity = (CFG::cfg_ResearchQuantity > 2) ? CFG::cfg_ResearchQuantity - 1 : 1;
 
 								ImGui::SameLine();
-								if (ImGui::Button("+1", ImVec2(30, 30)))
+								if (ImGui::Button("+1", ImVec2(60, 30)))
 									CFG::cfg_ResearchQuantity = (CFG::cfg_ResearchQuantity < 2000) ? CFG::cfg_ResearchQuantity + 1 : 2000;
 
 								ImGui::TableNextRow();
@@ -315,6 +341,9 @@ namespace Menu
 								ImGui::TableNextColumn();
 								if (ImGui::Button("Start Research", ImVec2(120, 30)))
 									Cheat::ResearchBookmarkedItems();
+								ImGui::TableNextRow();
+								ImGui::TableNextColumn();
+								ImGui::Text("Bookmark a research item, set the desired quantity,\nthen click 'Start Research'!");
 								ImGui::EndTable();
 							}
 						}
@@ -401,58 +430,34 @@ namespace Menu
 								ImGui::Text("Rapid Fire Rate: ");
 								ImGui::TableNextColumn();
 								ImGui::SliderFloat("##RFR", &CFG::cfg_Aim_FireRate, 1.0f, 100.0f);
-								ImGui::TableNextRow();
-								ImGui::TableNextColumn();
-								ImGui::Text("Enable Modify Grapples: ");
-								ImGui::TableNextColumn();
-								ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
-								ImGui::TableNextRow();
-								ImGui::TableNextColumn();
-								ImGui::Text("Grapple Range: ");
-								ImGui::TableNextColumn();
-								ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
-								ImGui::TableNextRow();
-								ImGui::TableNextColumn();
-								if (ImGui::CollapsingHeader("Abilties/HP/Ammo", NULL))
-								{
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Enable Auto Restock: ");
-									ImGui::TableNextColumn();
-									ImGui::Checkbox("##AEAR", &CFG::cfg_Abilities_AutoRestock);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Enable Infinite Abilities: ");
-									ImGui::TableNextColumn();
-									ImGui::Checkbox("##EAIA", &CFG::cfg_Abilities_ResetCooldowns);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Auto Restock HP Below %: ");
-									ImGui::TableNextColumn();
-									ImGui::SliderFloat("##ARHP", &CFG::cfg_Loot_HPToRestock, 1.0f, 100.0f);
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 1 (Q): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A1QK", &CFG::cfg_Abilities_Ability1Key, cfg_Abilities_Ability1KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 2 (C): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A2CK", &CFG::cfg_Abilities_Ability2Key, cfg_Abilities_Ability2KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 3 (V): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A3VK", &CFG::cfg_Abilities_Ability3Key, cfg_Abilities_Ability3KeyState, ImVec2(180, 24));
-									ImGui::TableNextRow();
-									ImGui::TableNextColumn();
-									ImGui::Text("Ability 4 (Z): ");
-									ImGui::TableNextColumn();
-									ImGui::Hotkey("##A4ZK", &CFG::cfg_Abilities_Ability4Key, cfg_Abilities_Ability4KeyState, ImVec2(180, 24));
-								}
 								ImGui::EndTable();
 							}
+						}
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Resupply"))
+					{
+						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Enable Automatic Resupply: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##EAR", &CFG::cfg_Abilities_EnableAutomaticResupply);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Automatic Resupply Hotkey: ");
+							ImGui::TableNextColumn();
+							ImGui::Hotkey("##EARK", &CFG::cfg_Abilities_AutomaticResupplyKey, cfg_AutomaticResupplyKeyState, ImVec2(180, 24));
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Resupply at Percent of Max Health");
+							ImGui::TableNextColumn();
+							ImGui::SliderFloat("##ARHP", &CFG::cfg_Abilities_AutomaticResupplyHealth, 0.0f, 100.0f);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Automatic Resupply will restore your Health,\nMana, Ammo, and resets Ability cooldowns.");
+							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
 					}
@@ -520,7 +525,7 @@ namespace Menu
 											if (ImGui::Button("Start"))
 											{
 												//Cheat::Missions->TryStartMission(Actor->MissionData->MissionDataRowName);
-												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i],true);
+												Cheat::Missions->ServerStartMission(Cheat::Missions->AvailableMissions[i], true);
 											}
 											ImGui::PopID();
 											ImGui::SameLine();
@@ -608,7 +613,7 @@ namespace Menu
 							ImGui::TableNextColumn();
 							if (ImGui::Button("Unlock!"))
 							{
-								Cheat::AddAllCustomizationItems();
+								Cheat::TryAddAllItems = true;
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
@@ -622,7 +627,7 @@ namespace Menu
 							ImGui::Checkbox("##CECAE", &CFG::cfg_Customize_EnableAutoApplyCustomization);
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Auto-Equip will equip the data from the first saved slot that matches your current character.");
+							ImGui::Text("Auto-Equip will equip the data from the first\nsaved slot that matches your current character.");
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
 							static int SaveSlot = 0;
@@ -632,7 +637,7 @@ namespace Menu
 									SaveSlot--;
 							}
 							ImGui::SameLine();
-							ImGui::Text(std::format("Slot {}", SaveSlot).c_str());
+							ImGui::Text(std::format("Slot {} - {}", SaveSlot, CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterName).c_str());
 							ImGui::SameLine();
 							if (ImGui::Button(">"))
 							{
@@ -646,16 +651,21 @@ namespace Menu
 							if (ImGui::Button("Save"))
 							{
 								// 282000003 - 282100000 = Head		// Slot 0
-				// 282100001 - 282200000 = Body		// Slot 1
-				// 282400001 - 282500000 = Back		// Slot 2
-				// 282500001 - 282600000 = Front	// Slot 3
-				// 282600002 - 282700000 = Makeup	// Slot 5
-				// 283000001 - 283000090 = Character Paint
-				// 283100001 - 283100060 = Hair Paint
-				// 284100001 - 284100029 = Spawn	// Slot 4
-				// 282009001 - 282109000 = Default Head
-				// 282109001 - 282109110 = Default Body
+								// 282100001 - 282200000 = Body		// Slot 1
+								// 282400001 - 282500000 = Back		// Slot 2
+								// 282500001 - 282600000 = Front	// Slot 3
+								// 282600002 - 282700000 = Makeup	// Slot 5
+								// 283000001 - 283000090 = Character Paint
+								// 283100001 - 283100060 = Hair Paint
+								// 284100001 - 284100029 = Spawn	// Slot 4
+								// 282009001 - 282109000 = Default Head
+								// 282109001 - 282109110 = Default Body
 								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterID = Cheat::LocalPlayerCharacter->CharacterId.ID;
+								static TFD::FString CharacterName;
+								CharacterName = *TFD::native_GetCharacterName(Cheat::LocalPlayerCharacter, &CharacterName);
+								std::string fmtName = CharacterName.ToString();
+								fmtName = fmtName.substr(fmtName.find_last_of("_") + 1);
+								CFG::cfg_Customize_SaveSlots[SaveSlot].CharacterName = fmtName;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Head = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Body = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID;
 								CFG::cfg_Customize_SaveSlots[SaveSlot].Back = Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID;
@@ -665,7 +675,7 @@ namespace Menu
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							if (ImGui::Button("Manually Load Customization"))
+							if (ImGui::Button("Equip Selected Save Slot"))
 							{
 								Cheat::TryEquipState = true;
 							}
@@ -723,6 +733,25 @@ namespace Menu
 							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
+							ImGui::Text("Enable Modify Grapples: ");
+							ImGui::TableNextColumn();
+							ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Grapple Range: ");
+							ImGui::TableNextColumn();
+							ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
+
+							ImGui::EndTable();
+						}
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Appearance"))
+					{
+						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
 							ImGui::Text("ESP Shape Size: ");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##ESPSS", &CFG::cfg_ESP_ShapeSize, 5.0f, 80.0f);
@@ -730,25 +759,26 @@ namespace Menu
 							ImGui::TableNextColumn();
 							ImGui::Text("Adjust Size: ");
 							ImGui::TableNextColumn();
-							if (ImGui::Button("-1", ImVec2(30, 30)))
+							if (ImGui::Button("-1", ImVec2(60, 30)))
 								CFG::cfg_ESP_ShapeSize = (CFG::cfg_ESP_ShapeSize > 5.0f) ? CFG::cfg_ESP_ShapeSize - 1.0f : 5.0f;
 							ImGui::SameLine();
-							if (ImGui::Button("+1", ImVec2(30, 30)))
+							if (ImGui::Button("+1", ImVec2(60, 30)))
 								CFG::cfg_ESP_ShapeSize = (CFG::cfg_ESP_ShapeSize < 80.0f) ? CFG::cfg_ESP_ShapeSize + 1.0f : 80.0f;
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
 							ImGui::Text("ESP Shape Distance Scale: ");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##ESPSDS", &CFG::cfg_ESP_ShapeDistanceScale, 1.0f, 800.0f);
-							ImGui::EndTable();
-						}
-						if (ImGui::CollapsingHeader("Style", NULL))
-						{
-							const char* styleNames[] = { "Init", "Classic", "Moonlight", "DuckRedNope", "Tivmo"};
-							if (ImGui::Combo("UI Theme", &CurrentStyleIndex, styleNames, IM_ARRAYSIZE(styleNames)))
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Cheat Menu Theme: ");
+							ImGui::TableNextColumn();
+							const char* styleNames[] = { "Init", "Classic", "Moonlight", "DuckRedNope", "Tivmo" };
+							if (ImGui::Combo("##MTHEME", &CurrentStyleIndex, styleNames, IM_ARRAYSIZE(styleNames)))
 							{
 								ApplySelectedStyle(CurrentStyleIndex);
 							}
+							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
 					}
@@ -804,28 +834,6 @@ namespace Menu
 			}
 		}
 	}
-
-	bool IsKeyBinding()
-	{
-		if (cfg_ShowMenuKeyState
-			|| cfg_LootVacuumKeyState
-			|| cfg_AimbotHoldKeyState
-			|| cfg_AimbotToggleKeyState
-			|| cfg_TimescaleHoldKeyState
-			|| cfg_TimescaleToggleKeyState
-			|| cfg_MissionAutoRestartKeyState
-			|| cfg_MissionTeleportKeyState
-			|| cfg_SpawnLootKeyState
-			|| cfg_SpawnVaultRewardKeyState
-			|| cfg_HotswapKeyState)
-			return true;
-		return false;
-	}
-
-	void Classic();
-	void Moonlight();
-	void DuckRedNope();
-	void Tivmo();
 
 	void Classic()
 	{

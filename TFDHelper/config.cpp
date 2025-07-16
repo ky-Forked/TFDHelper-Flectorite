@@ -38,6 +38,7 @@ namespace CFG
 	int			cfg_Loot_LootVacuumKey = 0x54;
 	int			cfg_Loot_SpawnLootKey = VK_F5;
 	int			cfg_Loot_SpawnVaultRewardKey = VK_F6;
+	int         cfg_Loot_RestartDecodingKey = VK_F7;
 	float 		cfg_Loot_ContainerDropRange = 500.0f;
 	bool		cfg_Loot_MultiplyDrops = false;
 	int			cfg_Loot_SpawnCount = 1;
@@ -61,16 +62,13 @@ namespace CFG
 
 	bool		cfg_Abilities_EnableModifyGrapple = false;
 	float 		cfg_Abilities_GrappleRange = 10000.0f;
-	bool        cfg_Abilities_AutoRestock = false;
-	bool        cfg_Abilities_ResetCooldowns = false;
-	int			cfg_Abilities_Ability1Key = 0x51;
-	int			cfg_Abilities_Ability2Key = 0x43;
-	int			cfg_Abilities_Ability3Key = 0x56;
-	int			cfg_Abilities_Ability4Key = 0x5A;
+	bool		cfg_Abilities_EnableAutomaticResupply = false;
+	int			cfg_Abilities_AutomaticResupplyKey = VK_TAB;
+	float		cfg_Abilities_AutomaticResupplyHealth = 25.0f;
 
 	float		cfg_Extra_TimeScale = 2.0f;
-	int			cfg_Extra_TimeScaleKey = VK_F2;
-	int			cfg_Extra_TimeScaleHoldKey = VK_CONTROL;
+	int			cfg_Extra_TimeScaleKey = VK_F9;
+	int			cfg_Extra_TimeScaleHoldKey = VK_F1;
 	bool		cfg_Extra_EnableUEConsole = false;
 
 	bool		cfg_Mission_EnableMissionESP = false;
@@ -79,7 +77,7 @@ namespace CFG
 	int			cfg_Mission_MissionAutoRestartKey = VK_F3;
 	int			cfg_Mission_MissionTeleportKey = VK_F4;
 	bool		cfg_Mission_EnableInstantInfiltration = false;
-	int			cfg_Mission_InstantInfiltrationKey = VK_F7;
+	int			cfg_Mission_InstantInfiltrationKey = VK_CONTROL;
 
 	bool		cfg_Hotswap_EnableOverlay = false;
 	int			cfg_Hotswap_PresetSelectKey = VK_F8;
@@ -133,7 +131,6 @@ namespace CFG
 			LoadValue("Loot", "DrawItemBoxes", cfg_Loot_DrawItemBoxes);
 			LoadValue("Loot", "DrawItemBoxes", cfg_Loot_DrawItemCircles);
 			LoadValue("Loot", "DrawItemNames", cfg_Loot_DrawItemNames);
-			//LoadValue("Loot", "DrawItemLines", cfg_Loot_DrawItemLines);
 			LoadValue("Loot", "DrawVaults", cfg_Loot_DrawVaults);
 			LoadValue("Loot", "DrawSupplyResources", cfg_Loot_DrawSupplyResources);
 			LoadValue("Loot", "DrawVoidVesselBox", cfg_Loot_DrawVoidVesselBox);
@@ -142,8 +139,10 @@ namespace CFG
 			LoadValue("Loot", "LootVacuumKey", cfg_Loot_LootVacuumKey);
 			LoadValue("Loot", "SpawnLootKey", cfg_Loot_SpawnLootKey);
 			LoadValue("Loot", "SpawnVaultRewardKey", cfg_Loot_SpawnVaultRewardKey);
+			LoadValue("Loot", "RestartDecodingKey", cfg_Loot_RestartDecodingKey);
 			LoadValue("Loot", "HPThreshold", cfg_Loot_DrawHPThreshold);
 			LoadValue("Loot", "MPThreshold", cfg_Loot_DrawMPThreshold);
+			LoadValue("Loot", "ContainerDropRange", cfg_Loot_ContainerDropRange);
 
 			LoadValue("Aimbot", "EnableAimbot", cfg_Aim_EnableAimbot);
 			LoadValue("Aimbot", "EnableAimbotHold", cfg_Aim_EnableAimbotHold);
@@ -154,20 +153,16 @@ namespace CFG
 			LoadValue("Aimbot", "AimbotDistance", cfg_Aim_AimbotFOV);
 			LoadValue("Aimbot", "AimbotSpeed", cfg_Aim_AimbotSpeed);
 			LoadValue("Aimbot", "AimbotLineOfSight", cfg_Aim_AimbotLineOfSight);
-			//LoadValue("Aimbot", "NoSpread", cfg_Aim_NoSpread);
-			//LoadValue("Aimbot", "NoRecoil", cfg_Aim_NoRecoil);
 			LoadValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 			LoadValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 			LoadValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
+			LoadValue("Aimbot", "RapidFireRate", cfg_Aim_FireRate);
 
 			LoadValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 			LoadValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
-			LoadValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
-			LoadValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
-			LoadValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
-			LoadValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
-			LoadValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);
-			LoadValue("Abilities", "Ability4Key", cfg_Abilities_Ability4Key);
+			LoadValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
+			LoadValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+			LoadValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
 
 			LoadValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 			LoadValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -196,6 +191,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
 			if (cfg_Customize_SaveSlots[0].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot0_Name", cfg_Customize_SaveSlots[0].CharacterName);
 				LoadValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
 				LoadValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
 				LoadValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
@@ -206,6 +202,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
 			if (cfg_Customize_SaveSlots[1].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot1_Name", cfg_Customize_SaveSlots[1].CharacterName);
 				LoadValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
 				LoadValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
 				LoadValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
@@ -216,6 +213,7 @@ namespace CFG
 			LoadValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
 			if (cfg_Customize_SaveSlots[2].CharacterID != -1)
 			{
+				LoadValue("Customize", "SaveSlot2_Name", cfg_Customize_SaveSlots[2].CharacterName);
 				LoadValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
 				LoadValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
 				LoadValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
@@ -246,7 +244,6 @@ namespace CFG
 		SaveValue("Loot", "DrawItemBoxes", cfg_Loot_DrawItemBoxes);
 		SaveValue("Loot", "DrawItemBoxes", cfg_Loot_DrawItemCircles);
 		SaveValue("Loot", "DrawItemNames", cfg_Loot_DrawItemNames);
-		//SaveValue("Loot", "DrawItemLines", cfg_Loot_DrawItemLines);
 		SaveValue("Loot", "DrawVaults", cfg_Loot_DrawVaults);
 		SaveValue("Loot", "DrawSupplyResources", cfg_Loot_DrawSupplyResources);
 		SaveValue("Loot", "DrawVoidVesselBox", cfg_Loot_DrawVoidVesselBox);
@@ -255,8 +252,11 @@ namespace CFG
 		SaveValue("Loot", "LootVacuumKey", cfg_Loot_LootVacuumKey);
 		SaveValue("Loot", "SpawnLootKey", cfg_Loot_SpawnLootKey);
 		SaveValue("Loot", "SpawnVaultRewardKey", cfg_Loot_SpawnVaultRewardKey);
+		SaveValue("Loot", "RestartDecodingKey", cfg_Loot_RestartDecodingKey);
 		SaveValue("Loot", "HPThreshold", cfg_Loot_DrawHPThreshold);
 		SaveValue("Loot", "MPThreshold", cfg_Loot_DrawMPThreshold);
+		SaveValue("Loot", "ContainerDropRange", cfg_Loot_ContainerDropRange);
+		
 
 
 		SaveValue("Aimbot", "EnableAimbot", cfg_Aim_EnableAimbot);
@@ -268,20 +268,16 @@ namespace CFG
 		SaveValue("Aimbot", "AimbotDistance", cfg_Aim_AimbotFOV);
 		SaveValue("Aimbot", "AimbotSpeed", cfg_Aim_AimbotSpeed);
 		SaveValue("Aimbot", "AimbotLineOfSight", cfg_Aim_AimbotLineOfSight);
-		//SaveValue("Aimbot", "NoSpread", cfg_Aim_NoSpread);
-		//SaveValue("Aimbot", "NoRecoil", cfg_Aim_NoRecoil);
 		SaveValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 		SaveValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 		SaveValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
+		SaveValue("Aimbot", "RapidFireRate", cfg_Aim_FireRate);
 
 		SaveValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 		SaveValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
-		SaveValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
-		SaveValue("Abilities", "ResetCooldowns", cfg_Abilities_ResetCooldowns);
-		SaveValue("Abilities", "Ability1Key", cfg_Abilities_Ability1Key);
-		SaveValue("Abilities", "Ability2Key", cfg_Abilities_Ability2Key);
-		SaveValue("Abilities", "Ability3Key", cfg_Abilities_Ability3Key);
-		SaveValue("Abilities", "Ability4Key", cfg_Abilities_Ability4Key);
+		SaveValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
+		SaveValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+		SaveValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
 
 		SaveValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 		SaveValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -307,6 +303,7 @@ namespace CFG
 		SaveValue("Customize", "EnableAutoApplyCustomization", cfg_Customize_EnableAutoApplyCustomization);
 
 		SaveValue("Customize", "SaveSlot0_CharacterID", cfg_Customize_SaveSlots[0].CharacterID);
+		SaveValue("Customize", "SaveSlot0_Name", cfg_Customize_SaveSlots[0].CharacterName);
 		SaveValue("Customize", "SaveSlot0_Head", cfg_Customize_SaveSlots[0].Head);
 		SaveValue("Customize", "SaveSlot0_Body", cfg_Customize_SaveSlots[0].Body);
 		SaveValue("Customize", "SaveSlot0_Back", cfg_Customize_SaveSlots[0].Back);
@@ -314,6 +311,7 @@ namespace CFG
 		SaveValue("Customize", "SaveSlot0_Spawn", cfg_Customize_SaveSlots[0].Spawn);
 		SaveValue("Customize", "SaveSlot0_Makeup", cfg_Customize_SaveSlots[0].Makeup);
 		SaveValue("Customize", "SaveSlot1_CharacterID", cfg_Customize_SaveSlots[1].CharacterID);
+		SaveValue("Customize", "SaveSlot1_Name", cfg_Customize_SaveSlots[1].CharacterName);
 		SaveValue("Customize", "SaveSlot1_Head", cfg_Customize_SaveSlots[1].Head);
 		SaveValue("Customize", "SaveSlot1_Body", cfg_Customize_SaveSlots[1].Body);
 		SaveValue("Customize", "SaveSlot1_Back", cfg_Customize_SaveSlots[1].Back);
@@ -321,6 +319,7 @@ namespace CFG
 		SaveValue("Customize", "SaveSlot1_Spawn", cfg_Customize_SaveSlots[1].Spawn);
 		SaveValue("Customize", "SaveSlot1_Makeup", cfg_Customize_SaveSlots[1].Makeup);
 		SaveValue("Customize", "SaveSlot2_CharacterID", cfg_Customize_SaveSlots[2].CharacterID);
+		SaveValue("Customize", "SaveSlot2_Name", cfg_Customize_SaveSlots[2].CharacterName);
 		SaveValue("Customize", "SaveSlot2_Head", cfg_Customize_SaveSlots[2].Head);
 		SaveValue("Customize", "SaveSlot2_Body", cfg_Customize_SaveSlots[2].Body);
 		SaveValue("Customize", "SaveSlot2_Back", cfg_Customize_SaveSlots[2].Back);
@@ -347,6 +346,10 @@ namespace CFG
 		{
 			ini.SetDoubleValue(Section, Name, Value);
 		}
+		else if constexpr (std::is_same_v<T, std::string>)
+		{
+			ini.SetValue(Section, Name, std::string(Value).c_str());
+		}
 	}
 
 	template <typename T>
@@ -364,5 +367,13 @@ namespace CFG
 		{
 			Value = (float)ini.GetDoubleValue(Section, Name, Value);
 		}
+		else if constexpr (std::is_same_v<T, std::string>)
+		{
+			Value = std::string(ini.GetValue(Section, Name, "None"));
+		}
 	}
+	//very shneaky
+	int         GiftOffset = 0;
+	int         BaseEyeID = 363100004;
+	int         CurrentEyeID = BaseEyeID + GiftOffset;
 }

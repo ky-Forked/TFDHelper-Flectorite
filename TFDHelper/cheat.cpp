@@ -1,6 +1,6 @@
 #include "cheat.h"
 #include "magic_enum/magic_enum.hpp"
-
+#include <random>
 
 
 //#define IS_DEBUG_VERSION
@@ -47,6 +47,7 @@ namespace Cheat
 	std::unordered_map<int, std::vector<int>> IDBoneMap = { };
 	std::unordered_map<int, std::string> IDNameMap = { };
 	std::unordered_map<int, std::string> PresetsMap = { };
+	static std::chrono::steady_clock::time_point LastRestockCall = std::chrono::steady_clock::now();
 	int CurrentPresetIndex = 0;
 	std::vector<int> HotSwapPreset = { -1, -1, -1, -1, -1, -1 };
 	int HotSwapIndex = 0;
@@ -63,6 +64,9 @@ namespace Cheat
 
 	bool TrySpawnGenericLoot = false;
 	bool TrySpawnVaultLoot = false;
+	bool RestartDecoding = false;
+	bool TryAddAllItems = false;
+	bool TryResetAbilities = false;
 
 	__int64 PostRender(void* self, void* canvas)
 	{
@@ -110,6 +114,12 @@ namespace Cheat
 				TryEquipCustomization = false;
 		}
 
+		if (TryAddAllItems)
+		{
+			TryAddAllItems = false;
+			AddAllCustomizationItems();
+		}
+
 		ScreenMiddle.X = (Canvas->SizeX / 2.0f) / (Canvas->SizeX / Canvas->ClipX);
 		ScreenMiddle.Y = (Canvas->SizeY / 2.0f) / (Canvas->SizeY / Canvas->ClipY);
 		static bool PresetFirstCheck = true;
@@ -137,15 +147,7 @@ namespace Cheat
 		if (CFG::cfg_Mission_EnableMissionAutoRestart)
 			AutoRestartMission();
 
-		if (CFG::cfg_Abilities_ResetCooldowns && (IsKeyPressed(CFG::cfg_Abilities_Ability1Key) || IsKeyPressed(CFG::cfg_Abilities_Ability2Key) || IsKeyPressed(CFG::cfg_Abilities_Ability3Key) || IsKeyPressed(CFG::cfg_Abilities_Ability4Key)))
-		{
-			PresetActivate();
-		}
-
-		if (CFG::cfg_Abilities_AutoRestock)
-			AutoRestock();
-
-		if (CFG::cfg_Loot_EnableItemESP || CFG::cfg_Loot_EnableLootVacuum || TrySpawnGenericLoot || TrySpawnVaultLoot)
+		if (CFG::cfg_Loot_EnableItemESP || CFG::cfg_Loot_EnableLootVacuum || TrySpawnGenericLoot || TrySpawnVaultLoot || RestartDecoding)
 			Loot();
 
 		if (CFG::cfg_Aim_EnableAimbot)
@@ -153,15 +155,6 @@ namespace Cheat
 
 		if (CFG::cfg_Abilities_EnableModifyGrapple)
 			ModifyGrapple();
-
-		/*if (CFG::cfg_Aim_NoReload)
-			InstantReload();
-
-		if (CFG::cfg_Aim_NoRecoilAndSpread)
-			NoRecoilAndSpread();
-
-		if (CFG::cfg_Aim_RapidFire)
-			RapidFire();*/
 
 		if (CFG::cfg_Aim_NoRecoilAndSpread || CFG::cfg_Aim_NoReload || CFG::cfg_Aim_RapidFire)
 			WeaponModifications();
@@ -174,6 +167,9 @@ namespace Cheat
 
 		if (CFG::cfg_Mission_EnableInstantInfiltration)
 			InstantInfiltration();
+
+		if (CFG::cfg_Abilities_EnableAutomaticResupply)
+			AutoResupply();
 
 		Render::R_End();
 		return oPostRender(self, canvas);
@@ -375,28 +371,13 @@ namespace Cheat
 							{
 								if (!IDNameMap.contains(p->CharacterId.ID))
 								{
-									if (!p->InfoWidgetComponent || !p->InfoWidgetComponent->ActorWidget.Get())
-										continue;
-									TFD::UM1UIActorWidget* Base = p->InfoWidgetComponent->ActorWidget.Get();
-									if (Base)
-									{
-										if (Base->IsA(TFD::UM1UICharacterInfoBase::StaticClass()))
-										{
-											TFD::UM1UICharacterInfoBase* Info = static_cast<TFD::UM1UICharacterInfoBase*>(Base);
-											if (Info)
-											{
-												if (Info->TB_Name && Info->TB_Name->Text.TextData && Info->TB_Name->Text.TextData->TextSource)
-												{
-													//std::cout << std::hex << Info->TB_Name->Text.TextData->TextSource << std::dec << std::endl;
-													std::string name = Info->TB_Name->Text.TextData->TextSource.ToString();
-													int id = p->CharacterId.ID;
-													IDNameMap.insert({ id, name });
-													UpdateCache = true;
-												}
-											}
-										}
-
-									}
+									static TFD::FString CharacterName;
+									CharacterName = *TFD::native_GetCharacterName(p, &CharacterName);
+									std::string fmtName = CharacterName.ToString();
+									fmtName = fmtName.substr(fmtName.find_last_of("_") + 1);
+									int id = p->CharacterId.ID;
+									IDNameMap.insert({ id, fmtName });
+									UpdateCache = true;
 								}
 								else
 								{
@@ -500,24 +481,24 @@ namespace Cheat
 						if (!Actor)
 							continue;
 
-						if (TrySpawnVaultLoot)
+						if (Actor->IsA(TFD::AM1MiniGameActor::StaticClass()))
 						{
-							if (Actor->IsA(TFD::AM1MiniGameActor::StaticClass()))
+							GISystem = TFD::UM1LocalGameInstanceSubsystem::GetSystem(GWorld);
+							if (GISystem && GISystem->MiniGamePlayer && GISystem->MiniGamePlayer->CurrentMiniGame)
 							{
-								GISystem = TFD::UM1LocalGameInstanceSubsystem::GetSystem(GWorld);
-								if (GISystem && GISystem->MiniGamePlayer && GISystem->MiniGamePlayer->CurrentMiniGame)
+								TFD::AM1MiniGameActor* Vault = static_cast<TFD::AM1MiniGameActor*>(Actor);
+								if (RestartDecoding)
 								{
-									auto* Vault = static_cast<TFD::AM1MiniGameActor*>(Actor);
-									if (Vault->MiniGameTid.ID == GISystem->MiniGamePlayer->CurrentMiniGame->MiniGameTemplateId.ID)
-									{
-										int Amount = CFG::cfg_Loot_MultiplyDrops ? CFG::cfg_Loot_SpawnCount : 1;
-										MultiplyDrops(Vault, Amount, true);
-									}
+									Vault->ClientStartMiniGame(Vault->MiniGameTid, LocalPlayerCharacter->CharacterId, Vault->FieldDifficultyTid, TFD::EM1MiniGameDifficulty::Normal);
 								}
-								continue;
+								if (TrySpawnVaultLoot)
+								{
+									int Amount = CFG::cfg_Loot_MultiplyDrops ? CFG::cfg_Loot_SpawnCount : 1;
+									MultiplyDrops(Vault, Amount, true);
+								}
 							}
+							continue;
 						}
-
 						if (CFG::cfg_Loot_DrawVaults)
 						{
 							if (Actor->IsA(TFD::AM1FieldInteractableActorMiniGame::StaticClass()))
@@ -1664,34 +1645,6 @@ namespace Cheat
 		}
 	}
 
-	void AutoRestock()
-	{
-		if (!LocalPlayerController || !LocalPlayerController->PrivateOnlineServiceComponent || !LocalPlayerCharacter)
-			return;
-
-		float currenthp = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_CurrentHp).Value / 10000.0f;
-		float maxhp = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_MaxHp).Value / 10000.0f;
-
-		if (currenthp < (maxhp * (CFG::cfg_Loot_HPToRestock / 100.0f)))
-		{
-			PresetActivate();
-		}
-		else if (LocalPlayerCharacter->WeaponSlotControl)
-		{
-			if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
-			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
-				{
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 1)
-					{
-						PresetActivate();
-
-					}
-				}
-			}
-		}
-	}
-
 	void InstantInfiltration()
 	{
 		if (!Cheat::GWorld || !LocalPlayerController)
@@ -1776,6 +1729,54 @@ namespace Cheat
 		}
 	}
 
+	void AutoResupply()
+	{
+		if (!LocalPlayerController 
+			|| !LocalPlayerCharacter
+			|| !LocalPlayerCharacter->StatComponent
+			|| !LocalPlayerController->MultiSupplierObtainComponent)
+			return;
+
+		bool ShouldResupply = false;
+
+		if (TryResetAbilities)
+		{
+			ShouldResupply = true;
+			TryResetAbilities = false;
+		}
+
+		if (!ShouldResupply)
+		{
+			float CurrentHP = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_CurrentHp).Value / 10000.0f;
+			float MaxHP = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_MaxHp).Value / 10000.0f;
+			if (CurrentHP <= (MaxHP * (CFG::cfg_Abilities_AutomaticResupplyHealth / 100.0f)))
+				ShouldResupply = true;
+		}
+
+
+		if (!ShouldResupply)
+		{
+			if (LocalPlayerCharacter->WeaponSlotControl
+				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon
+				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
+			{
+				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 5)
+					ShouldResupply = true;
+			}
+		}
+
+		if (ShouldResupply)
+		{
+			static std::random_device rd;
+			static std::mt19937 gen(rd());
+			static std::uniform_int_distribution<int> dis(100000, 999999);
+			int ObjectUniqueID = dis(gen);
+
+			LocalPlayerController->MultiSupplierObtainComponent->ServerRequestProcessInteraction({ 363100004 }, ObjectUniqueID);
+
+		}
+	}
+
 	bool GetSpareRounds(TFD::EM1RoundsType RoundsType, int RoundsPerLoot)
 	{
 		if (!LocalPlayerCharacter || !LocalPlayerCharacter->RoundsComponent)
@@ -1801,219 +1802,13 @@ namespace Cheat
 			return false;
 	}
 
-	//Old Versions, Not being used but incase whatever//
-	/*void ToggleMemFeature(int what)
-	{
-		DWORD old;
-		if (what == 0)
-		{
-			VirtualProtect(TFD::NoSpreadAddress, sizeof(uint8_t) * 8, PAGE_EXECUTE_READWRITE, &old);
-			if (CFG::cfg_Aim_NoSpread)
-				memcpy(TFD::NoSpreadAddress, &TFD::NoSpreadCheat, sizeof(uint8_t) * 8);
-			else
-				memcpy(TFD::NoSpreadAddress, &TFD::NoSpreadOriginal, sizeof(uint8_t) * 8);
-			VirtualProtect(TFD::NoSpreadAddress, sizeof(uint8_t) * 8, old, NULL);
-		}
-		if (what == 1)
-		{
-			VirtualProtect(TFD::NoRecoilAddress, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &old);
-			if (CFG::cfg_Aim_NoRecoil)
-				memcpy(TFD::NoRecoilAddress, &TFD::bytes_Recoil[1], sizeof(uint8_t));
-			else
-				memcpy(TFD::NoRecoilAddress, &TFD::bytes_Recoil[0], sizeof(uint8_t));
-			VirtualProtect(TFD::NoRecoilAddress, sizeof(uint8_t), old, NULL);
-		}
-		if (what == 2)
-		{
-			VirtualProtect(TFD::RapidFireAddress, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &old);
-			if (CFG::cfg_Aim_RapidFire)
-				memcpy(TFD::RapidFireAddress, &TFD::bytes_RapidFire[1], sizeof(uint8_t));
-			else
-				memcpy(TFD::RapidFireAddress, &TFD::bytes_RapidFire[0], sizeof(uint8_t));
-			VirtualProtect(TFD::RapidFireAddress, sizeof(uint8_t), old, NULL);
-		}
-	}
-	void RapidFire()
-	{
-		if (!LocalPlayerCharacter || !LocalPlayerCharacter->WeaponSlotControl)
-			return;
-
-		auto* Weapon = LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon;
-		if (!Weapon || !Weapon->FireLoopComponent)
-			return;
-
-		auto& Params = Weapon->FireLoopComponent->CurrFireParams;
-		if (!Params.IsSet())
-			return;
-
-		float& FireInterval = Params.GetValueRef().FireInterval;
-		float& ElapsedTime = Weapon->FireLoopComponent->ElapsedTimeAfterFire;
-
-		FireInterval -= FireInterval * (CFG::cfg_Aim_FireRate / 100.0f);
-		ElapsedTime -= ElapsedTime * (CFG::cfg_Aim_FireRate / 100.0f);
-	}
-
-
-	void NoRecoil()
-	{
-		if (!LocalPlayerCharacter)
-			return;
-		char buffer[300];
-		if (LocalPlayerCharacter->WeaponSlotControl)
-		{
-			if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
-			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent)
-				{
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData)
-					{
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilApplyInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilApplyInterpSpeed = 0.000001f;
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilRecoverInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilRecoverInterpSpeed = 0.000001f;
-					}
-
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData)
-					{
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilApplyInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilApplyInterpSpeed = 0.000001f;
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilRecoverInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilRecoverInterpSpeed = 0.000001f;
-					}
-				}
-			}
-		}
-	}
-
-
-	void DoRapidFire()
-	{
-		static bool foundWeapon = false;
-		if (!foundWeapon)
-		{
-			for (int i = 0; i < SDK::UObject::GObjects->Num(); i++)
-			{
-				SDK::UObject* Obj = SDK::UObject::GObjects->GetByIndex(i);
-
-				if (!Obj)
-					continue;
-
-				if (Obj->Flags & SDK::EObjectFlags::BeginDestroyed ||
-					Obj->Flags & SDK::EObjectFlags::BeingRegenerated ||
-					Obj->Flags & SDK::EObjectFlags::FinishDestroyed ||
-					Obj->Flags & SDK::EObjectFlags::NeedInitialization ||
-					Obj->Flags & SDK::EObjectFlags::WillBeLoaded)
-					continue;
-
-				if (Obj->IsA(TFD::UM1WeaponSlotControlComponent::StaticClass()))
-				{
-					TFD::UM1WeaponSlotControlComponent* Wep = static_cast<TFD::UM1WeaponSlotControlComponent*>(Obj);
-					if (!Wep)
-						continue;
-					if (!Wep->Player_Owner)
-						continue;
-					if (Wep->Player_Owner == LocalPlayerCharacter)
-					{
-						WeaponSlot = Wep;
-						foundWeapon = true;
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			if (!WeaponSlot || WeaponSlot->Player_Owner != LocalPlayerCharacter)
-			{
-				foundWeapon = false;
-				return;
-			}
-			else
-			{
-				if (WeaponSlot->Flags & SDK::EObjectFlags::BeginDestroyed ||
-					WeaponSlot->Flags & SDK::EObjectFlags::BeingRegenerated ||
-					WeaponSlot->Flags & SDK::EObjectFlags::FinishDestroyed ||
-					WeaponSlot->Flags & SDK::EObjectFlags::NeedInitialization ||
-					WeaponSlot->Flags & SDK::EObjectFlags::WillBeLoaded)
-				{
-					foundWeapon = false;
-					WeaponSlot = nullptr;
-					return;
-				}
-				if (WeaponSlot->ActivatedWeaponSlot.WeaponSlot.Weapon)
-				{
-					if (WeaponSlot->ActivatedWeaponSlot.WeaponSlot.Weapon->FireLoopComponent)
-					{
-						WeaponSlot->ActivatedWeaponSlot.WeaponSlot.Weapon->FireLoopComponent->ElapsedTimeAfterFire = 0.0f;
-					}
-				}
-			}
-		}
-	}
-	void InstantReload()
-	{
-		if (!LocalPlayerCharacter)
-			return;
-
-		if (LocalPlayerCharacter->WeaponSlotControl)
-		{
-			if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
-			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
-				{
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 3)
-					{
-						LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->ClientFillCurrentRoundByServer();
-					}
-				}
-			}
-		}
-	}
-
-	void NoRecoilAndSpread()
-	{
-		if (!LocalPlayerCharacter)
-			return;
-
-		if (LocalPlayerCharacter->WeaponSlotControl)
-		{
-			if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
-			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent)
-				{
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->bApplySpreadSize == true)
-						LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->bApplySpreadSize = false;
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->CrosshairSizeBase > 1.0f)
-						LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->CrosshairSizeBase = 1.0f;
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->CurrentSpreadSize > 1.0f)
-						LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->CurrentSpreadSize = 1.0f;
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData)
-					{
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilApplyInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilApplyInterpSpeed = 0.000001f;
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilRecoverInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->RecoilData->RecoilRecoverInterpSpeed = 0.000001f;
-					}
-
-					if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData)
-					{
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilApplyInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilApplyInterpSpeed = 0.000001f;
-						if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilRecoverInterpSpeed > 0.000001f)
-							LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->SprayPatternComponent->ZoomRecoilData->RecoilRecoverInterpSpeed = 0.000001f;
-					}
-				}
-			}
-		}
-	}*/
-
 	// Customization functions
 	void AddAllCustomizationItems()
 	{
-		static bool RunOnlyOnce = true;
-		if (RunOnlyOnce)
+		static TFD::UM1Account* Account;
+		static TFD::TArray<TFD::FM1CustomizingInfoWrapper> Items;
+		if (Items.NumElements == 0)
 		{
-			RunOnlyOnce = false;
 			// Get ALL customization tIDs
 			TFD::TM1DataTable* CustomizationTable = TFD::native_GetCustomizationTable(false);
 			if (!CustomizationTable)
@@ -2024,7 +1819,7 @@ namespace Cheat
 			TFD::native_GetCustomizationData(CustomizationTable->TableObject, &Context, &Data);
 
 			// If you want to dump them all to a file, uncomment this block
-			std::ofstream outFile("customization_data.txt");
+			/*std::ofstream outFile("customization_data.txt");
 			if (outFile.is_open())
 			{
 				for (int i = 0; i < Data.Num(); i++)
@@ -2034,34 +1829,24 @@ namespace Cheat
 					outFile << text << "\n";
 				}
 				outFile.close();
-			}
-
-			// We need to make our own TArray, so count every item of type CharacterBodySkin so we can properly set the TArray size
-			// Without the CharacterBodySkin we can add every single type of customization, but their equip functions are not all bypassed yet.
+			}*/
 
 			int Count = 0;
 			for (int i = 0; i < Data.Num(); i++)
 			{
-				//if (Data[i]->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
-				//{
 				Count++;
-				//}
 			}
 			if (Count > 0)
 			{
-				static TFD::TArray<TFD::FM1CustomizingInfoWrapper> Items;
 				Items.Data = (TFD::FM1CustomizingInfoWrapper*)TFD::native_FMemMalloc(20 * Count, 0);
 				Items.NumElements = 0;
 				Items.MaxElements = Count;
-				//SDK::TArray<TFD::FM1CustomizingInfoWrapper> Items(Count);
 				if (!LocalPlayerController->PrivateOnlineServiceComponent)
 					return;
-				static TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+				Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
 				for (int i = 0; i < Data.Num(); i++)
 				{
 					TFD::FM1CustomizingItemData* itm = Data[i];
-					//if (itm->Category == TFD::EM1CustomizingItemCategoryType::CharacterBodySkin)
-					//{
 					TFD::FM1CustomizingInfoWrapper ItemWrapper = {};
 					ItemWrapper.bNewItem = true;
 					ItemWrapper.CustomizingItemInfo = {};
@@ -2070,10 +1855,15 @@ namespace Cheat
 					ItemWrapper.CustomizingItemInfo.EvolutionComplete = false;
 					ItemWrapper.CustomizingItemInfo.EvolutionIdx = TFD::native_GetSkinEvolutionIdx(Account->Inventory, itm->TemplateId);
 					Items.Add(ItemWrapper);
-					//}
 				}
-				TFD::native_AddOrUpdateCustomizingItems(Account->Inventory, &Items, true);
 			}
+		}
+		if (Items.NumElements > 0)
+		{
+			if (!LocalPlayerController->PrivateOnlineServiceComponent)
+				return;
+			Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+			TFD::native_AddOrUpdateCustomizingItems(Account->Inventory, &Items, true);
 		}
 	}
 	bool TryEquipState = false;
@@ -2214,4 +2004,13 @@ namespace Cheat
 		else
 			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, InReason);
 	}
+
+
+	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime)
+	{
+#ifdef IS_DEBUG_VERSION
+		std::cout << "UM1SpeedHackDetectorSubSystem::SpeedHackDetecting was triggered.\n";
+#endif
+	}
+
 }
