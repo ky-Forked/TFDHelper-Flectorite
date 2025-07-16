@@ -35,7 +35,7 @@ namespace Menu
 	extern bool cfg_SpawnLootKeyState;
 	extern bool cfg_SpawnVaultRewardKeyState;
 	extern bool cfg_RestartDecodingKeyState;
-	extern bool cfg_EyesInTheSkyKeyState;
+	extern bool cfg_AutomaticResupplyKeyState;
 
 	extern int  CurrentStyleIndex;
 

@@ -62,11 +62,9 @@ namespace CFG
 
 	bool		cfg_Abilities_EnableModifyGrapple = false;
 	float 		cfg_Abilities_GrappleRange = 10000.0f;
-	bool        cfg_Abilities_AutoRestock = false;
-	int         cfg_Abilities_EyesInTheSkyKey = VK_TAB;
-	float       cfg_Abilities_LowHealthSave = 20.0f;
-	bool		cfg_Abilities_EnableTimedRestock = false;
-	float		cfg_Abilities_TimedRestockDelay = 1.0f; // in seconds
+	bool		cfg_Abilities_EnableAutomaticResupply = false;
+	int			cfg_Abilities_AutomaticResupplyKey = VK_TAB;
+	float		cfg_Abilities_AutomaticResupplyHealth = 25.0f;
 
 	float		cfg_Extra_TimeScale = 2.0f;
 	int			cfg_Extra_TimeScaleKey = VK_F9;
@@ -158,14 +156,13 @@ namespace CFG
 			LoadValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 			LoadValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 			LoadValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
+			LoadValue("Aimbot", "RapidFireRate", cfg_Aim_FireRate);
 
 			LoadValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 			LoadValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
-			LoadValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
-			LoadValue("Abiltiies", "EyesInTheSkyKey", cfg_Abilities_EyesInTheSkyKey);
-			LoadValue("Abilities", "LowHealthSave", cfg_Abilities_LowHealthSave);
-			LoadValue("Abiltiies", "EnableTimedRestock", cfg_Abilities_EnableTimedRestock);
-			LoadValue("Abilities", "TimedDelay", cfg_Abilities_TimedRestockDelay);
+			LoadValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
+			LoadValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+			LoadValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
 
 			LoadValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 			LoadValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -274,14 +271,13 @@ namespace CFG
 		SaveValue("Aimbot", "NoReload", cfg_Aim_NoReload);
 		SaveValue("Aimbot", "NoRecoilAndSpread", cfg_Aim_NoRecoilAndSpread);
 		SaveValue("Aimbot", "RapidFire", cfg_Aim_RapidFire);
+		SaveValue("Aimbot", "RapidFireRate", cfg_Aim_FireRate);
 
 		SaveValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 		SaveValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
-		SaveValue("Abilities", "AutoRestock", cfg_Abilities_AutoRestock);
-		SaveValue("Abilities", "EyesInTheSkyKey", cfg_Abilities_EyesInTheSkyKey);
-		SaveValue("Abilities", "LowHealthSave", cfg_Abilities_LowHealthSave);
-		SaveValue("Abiltiies", "EnableTimedRestock", cfg_Abilities_EnableTimedRestock);
-		SaveValue("Abilities", "TimedDelay", cfg_Abilities_TimedRestockDelay);
+		SaveValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
+		SaveValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+		SaveValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
 
 		SaveValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 		SaveValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -378,6 +374,6 @@ namespace CFG
 	}
 	//very shneaky
 	int         GiftOffset = 0;
-	int         BaseEyeID = 363100003;
+	int         BaseEyeID = 363100004;
 	int         CurrentEyeID = BaseEyeID + GiftOffset;
 }

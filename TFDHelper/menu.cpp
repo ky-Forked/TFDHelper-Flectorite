@@ -24,15 +24,15 @@ namespace Menu
 	bool cfg_SpawnVaultRewardKeyState = false;
 	bool cfg_RestartDecodingKeyState = false;
 	bool cfg_HotswapKeyState = false;
-	bool cfg_EyesInTheSkyKeyState = false;
+	bool cfg_AutomaticResupplyKeyState = false;
 
 	int CurrentStyleIndex = 0;
 
 	const char* giftNames[] = 
 	{
-	"|Health|",
-	"|Health/Mana/Ammo/Abilities|",
-	"|Mana/Ammo|"
+	"Health Only",
+	"Health & Mana & Ammo & Abilities",
+	"Mana & Ammo"
 	};
 
 	void HandleKeybinds()
@@ -100,8 +100,20 @@ namespace Menu
 			if (ImGui::IsKeyPressed(VK_DOWN))
 				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex + 1 > (Cheat::PresetsMap.size() - 1) ? 0 : Cheat::CurrentPresetIndex + 1;
 
-			if (ImGui::IsKeyPressed(CFG::cfg_Abilities_EyesInTheSkyKey))
-				Cheat::Restock(false);
+			if (ImGui::IsKeyPressed(CFG::cfg_Abilities_AutomaticResupplyKey))
+				CFG::cfg_Abilities_EnableAutomaticResupply = !CFG::cfg_Abilities_EnableAutomaticResupply;
+
+			if (CFG::cfg_Abilities_EnableAutomaticResupply)
+			{
+				if (ImGui::IsKeyPressed(0x51) || ImGui::IsKeyDown(0x51)) // Q
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x43) || ImGui::IsKeyDown(0x43)) // C
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x56) || ImGui::IsKeyDown(0x56)) // V
+					Cheat::TryResetAbilities = true;
+				if (ImGui::IsKeyPressed(0x5A) || ImGui::IsKeyDown(0x5A)) // Z
+					Cheat::TryResetAbilities = true;
+			}
 		}
 	}
 
@@ -118,7 +130,7 @@ namespace Menu
 			|| cfg_SpawnLootKeyState
 			|| cfg_SpawnVaultRewardKeyState
 			|| cfg_RestartDecodingKeyState
-			|| cfg_EyesInTheSkyKeyState)
+			|| cfg_AutomaticResupplyKeyState)
 			return true;
 		return false;
 	}
@@ -289,7 +301,7 @@ namespace Menu
 								ImGui::Hotkey("##IVRKEY", &CFG::cfg_Loot_SpawnVaultRewardKey, cfg_SpawnVaultRewardKeyState, ImVec2(180, 24));
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								ImGui::Text("Reset Vault End Timer:");
+								ImGui::Text("Restart Vault Timer:");
 								ImGui::TableNextColumn();
 								ImGui::Hotkey("##RVETKEY", &CFG::cfg_Loot_RestartDecodingKey, cfg_RestartDecodingKeyState, ImVec2(180, 24));
 								ImGui::TableNextRow();
@@ -304,7 +316,7 @@ namespace Menu
 								ImGui::Checkbox("##EMD", &CFG::cfg_Loot_MultiplyDrops);
 								ImGui::TableNextRow();
 								ImGui::TableNextColumn();
-								ImGui::Text("Multiply Drop Count: ");
+								ImGui::Text("Multiply Drops By Amount: ");
 								ImGui::TableNextColumn();
 								ImGui::SliderInt("##MDC", &CFG::cfg_Loot_SpawnCount, 1, 100);
 								ImGui::TableNextRow();
@@ -329,6 +341,9 @@ namespace Menu
 								ImGui::TableNextColumn();
 								if (ImGui::Button("Start Research", ImVec2(120, 30)))
 									Cheat::ResearchBookmarkedItems();
+								ImGui::TableNextRow();
+								ImGui::TableNextColumn();
+								ImGui::Text("Bookmark a research item, set the desired quantity,\nthen click 'Start Research'!");
 								ImGui::EndTable();
 							}
 						}
@@ -420,64 +435,28 @@ namespace Menu
 						}
 						ImGui::EndTabItem();
 					}
-					if (ImGui::BeginTabItem("Abilities/Ammo"))
+					if (ImGui::BeginTabItem("Resupply"))
 					{
 						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
 						{
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Enable Modify Grapples: ");
+							ImGui::Text("Enable Automatic Resupply: ");
 							ImGui::TableNextColumn();
-							ImGui::Checkbox("##EMG", &CFG::cfg_Abilities_EnableModifyGrapple);
+							ImGui::Checkbox("##EAR", &CFG::cfg_Abilities_EnableAutomaticResupply);
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Grapple Range: ");
+							ImGui::Text("Automatic Resupply Hotkey: ");
 							ImGui::TableNextColumn();
-							ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 200000.0f);
+							ImGui::Hotkey("##EARK", &CFG::cfg_Abilities_AutomaticResupplyKey, cfg_AutomaticResupplyKeyState, ImVec2(180, 24));
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Eyes in the Sky: ");
+							ImGui::Text("Resupply at Percent of Max Health");
 							ImGui::TableNextColumn();
-							ImGui::Hotkey("##EITSK", &CFG::cfg_Abilities_EyesInTheSkyKey, cfg_EyesInTheSkyKeyState, ImVec2(180, 24));
+							ImGui::SliderFloat("##ARHP", &CFG::cfg_Abilities_AutomaticResupplyHealth, 0.0f, 100.0f);
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Pick The Eyes Gift To You:");
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							if (ImGui::Button("-", ImVec2(30, 30)))
-								CFG::GiftOffset = (CFG::GiftOffset > 0) ? CFG::GiftOffset - 1 : 0;
-							ImGui::SameLine();
-							if (ImGui::Button("+", ImVec2(30, 30)))
-								CFG::GiftOffset = (CFG::GiftOffset < 2) ? CFG::GiftOffset + 1 : 2;
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Current Gift Selected:");
-							ImGui::TableNextColumn();
-							ImGui::Text("%s", giftNames[CFG::GiftOffset]);
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Heavy Is Only Given By The Second Gift Option");
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Enable Automatic Heal:");
-							ImGui::TableNextColumn();
-							ImGui::Checkbox("##EAARH", &CFG::cfg_Abilities_AutoRestock);
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Automatically Heal At %");
-							ImGui::TableNextColumn();
-							ImGui::SliderFloat("HP %", &CFG::cfg_Abilities_LowHealthSave, 0.0f, 100.0f);
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Enable Timed Ammo Refill:");
-							ImGui::TableNextColumn();
-							ImGui::Checkbox("##ETAR", &CFG::cfg_Abilities_EnableTimedRestock);
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Ammo Refill Delay (sec):");
-							ImGui::TableNextColumn();
-							ImGui::SliderFloat("##TARD", &CFG::cfg_Abilities_TimedRestockDelay, 0.01f, 5.0f);
-
+							ImGui::Text("Automatic Resupply will restore your Health,\nMana, Ammo, and resets Ability cooldowns.");
 							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
@@ -648,7 +627,7 @@ namespace Menu
 							ImGui::Checkbox("##CECAE", &CFG::cfg_Customize_EnableAutoApplyCustomization);
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Auto-Equip will equip the data from the first saved slot that matches your current character.");
+							ImGui::Text("Auto-Equip will equip the data from the first\nsaved slot that matches your current character.");
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
 							static int SaveSlot = 0;
@@ -854,25 +833,6 @@ namespace Menu
 				ImGui::End();
 			}
 		}
-	}
-
-	bool IsKeyBinding()
-	{
-		if (cfg_ShowMenuKeyState
-			|| cfg_LootVacuumKeyState
-			|| cfg_AimbotHoldKeyState
-			|| cfg_AimbotToggleKeyState
-			|| cfg_TimescaleHoldKeyState
-			|| cfg_TimescaleToggleKeyState
-			|| cfg_MissionAutoRestartKeyState
-			|| cfg_MissionTeleportKeyState
-			|| cfg_SpawnLootKeyState
-			|| cfg_SpawnVaultRewardKeyState
-			|| cfg_RestartDecodingKeyState
-			|| cfg_EyesInTheSkyKeyState
-			|| cfg_HotswapKeyState)
-			return true;
-		return false;
 	}
 
 	void Classic()

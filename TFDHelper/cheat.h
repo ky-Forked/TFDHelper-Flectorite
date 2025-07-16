@@ -83,7 +83,7 @@ namespace Cheat
 	void ModifyGrapple();
 	void MultiplyDrops(TFD::AActor* Actor, int Amount, bool isVault);
 	bool GetSpareRounds(TFD::EM1RoundsType RoundsType, int RoundsPerLoot);
-	void Restock(bool Auto);
+	void AutoResupply();
 
 	void CreateConsole();
 	void CreateCheatManager();
@@ -97,4 +97,6 @@ namespace Cheat
 	void __fastcall hkReceiveCustomizingCharacterSkin(TFD::UM1PrivateOnlineServiceCustomize* This, TFD::FM1TemplateId InTargetCharacterTid, TFD::FM1TemplateId InSkinTid, bool bEquip, TFD::EM1CustomizeReason InReason);
 
 	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime);
+
+	extern bool TryResetAbilities;
 }

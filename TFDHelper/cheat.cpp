@@ -66,6 +66,7 @@ namespace Cheat
 	bool TrySpawnVaultLoot = false;
 	bool RestartDecoding = false;
 	bool TryAddAllItems = false;
+	bool TryResetAbilities = false;
 
 	__int64 PostRender(void* self, void* canvas)
 	{
@@ -167,41 +168,8 @@ namespace Cheat
 		if (CFG::cfg_Mission_EnableInstantInfiltration)
 			InstantInfiltration();
 
-		if (IsKeyPressed(CFG::cfg_Abilities_EyesInTheSkyKey))
-			Restock(false);
-
-		if (CFG::cfg_Abilities_AutoRestock && CFG::cfg_Abilities_LowHealthSave > 0)
-			Restock(true);
-
-		if (CFG::cfg_Abilities_EnableTimedRestock)
-		{
-			auto now = std::chrono::steady_clock::now();
-			float elapsed = std::chrono::duration<float>(now - LastRestockCall).count();
-
-			if (elapsed >= CFG::cfg_Abilities_TimedRestockDelay)
-			{
-
-				const int baseID = 363100004;
-
-				if (LocalPlayerController)
-				{
-					auto* Controller = static_cast<TFD::AM1PlayerControllerInGame*>(LocalPlayerController);
-					if (Controller && Controller->MultiSupplierObtainComponent)
-					{
-						TFD::FM1TemplateId AmmoTemplateId{};
-						AmmoTemplateId.ID = baseID;
-
-						static std::random_device rd;
-						static std::mt19937 gen(rd());
-						static std::uniform_int_distribution<SDK::uint32> dis(100000, 999999);
-						SDK::uint32 ObjectUniqueID = dis(gen);
-
-						Controller->MultiSupplierObtainComponent->ServerRequestProcessInteraction(AmmoTemplateId, ObjectUniqueID);
-						LastRestockCall = now;
-					}
-				}
-			}
-		}
+		if (CFG::cfg_Abilities_EnableAutomaticResupply)
+			AutoResupply();
 
 		Render::R_End();
 		return oPostRender(self, canvas);
@@ -509,17 +477,19 @@ namespace Cheat
 
 					for (int j = 0; j < Level->Actors.Num(); ++j)
 					{
+						TFD::AActor* Actor = (TFD::AActor*)Level->Actors[j];
+						if (!Actor)
+							continue;
+
 						if (Actor->IsA(TFD::AM1MiniGameActor::StaticClass()))
 						{
 							GISystem = TFD::UM1LocalGameInstanceSubsystem::GetSystem(GWorld);
 							if (GISystem && GISystem->MiniGamePlayer && GISystem->MiniGamePlayer->CurrentMiniGame)
 							{
-								auto* Vault = static_cast<TFD::AM1MiniGameActor*>(Actor);
-								TFD::AM1Character* BaseCharacter = static_cast<TFD::AM1Character*>(LocalPlayerCharacter);
-								int PlayerTid = BaseCharacter->CharacterId.ID;
+								TFD::AM1MiniGameActor* Vault = static_cast<TFD::AM1MiniGameActor*>(Actor);
 								if (RestartDecoding)
 								{
-									Vault->ClientStartMiniGame(Vault->MiniGameTid, { PlayerTid }, Vault->FieldDifficultyTid, static_cast<TFD::EM1MiniGameDifficulty>(1));
+									Vault->ClientStartMiniGame(Vault->MiniGameTid, LocalPlayerCharacter->CharacterId, Vault->FieldDifficultyTid, TFD::EM1MiniGameDifficulty::Normal);
 								}
 								if (TrySpawnVaultLoot)
 								{
@@ -1759,43 +1729,52 @@ namespace Cheat
 		}
 	}
 
-	void Restock(bool Auto = false)
+	void AutoResupply()
 	{
-		if (!LocalPlayerController || !LocalPlayerCharacter)
+		if (!LocalPlayerController 
+			|| !LocalPlayerCharacter
+			|| !LocalPlayerCharacter->StatComponent
+			|| !LocalPlayerController->MultiSupplierObtainComponent)
 			return;
 
-		const int giftID = 363100003 + CFG::GiftOffset;
+		bool ShouldResupply = false;
 
+		if (TryResetAbilities)
+		{
+			ShouldResupply = true;
+			TryResetAbilities = false;
+		}
 
-		if (Auto && giftID == 363100005)
-			return;
-
-		if (Auto)
+		if (!ShouldResupply)
 		{
 			float CurrentHP = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_CurrentHp).Value / 10000.0f;
 			float MaxHP = (float)LocalPlayerCharacter->StatComponent->GetStatValue(TFD::EM1StatType::Stat_MaxHp).Value / 10000.0f;
-
-			if (CurrentHP >= (MaxHP * (CFG::cfg_Abilities_LowHealthSave / 100.0f)))
-				return;
+			if (CurrentHP <= (MaxHP * (CFG::cfg_Abilities_AutomaticResupplyHealth / 100.0f)))
+				ShouldResupply = true;
 		}
 
-		auto* Controller = static_cast<TFD::AM1PlayerControllerInGame*>(LocalPlayerController);
-		if (!Controller)
-			return;
 
-		auto* SupplyComponent = Controller->MultiSupplierObtainComponent;
-		if (!SupplyComponent)
-			return;
+		if (!ShouldResupply)
+		{
+			if (LocalPlayerCharacter->WeaponSlotControl
+				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon
+				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
+			{
+				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 5)
+					ShouldResupply = true;
+			}
+		}
 
-		TFD::FM1TemplateId AmmoTemplateId{};
-		AmmoTemplateId.ID = giftID;
+		if (ShouldResupply)
+		{
+			static std::random_device rd;
+			static std::mt19937 gen(rd());
+			static std::uniform_int_distribution<int> dis(100000, 999999);
+			int ObjectUniqueID = dis(gen);
 
-		static std::random_device rd;
-		static std::mt19937 gen(rd());
-		static std::uniform_int_distribution<SDK::uint32> dis(100000, 999999);
-		SDK::uint32 ObjectUniqueID = dis(gen);
+			LocalPlayerController->MultiSupplierObtainComponent->ServerRequestProcessInteraction({ 363100004 }, ObjectUniqueID);
 
-		SupplyComponent->ServerRequestProcessInteraction(AmmoTemplateId, ObjectUniqueID);
+		}
 	}
 
 	bool GetSpareRounds(TFD::EM1RoundsType RoundsType, int RoundsPerLoot)
