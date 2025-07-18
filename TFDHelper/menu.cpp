@@ -27,13 +27,7 @@ namespace Menu
 	bool cfg_AutomaticResupplyKeyState = false;
 
 	int CurrentStyleIndex = 0;
-
-	const char* giftNames[] = 
-	{
-	"Health Only",
-	"Health & Mana & Ammo & Abilities",
-	"Mana & Ammo"
-	};
+	bool ShowEnabledFeatures = false;
 
 	void HandleKeybinds()
 	{
@@ -151,6 +145,12 @@ namespace Menu
 
 	void RenderMenu()
 	{
+		if (ShowEnabledFeatures)
+		{
+
+
+		}
+
 		if (ShowMenu)
 		{
 			if (ImGui::Begin("Flectorite - v1.0.33", &ShowMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
@@ -741,6 +741,11 @@ namespace Menu
 							ImGui::Text("Grapple Range: ");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##AGRM", &CFG::cfg_Abilities_GrappleRange, 1000.0f, 50000.0f);
+							//ImGui::TableNextRow();
+							//ImGui::TableNextColumn();
+							//ImGui::Text("Enable Enabled Feature Overlay: ");
+							//ImGui::TableNextColumn();
+							//ImGui::Checkbox("##EEFO", &ShowEnabledFeatures);
 
 							ImGui::EndTable();
 						}

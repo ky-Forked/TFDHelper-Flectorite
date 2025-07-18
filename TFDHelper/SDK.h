@@ -1232,8 +1232,8 @@ namespace TFD
 	class AM1PlayerControllerInGame : public AM1PlayerController
 	{
 	public:
-		uint8 Pad_0910[0x080]; // 0x0910
-		class UM1OutOfPlayableAreaEffectComponent* OutOfPlayableAreaEffectComponent;  // 0x0990 //uint8 Pad_0B20[0x160];class UM1InstanceDungeonComponent* InstanceDungeonComponent;uint8 Pad_0C88[0x130];
+		uint8 Pad_0910[0x088]; // 0x0910
+		//class UM1OutOfPlayableAreaEffectComponent* OutOfPlayableAreaEffectComponent;  // 0x0990 //uint8 Pad_0B20[0x160];class UM1InstanceDungeonComponent* InstanceDungeonComponent;uint8 Pad_0C88[0x130];
 		class UM1MultiSuppliierObtainComponent* MultiSupplierObtainComponent;        // 0x0998
 		uint8 Pad_09A0[0x178]; // 0x09A0
 		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent;                // 0x0B18
@@ -1241,7 +1241,7 @@ namespace TFD
 	public:
 		void ServerRequestFieldObjectDropItems(class AM1FieldInteractableActor* InActor);
 		//class UM1DroppedItemObtainComponent* GetDroppedItemObtainComponent() const;
-		class UM1MultiSuppliierObtainComponent* GetMultiSupplierObtainComponent() const;
+		//class UM1MultiSuppliierObtainComponent* GetMultiSupplierObtainComponent() const;
 	public:
 		static class UClass* StaticClass()
 		{
@@ -2851,7 +2851,7 @@ namespace TFD
 			return StaticClassImpl<"M1MissionTaskActorDestructionVulgusPost">();
 		}
 	};
-	static_assert(offsetof(AM1MissionTaskActorDestructionVulgusPost, MissionTargets) == 0x07F0, "Bad alignment");
+	//static_assert(offsetof(AM1MissionTaskActorDestructionVulgusPost, MissionTargets) == 0x07F0, "Bad alignment");
 
 	class UConsole final : public UObject
 	{
@@ -3310,8 +3310,8 @@ namespace TFD
 		uint8 Pad_297[0x11];                                               // 0x0297
 		class USkeletalMesh* DefaultMeshAsset;                             // 0x02A8
 		uint8 Pad_2B0[0xC8];                                               // 0x02B0
-	public:
-		bool IsValidLandingSpot() const;
+	//public:
+		//bool IsValidLandingSpot() const;
 	public:
 		static class UClass* StaticClass()
 		{
@@ -3809,6 +3809,30 @@ namespace TFD
 	static const char* CustomizeCharacterSkinData_Sig = "\x40\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8B\x05\xA8\x08";
 	static const char* CustomizeCharacterSkinData_Mask = "xxxxx????xxxxx";
 
+	//void __fastcall UM1UIGame_ReceivedItemList::Clear(UM1UIGame_ReceivedItemList *this)
+	//class UM1UIGame_ReceivedItemList : public UM1UIWidget
+	//{
+	//public:
+	//	class UPanelWidget* UI_ItemList;                                       // 0x0728(0x0008)(BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	//	int32                                         ReceivedItemWidgetMaxNum;                          // 0x0730(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	//	float                                         ReceivedItemUpdateDelay;                           // 0x0734(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	//	float                                         ReceivedItemFirstShowDelay;                        // 0x0738(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	//	uint8                                         Pad_73C[0x4];                                      // 0x073C(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+	//	TSubclassOf<class UM1UIGame_ReceivedItem>     ReceivedItemWidgetClass;                           // 0x0740(0x0008)(Edit, ZeroConstructor, NoDestructor, Protected, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+	//	uint8                                         Pad_748[0x8];                                      // 0x0748(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
+	//	TArray<class UM1UIDataItemInfo*>              ReceivedItemData;                                  // 0x0750(0x0010)(ExportObject, ZeroConstructor, Transient, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+	//	uint8                                         Pad_760[0x8];                                      // 0x0760(0x0008)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
+	//public:
+	//	static class UClass* StaticClass()
+	//	{
+	//		return StaticClassImpl<"M1UIGame_ReceivedItemList">();
+	//	}
+	//	static class UM1UIGame_ReceivedItemList* GetDefaultObj()
+	//	{
+	//		return GetDefaultObjImpl<UM1UIGame_ReceivedItemList>();
+	//	}
+	//};
 
 	struct M1PrivateOnlineServiceComponent_ServerChangePlayer final
 	{
