@@ -279,10 +279,9 @@ namespace DX12
 	}
 
 	LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		//if (Menu::ShowMenu) {// && !Menu::IsCurrentlyBindingKey()) {
 		ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
-		//	return true;
-		//}
+		if (Menu::ShowMenu)
+			return true;
 		return CallWindowProc(Process::WndProc, hwnd, uMsg, wParam, lParam);
 	}
 

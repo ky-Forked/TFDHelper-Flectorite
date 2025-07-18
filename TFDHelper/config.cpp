@@ -77,10 +77,10 @@ namespace CFG
 	int			cfg_Mission_MissionAutoRestartKey = VK_F3;
 	int			cfg_Mission_MissionTeleportKey = VK_F4;
 	bool		cfg_Mission_EnableInstantInfiltration = false;
-	int			cfg_Mission_InstantInfiltrationKey = VK_CONTROL;
+	int			cfg_Mission_InstantInfiltrationKey = VK_F8;
 
 	bool		cfg_Hotswap_EnableOverlay = false;
-	int			cfg_Hotswap_PresetSelectKey = VK_F8;
+	int			cfg_Hotswap_PresetSelectKey = VK_HOME;
 	int 		cfg_ResearchQuantity = 1;
 	int 		CurrentStyleIndex = 0;
 
@@ -173,6 +173,7 @@ namespace CFG
 			LoadValue("Missions", "MissionAutoRestartDelay", cfg_Mission_MissionAutoRestartDelay);
 			LoadValue("Missions", "MissionAutoRestartKey", cfg_Mission_MissionAutoRestartKey);
 			LoadValue("Missions", "MissionTeleportKey", cfg_Mission_MissionTeleportKey);
+			LoadValue("Missions", "MissionInstaInfilKey", cfg_Mission_InstantInfiltrationKey);
 
 			LoadValue("Hotswap", "EnableOverlay", cfg_Hotswap_EnableOverlay);
 			LoadValue("Hotswap", "PresetSelectKey", cfg_Hotswap_PresetSelectKey);
@@ -288,6 +289,7 @@ namespace CFG
 		SaveValue("Missions", "MissionAutoRestartDelay", cfg_Mission_MissionAutoRestartDelay);
 		SaveValue("Missions", "MissionAutoRestartKey", cfg_Mission_MissionAutoRestartKey);
 		SaveValue("Missions", "MissionTeleportKey", cfg_Mission_MissionTeleportKey);
+		SaveValue("Missions", "MissionInstaInfilKey", cfg_Mission_InstantInfiltrationKey);
 
 		SaveValue("Hotswap", "EnableOverlay", cfg_Hotswap_EnableOverlay);
 		SaveValue("Hotswap", "PresetSelectKey", cfg_Hotswap_PresetSelectKey);

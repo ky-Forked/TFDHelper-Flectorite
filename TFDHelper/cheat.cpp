@@ -1879,7 +1879,7 @@ namespace Cheat
 		if (Cheat::LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray.Num() != 6)
 			return false;
 
-		static TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
+		TFD::UM1Account* Account = (TFD::UM1Account*)TFD::native_GetUM1Account(LocalPlayerController->PrivateOnlineServiceComponent);
 		if (Account)
 		{
 			int SaveSlot = -1;
@@ -1892,7 +1892,7 @@ namespace Cheat
 
 			if (SaveSlot != -1)
 			{
-				std::cout << SaveSlot << std::endl;
+				//std::cout << SaveSlot << std::endl;
 				// 282000003 - 282100000 = Head		// Slot 0
 				// 282100001 - 282200000 = Body		// Slot 1
 				// 282400001 - 282500000 = Back		// Slot 2
