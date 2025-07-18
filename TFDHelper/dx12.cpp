@@ -69,23 +69,6 @@ namespace DX12
 		return true;
 	}
 
-	LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		// checking if theres a menu to even worry about
-		if (ImGui::GetCurrentContext())
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			// imgui is top dog, imgui goes first and handles all inputs
-			if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-				return true;
-			// imgui checking if it wants to capture inputs, if it does then we stop them from going to the game
-			if (Menu::ShowMenu && (io.WantCaptureMouse || io.WantCaptureKeyboard || io.WantTextInput))
-				return DefWindowProc(hWnd, uMsg, wParam, lParam); // stops inputs from running off into the world, Windows is its prison
-		}
-		// imgui lets the other window (TFD) take the inputs
-		return CallWindowProc(Process::WndProc, hWnd, uMsg, wParam, lParam);
-	}
-
 	bool DX12::DeleteWindow() {
 		DestroyWindow(WindowHwnd);
 		UnregisterClass(WindowClass.lpszClassName, WindowClass.hInstance);
@@ -385,7 +368,7 @@ namespace DX12
 				if (!Process::WndProc) // Check if hooked
 				{
 					Process::WndProc = (WNDPROC)GetWindowLongPtr(Process::Hwnd, GWLP_WNDPROC); // keep standard window behavior
-					SetWindowLongPtr(Process::Hwnd, GWLP_WNDPROC, (LONG_PTR)CustomWndProc); // setting the custom window procedure
+					SetWindowLongPtr(Process::Hwnd, GWLP_WNDPROC, (LONG_PTR)WndProc); // setting the custom window procedure
 				}
 			}
 			Menu::Init();
