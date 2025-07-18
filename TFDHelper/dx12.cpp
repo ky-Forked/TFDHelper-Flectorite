@@ -422,7 +422,11 @@ namespace DX12
 				CFG::SaveCFG();
 		}
 
-		io.MouseDrawCursor = Menu::ShowMenu;
+		io.MouseDrawCursor = Menu::ShowMenu; //if menu open, imgui cursor is only shown
+        	if (Menu::ShowMenu)
+            		SetCursor(NULL); //hide game/default cursor to use imgui cursor
+        	else
+           		SetCursor(LoadCursor(NULL, IDC_ARROW)); //load system cursor, should use TFD when its the focused window and no menu open.
 
 		/* OVERLAY FOR ESP AND OTHER DRAWING */
 		Render::RenderOverlay();
