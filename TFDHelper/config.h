@@ -61,6 +61,8 @@ namespace CFG
 	extern bool     cfg_Abilities_EnableAutomaticResupply;
 	extern int      cfg_Abilities_AutomaticResupplyKey;
 	extern float    cfg_Abilities_AutomaticResupplyHealth;
+	extern bool		cfg_Abilities_EnableAutomaticResupplyTimer;
+	extern float    cfg_Abilities_AutomaticResupplyTime;
 	
 	extern float	cfg_Extra_TimeScale;
 	extern int		cfg_Extra_TimeScaleKey;

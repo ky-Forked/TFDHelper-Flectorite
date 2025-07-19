@@ -1483,4 +1483,23 @@ namespace TFD
 		UObject::ProcessEvent(Func, &Params);
 		Func->FunctionFlags = Flags;
 	}
+
+	void APlayerCameraManager::StopAllCameraShakes(bool bImmediately)
+	{
+		static class UFunction* Func = nullptr;
+
+		if (Func == nullptr)
+			Func = Class->GetFunction("PlayerCameraManager", "StopAllCameraShakes");
+
+		PlayerCameraManager_StopAllCameraShakes Parms{};
+
+		Parms.bImmediately = bImmediately;
+
+		auto Flgs = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+
+		UObject::ProcessEvent(Func, &Parms);
+
+		Func->FunctionFlags = Flgs;
+	}
 }

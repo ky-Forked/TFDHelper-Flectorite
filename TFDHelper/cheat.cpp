@@ -1506,6 +1506,8 @@ namespace Cheat
 			if (Spray->ZoomRecoilData->RecoilRecoverInterpSpeed != 0.000001f) Spray->ZoomRecoilData->RecoilRecoverInterpSpeed = 0.000001f;
 			if (Spray->ZoomRecoilData->RecoilRecoverStartDelay != 0.000001f) Spray->ZoomRecoilData->RecoilRecoverStartDelay = 0.000001f;
 			if (Spray->ZoomRecoilData->RecoilResetTimeAfterFire != 0.000001f) Spray->ZoomRecoilData->RecoilResetTimeAfterFire = 0.000001f;
+
+			LocalPlayerController->PlayerCameraManager->StopAllCameraShakes(true);
 		}
 	}
 	/*if (Spray->RecoilData)

@@ -396,19 +396,11 @@ namespace DX12
 		if (ImGui::IsKeyPressed(VK_INSERT))
 		{
 			Menu::ShowMenu = !Menu::ShowMenu;
-			if (Menu::ShowMenu)
-				io.WantCaptureMouse = true;
-			else
-				io.WantCaptureMouse = false;
 			if (!Menu::ShowMenu)
 				CFG::SaveCFG();
 		}
 
 		io.MouseDrawCursor = Menu::ShowMenu; //if menu open, imgui cursor is only shown
-        	if (Menu::ShowMenu)
-            		SetCursor(NULL); //hide game/default cursor to use imgui cursor
-        	else
-           		SetCursor(LoadCursor(NULL, IDC_ARROW)); //load system cursor, should use TFD when its the focused window and no menu open.
 
 		/* OVERLAY FOR ESP AND OTHER DRAWING */
 		Render::RenderOverlay();

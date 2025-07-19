@@ -406,6 +406,7 @@ namespace TFD
 	public:
 		struct FVector GetCameraLocation() const;
 		struct FRotator GetCameraRotation() const;
+		void StopAllCameraShakes(bool bImmediately);
 
 	public:
 		static class UClass* StaticClass()
@@ -4319,5 +4320,11 @@ namespace TFD
 	public:
 		FM1TemplateId					InTemplateId;
 		uint32						InObjectUniqueID;
+	};
+
+	struct PlayerCameraManager_StopAllCameraShakes final
+	{
+	public:
+		bool                                          bImmediately;                                      // 0x0000(0x0001)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 	};
 }
