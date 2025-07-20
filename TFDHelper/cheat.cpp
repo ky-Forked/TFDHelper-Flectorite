@@ -1749,6 +1749,7 @@ namespace Cheat
 
 			if (elapsed >= CFG::cfg_Abilities_AutomaticResupplyTime)
 			{
+				LastResupplyTime = now;
 				ShouldResupply = true;
 			}
 		}
