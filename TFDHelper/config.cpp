@@ -63,8 +63,11 @@ namespace CFG
 	bool		cfg_Abilities_EnableModifyGrapple = false;
 	float 		cfg_Abilities_GrappleRange = 10000.0f;
 	bool		cfg_Abilities_EnableAutomaticResupply = false;
-	int			cfg_Abilities_AutomaticResupplyKey = VK_TAB;
-	float		cfg_Abilities_AutomaticResupplyHealth = 25.0f;
+	//int			cfg_Abilities_AutomaticResupplyKey = VK_TAB;
+	float		cfg_Abilities_AutomaticResupplyHealth = 75.0f;
+	int			cfg_Abilities_AutomaticResupplyAmmo = 10;
+	bool		cfg_Abilities_EnableAutomaticResupplyTimed = false;
+	float		cfg_Abilities_AutomaticResupplyTime = 1.0f;
 
 	float		cfg_Extra_TimeScale = 2.0f;
 	int			cfg_Extra_TimeScaleKey = VK_F9;
@@ -161,8 +164,11 @@ namespace CFG
 			LoadValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 			LoadValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
 			LoadValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
-			LoadValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+			//LoadValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
 			LoadValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
+			LoadValue("Abiltiies", "AutoResupplyAmmo", cfg_Abilities_AutomaticResupplyAmmo);
+			LoadValue("Abiltiies", "EnableAutoResupplyTimer", cfg_Abilities_EnableAutomaticResupplyTimed);
+			LoadValue("Abiltiies", "AutoResupplyTime", cfg_Abilities_AutomaticResupplyTime);
 
 			LoadValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 			LoadValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);
@@ -277,8 +283,11 @@ namespace CFG
 		SaveValue("Abilities", "EnableModifyGrapple", cfg_Abilities_EnableModifyGrapple);
 		SaveValue("Abilities", "GrappleRange", cfg_Abilities_GrappleRange);
 		SaveValue("Abiltiies", "EnableAutoResupply", cfg_Abilities_EnableAutomaticResupply);
-		SaveValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
+		//SaveValue("Abilities", "AutoReuspplyKey", cfg_Abilities_AutomaticResupplyKey);
 		SaveValue("Abiltiies", "AutoResupplyHealth", cfg_Abilities_AutomaticResupplyHealth);
+		SaveValue("Abiltiies", "AutoResupplyAmmo", cfg_Abilities_AutomaticResupplyAmmo);
+		SaveValue("Abiltiies", "EnableAutoResupplyTimer", cfg_Abilities_EnableAutomaticResupplyTimed);
+		SaveValue("Abiltiies", "AutoResupplyTime", cfg_Abilities_AutomaticResupplyTime);
 
 		SaveValue("Extra", "TimeScale", cfg_Extra_TimeScale);
 		SaveValue("Extra", "TimeScaleKey", cfg_Extra_TimeScaleKey);

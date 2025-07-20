@@ -3,7 +3,7 @@
 #include <random>
 
 
-//#define IS_DEBUG_VERSION
+#define IS_DEBUG_VERSION
 
 
 
@@ -168,7 +168,7 @@ namespace Cheat
 		if (CFG::cfg_Mission_EnableInstantInfiltration)
 			InstantInfiltration();
 
-		if (CFG::cfg_Abilities_EnableAutomaticResupply)
+		if (CFG::cfg_Abilities_EnableAutomaticResupply || CFG::cfg_Abilities_EnableAutomaticResupplyTimed)
 			AutoResupply();
 
 		Render::R_End();
@@ -1740,8 +1740,20 @@ namespace Cheat
 			return;
 
 		bool ShouldResupply = false;
+		static std::chrono::steady_clock::time_point LastResupplyTime = std::chrono::steady_clock::now();
 
-		if (TryResetAbilities)
+		if (CFG::cfg_Abilities_EnableAutomaticResupplyTimed)
+		{
+			auto now = std::chrono::steady_clock::now();
+			float elapsed = std::chrono::duration<float>(now - LastRestockCall).count();
+
+			if (elapsed >= CFG::cfg_Abilities_AutomaticResupplyTime)
+			{
+				ShouldResupply = true;
+			}
+		}
+
+		if (!ShouldResupply && TryResetAbilities)
 		{
 			ShouldResupply = true;
 			TryResetAbilities = false;
@@ -1762,7 +1774,7 @@ namespace Cheat
 				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon
 				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
 			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < 5)
+				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < CFG::cfg_Abilities_AutomaticResupplyAmmo)
 					ShouldResupply = true;
 			}
 		}

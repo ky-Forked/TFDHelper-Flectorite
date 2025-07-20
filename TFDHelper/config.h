@@ -59,9 +59,10 @@ namespace CFG
 	extern bool		cfg_Abilities_EnableModifyGrapple;
 	extern float    cfg_Abilities_GrappleRange;
 	extern bool     cfg_Abilities_EnableAutomaticResupply;
-	extern int      cfg_Abilities_AutomaticResupplyKey;
+	//extern int      cfg_Abilities_AutomaticResupplyKey;
 	extern float    cfg_Abilities_AutomaticResupplyHealth;
-	extern bool		cfg_Abilities_EnableAutomaticResupplyTimer;
+	extern int		cfg_Abilities_AutomaticResupplyAmmo;
+	extern bool		cfg_Abilities_EnableAutomaticResupplyTimed;
 	extern float    cfg_Abilities_AutomaticResupplyTime;
 	
 	extern float	cfg_Extra_TimeScale;

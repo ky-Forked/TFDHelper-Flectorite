@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 
-//#define IS_DEBUG_VERSION
+#define IS_DEBUG_VERSION
 
 
 DWORD WINAPI MainThread(LPVOID lpParameter) {

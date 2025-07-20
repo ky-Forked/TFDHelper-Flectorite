@@ -94,8 +94,8 @@ namespace Menu
 			if (ImGui::IsKeyPressed(VK_DOWN))
 				Cheat::CurrentPresetIndex = Cheat::CurrentPresetIndex + 1 > (Cheat::PresetsMap.size() - 1) ? 0 : Cheat::CurrentPresetIndex + 1;
 
-			if (ImGui::IsKeyPressed(CFG::cfg_Abilities_AutomaticResupplyKey))
-				CFG::cfg_Abilities_EnableAutomaticResupply = !CFG::cfg_Abilities_EnableAutomaticResupply;
+			//if (ImGui::IsKeyPressed(CFG::cfg_Abilities_AutomaticResupplyKey))
+			//	CFG::cfg_Abilities_EnableAutomaticResupply = !CFG::cfg_Abilities_EnableAutomaticResupply;
 
 			if (CFG::cfg_Abilities_EnableAutomaticResupply)
 			{
@@ -443,20 +443,43 @@ namespace Menu
 							ImGui::TableNextColumn();
 							ImGui::Text("Enable Automatic Resupply: ");
 							ImGui::TableNextColumn();
-							ImGui::Checkbox("##EAR", &CFG::cfg_Abilities_EnableAutomaticResupply);
+							if (ImGui::Checkbox("##EAR", &CFG::cfg_Abilities_EnableAutomaticResupply))
+							{
+								if (CFG::cfg_Abilities_EnableAutomaticResupply)
+									CFG::cfg_Abilities_EnableAutomaticResupplyTimed = false;
+							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Automatic Resupply Hotkey: ");
+							ImGui::Text("Enable Timed Resupply: ");
 							ImGui::TableNextColumn();
-							ImGui::Hotkey("##EARK", &CFG::cfg_Abilities_AutomaticResupplyKey, cfg_AutomaticResupplyKeyState, ImVec2(180, 24));
+							if (ImGui::Checkbox("##EATR", &CFG::cfg_Abilities_EnableAutomaticResupplyTimed))
+							{
+								if (CFG::cfg_Abilities_EnableAutomaticResupplyTimed)
+									CFG::cfg_Abilities_EnableAutomaticResupply = false;
+							}
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
+							ImGui::Text("Timed Resupply Timer: ");
+							ImGui::TableNextColumn();
+							ImGui::SliderFloat("##ATRT", &CFG::cfg_Abilities_AutomaticResupplyTime, 0.1f, 10.0f);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							//ImGui::Text("Toggle Automatic Resupply Hotkey: ");
+							//ImGui::TableNextColumn();
+							//ImGui::Hotkey("##EARK", &CFG::cfg_Abilities_AutomaticResupplyKey, cfg_AutomaticResupplyKeyState, ImVec2(180, 24));
+							//ImGui::TableNextRow();
+							//ImGui::TableNextColumn();
 							ImGui::Text("Resupply at Percent of Max Health");
 							ImGui::TableNextColumn();
 							ImGui::SliderFloat("##ARHP", &CFG::cfg_Abilities_AutomaticResupplyHealth, 0.0f, 100.0f);
 							ImGui::TableNextRow();
 							ImGui::TableNextColumn();
-							ImGui::Text("Automatic Resupply will restore your Health,\nMana, Ammo, and resets Ability cooldowns.");
+							ImGui::Text("Resupply When Below Ammo Count");
+							ImGui::TableNextColumn();
+							ImGui::SliderInt("##ARAM", &CFG::cfg_Abilities_AutomaticResupplyAmmo, 3, 20);
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::Text("Resupply will restore your Health,\nMana, Ammo, and resets Ability cooldowns.");
 							ImGui::EndTable();
 						}
 						ImGui::EndTabItem();
