@@ -47,7 +47,6 @@ namespace Cheat
 	std::unordered_map<int, std::vector<int>> IDBoneMap = { };
 	std::unordered_map<int, std::string> IDNameMap = { };
 	std::unordered_map<int, std::string> PresetsMap = { };
-	static std::chrono::steady_clock::time_point LastRestockCall = std::chrono::steady_clock::now();
 	int CurrentPresetIndex = 0;
 	std::vector<int> HotSwapPreset = { -1, -1, -1, -1, -1, -1 };
 	int HotSwapIndex = 0;
@@ -1745,7 +1744,7 @@ namespace Cheat
 		if (CFG::cfg_Abilities_EnableAutomaticResupplyTimed)
 		{
 			auto now = std::chrono::steady_clock::now();
-			float elapsed = std::chrono::duration<float>(now - LastRestockCall).count();
+			float elapsed = std::chrono::duration<float>(now - LastResupplyTime).count();
 
 			if (elapsed >= CFG::cfg_Abilities_AutomaticResupplyTime)
 			{
