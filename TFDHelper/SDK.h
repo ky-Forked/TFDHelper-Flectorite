@@ -1707,7 +1707,7 @@ namespace TFD
 		int32                                         TaskIndex;                                         // 0x05E8(0x0004)(Edit, ZeroConstructor, EditConst, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		uint8                                         Pad_WayPoints[0x7C];								 // 0x05EC
 		TArray<class AM1MissionTaskMoveWayPoint*>     WayPoints;                                         // 0x0668(0x0010)(Edit, ZeroConstructor, NativeAccessSpecifierPrivate)
-		uint8                                         Pad_AM1MissionTaskActor[0x1F8];				     // 0x0678
+		uint8                                         Pad_AM1MissionTaskActor[0x1F0];				     // 0x0678
 	};
 #pragma pack(pop)
 	struct FM1MissionTaskData final
@@ -3013,20 +3013,20 @@ namespace TFD
 		}
 	};
 
-	// 0x0060 (0x0840 - 0x07E0)
+	// 0x0060 (0x08D0 - 0x0870)
 	class AM1MissionTaskActorDestructionVulgusPost : public AM1MissionTaskActor
 	{
 	public:
-		uint8                                         Pad_MissionTargets[0x18];										 // 0x07D8
-		TArray<class AM1MissionTargetInteraction*>    MissionTargets;											     // 0x07F0(0x0010)(Edit, ZeroConstructor, EditConst, NativeAccessSpecifierPrivate)
-		uint8                                         Pad_AM1MissionTaskActorDestructionVulgusPost_Class[0x40];      // 0x0800
+		uint8                                         Pad_MissionTargets[0x18];										 // 0x0868
+		TArray<class AM1MissionTargetInteraction*>    MissionTargets;											     // 0x0880(0x0010)(Edit, ZeroConstructor, EditConst, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_AM1MissionTaskActorDestructionVulgusPost_Class[0x40];      // 0x0890
 	public:
 		static class UClass* StaticClass()
 		{
 			return StaticClassImpl<"M1MissionTaskActorDestructionVulgusPost">();
 		}
 	};
-	//static_assert(offsetof(AM1MissionTaskActorDestructionVulgusPost, MissionTargets) == 0x07F0, "Bad alignment");
+	static_assert(offsetof(AM1MissionTaskActorDestructionVulgusPost, MissionTargets) == 0x0880, "Bad alignment");
 
 	class UConsole final : public UObject
 	{

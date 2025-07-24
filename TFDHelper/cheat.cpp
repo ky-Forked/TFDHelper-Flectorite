@@ -1654,47 +1654,53 @@ namespace Cheat
 		auto* PlayerState = static_cast<TFD::AM1PlayerState*>(LocalPlayerController->PlayerState);
 		if (!PlayerState || !PlayerState->MissionControlComponent)
 			return;
-
 		TFD::UM1MissionControlComponent* MCC = PlayerState->MissionControlComponent;
 		if (!MCC || MCC->ActivatedMissions.Num() == 0 || MCC->SubServices.Num() == 0)
 			return;
-
 		for (TFD::AM1MissionActor* MissionActor : MCC->ActivatedMissions)
 		{
 			if (!MissionActor)
 				continue;
-
-			auto* TaskActor = MissionActor->ProgressInfo.ActivatedTaskActor;
-			if (!TaskActor || !TaskActor->IsA(TFD::AM1MissionTaskActorDestructionVulgusPost::StaticClass()))
-				continue;
-
-			auto* VPost = static_cast<TFD::AM1MissionTaskActorDestructionVulgusPost*>(TaskActor);
-			if (!VPost)
-				continue;
-
-			for (TFD::UM1MissionTaskService* MCCSub : MCC->SubServices)
+			//int CurrentTask = MissionActor->ProgressInfo.ActivatedTaskIndex;
+			if (MissionActor->TaskLinks.IsValidIndex(0))
 			{
-				if (!MCCSub || !MCCSub->bJoined)
-					continue;
-
-				auto* MCCInt = static_cast<TFD::UM1MissionTaskServiceInteraction*>(MCCSub);
-				if (!MCCInt)
-					continue;
-
-				for (TFD::AM1MissionTargetInteraction* Target : VPost->MissionTargets)
+				TFD::FM1MissionTaskLink TaskLink = MissionActor->TaskLinks[0];
+				TFD::AM1MissionTaskActor* TaskActor = TaskLink.InstancedTaskActor;
+				if (TaskActor)
 				{
-					if (!Target ||
-						Target->CurrentState == TFD::EM1MissionTargetState::Destructed ||
-						Target->CurrentState == TFD::EM1MissionTargetState::Deactivated)
+					if (!TaskActor->IsA(TFD::AM1MissionTaskActorDestructionVulgusPost::StaticClass()))
 						continue;
-
-					auto now = std::chrono::steady_clock::now();
-					if (std::chrono::duration_cast<std::chrono::milliseconds>(now - AutoInstantInfilStartTime).count() > 200)
+					auto* VPost = static_cast<TFD::AM1MissionTaskActorDestructionVulgusPost*>(TaskActor);
+					if (!VPost)
+						continue;
+					for (TFD::UM1MissionTaskService* MCCSub : MCC->SubServices)
 					{
-						AutoInstantInfilStartTime = now;
-						MCCInt->ServerRequestMissionTargetBeginInteraction(Target, LocalPlayerController);
-						return;
+						if (!MCCSub || !MCCSub->bJoined)
+							continue;
+
+						auto* MCCInt = static_cast<TFD::UM1MissionTaskServiceInteraction*>(MCCSub);
+						if (!MCCInt)
+							continue;
+						if (!VPost->MissionTargets.IsValid())
+							continue;
+
+						for (TFD::AM1MissionTargetInteraction* Target : VPost->MissionTargets)
+						{
+							if (!Target ||
+								Target->CurrentState == TFD::EM1MissionTargetState::Destructed ||
+								Target->CurrentState == TFD::EM1MissionTargetState::Deactivated)
+								continue;
+							//std::cout << "target is not destructed or deactivated\n";
+							auto now = std::chrono::steady_clock::now();
+							if (std::chrono::duration_cast<std::chrono::milliseconds>(now - AutoInstantInfilStartTime).count() > 200)
+							{
+								AutoInstantInfilStartTime = now;
+								MCCInt->ServerRequestMissionTargetBeginInteraction(Target, LocalPlayerController);
+								return;
+							}
+						}
 					}
+
 				}
 			}
 		}
