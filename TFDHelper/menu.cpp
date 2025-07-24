@@ -812,49 +812,73 @@ namespace Menu
 					}
 
 
-					/*if (ImGui::BeginTabItem("Debug"))
-					{
-						if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
-						{
+					//if (ImGui::BeginTabItem("Debug"))
+					//{
+					//	if (ImGui::BeginTable("Settings", 2, ImGuiTableFlags_SizingFixedSame))
+					//	{
 
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("Enable Cheat Console: ");
-							ImGui::TableNextColumn();
-							ImGui::Checkbox("##ECCONSOLE", &CFG::cfg_Debug_ShowConsole);
-							ImGui::EndTable();
-							ImGui::TableNextRow();
-							ImGui::TableNextColumn();
-							ImGui::Text("fuck me up: ");
-							ImGui::TableNextColumn();
-							ImGui::SliderFloat("##ASGFD", &Cheat::BoundsScale, 0.01f, 5.0f);
-							ImGui::EndTable();
-						}
+					//		ImGui::TableNextRow();
+					//		ImGui::TableNextColumn();
+					//		ImGui::Text("X Value: ");
+					//		ImGui::TableNextColumn();
+					//		ImGui::SliderFloat("##SAX", &Cheat::DistX, 1.0f, 1000.0f);
+					//		ImGui::TableNextRow();
+					//		ImGui::TableNextColumn();
+					//		ImGui::Text("Y Value: ");
+					//		ImGui::TableNextColumn();
+					//		ImGui::SliderFloat("##SAY", &Cheat::DistY, 1.0f, 1000.0f);
+					//		ImGui::TableNextRow();
+					//		ImGui::TableNextColumn();
+					//		ImGui::Text("Z Value: ");
+					//		ImGui::TableNextColumn();
+					//		ImGui::SliderFloat("##SAZ", &Cheat::DistZ, 1.0f, 1000.0f);
+					//		ImGui::TableNextRow();
+					//		ImGui::TableNextColumn();
+					//		if (ImGui::Button("Try Disable System"))
+					//		{
+					//			//TFD::UM1GameplayValidationSubsystem* System = static_cast<TFD::UM1GameplayValidationSubsystem*>(TFD::USubsystemBlueprintLibrary::GetWorldSubsystem(Cheat::GWorld, TFD::UM1GameplayValidationSubsystem::StaticClass()));
 
-						LocalPlayerController->CheatClass = TFD::UM1Cheat::StaticClass();
-						LocalPlayerController->CheatManager = static_cast<TFD::UM1Cheat*>(TFD::UGameplayStatics::SpawnObject(LocalPlayerController->CheatClass, LocalPlayerController));
-						if (Cheat::LocalPlayerController->CheatManager)
-						{
-							TFD::native_InitCheatManager(LocalPlayerController->CheatManager);
-							static_cast<TFD::UM1Cheat*>(LocalPlayerController->CheatManager)->CheatUI = static_cast<TFD::UM1UICheat*>(TFD::UGameplayStatics::SpawnObject(TFD::UM1UICheat::StaticClass(), LocalPlayerController->CheatManager));
-						}
-						if (ImGui::Button("Speed"))
-						{
-							for (int i = 0; i < SDK::UObject::GObjects->Num(); i++)
-							{
-								SDK::UObject* Obj = SDK::UObject::GObjects->GetByIndex(i);
-								if (!Obj)
-									continue;
-								if (Obj->IsA(TFD::UM1SpeedHackDetectorSubSystem::StaticClass()))
-								{
-									console.AddLog("SpeedDetector: %p", (void*)Obj);
-									//std::cout << "Speed " << std::hex << static_cast<void*>(Obj) << std::dec << std::endl;
-								}
-							}
+					//			TFD::UM1GameplayValidationSubsystem* System = TFD::native_GetValidSystem(Cheat::LocalPlayerCharacter);
+					//			if (System)
+					//			{
+					//				std::cout << "System...\n";
+					//				for (auto Feature : System->DisabledFeatures)
+					//				{
+					//					std::cout << "Feature Original" << (int)Feature.Key() << " - " << (int)Feature.Value() << "\n";
+					//					Feature.Second = true;
+					//					std::cout << "Feature New" << (int)Feature.Key() << " - " << (int)Feature.Value() << "\n";
+					//				}
 
-						}
-						ImGui::EndTabItem();
-					}*/
+					//			}
+					//		}
+
+					//		ImGui::EndTable();
+					//	}
+
+					//	//LocalPlayerController->CheatClass = TFD::UM1Cheat::StaticClass();
+					//	//LocalPlayerController->CheatManager = static_cast<TFD::UM1Cheat*>(TFD::UGameplayStatics::SpawnObject(LocalPlayerController->CheatClass, LocalPlayerController));
+					//	//if (Cheat::LocalPlayerController->CheatManager)
+					//	//{
+					//	//	TFD::native_InitCheatManager(LocalPlayerController->CheatManager);
+					//	//	static_cast<TFD::UM1Cheat*>(LocalPlayerController->CheatManager)->CheatUI = static_cast<TFD::UM1UICheat*>(TFD::UGameplayStatics::SpawnObject(TFD::UM1UICheat::StaticClass(), LocalPlayerController->CheatManager));
+					//	//}
+					//	//if (ImGui::Button("Speed"))
+					//	//{
+					//	//	for (int i = 0; i < SDK::UObject::GObjects->Num(); i++)
+					//	//	{
+					//	//		SDK::UObject* Obj = SDK::UObject::GObjects->GetByIndex(i);
+					//	//		if (!Obj)
+					//	//			continue;
+					//	//		if (Obj->IsA(TFD::UM1SpeedHackDetectorSubSystem::StaticClass()))
+					//	//		{
+					//	//			console.AddLog("SpeedDetector: %p", (void*)Obj);
+					//	//			//std::cout << "Speed " << std::hex << static_cast<void*>(Obj) << std::dec << std::endl;
+					//	//		}
+					//	//	}
+
+					//	//}
+					//	ImGui::EndTabItem();
+					//}
 
 					ImGui::EndTabBar();
 				}

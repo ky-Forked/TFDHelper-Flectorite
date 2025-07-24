@@ -98,5 +98,16 @@ namespace Cheat
 
 	void __fastcall hkSpeedHackDetecting(void* This, float InDeltaTime);
 
+	void __fastcall hkBP_FireInternal_Implementation(TFD::UM1WeaponInstantHitComponent* This, float FireTime, SDK::FVector* FireLoc, float WeaponRange, TFD::FM1ScaledInteger PenetrationStat);
+	void __fastcall hkHandleInstantHitResult(TFD::UM1WeaponInstantHitComponent* This, TFD::FM1WeaponInstantHitParams* Params, TFD::FM1WeaponInstantHitTraceResult_Multi_Penetration* Result);
+	bool __fastcall hkIsValidHit(TFD::UM1WeaponInstantHitComponent* This, float FireTime, SDK::FVector* FireLoc, SDK::FVector* FireDir, TFD::FHitResult* HitResult);
+	bool __fastcall hkLineTraceMulti(SDK::TArray<TFD::FHitResult>* OutHits, TFD::AActor* InSrcActor, SDK::FVector* StartPos, SDK::FVector* EndPos, TFD::EM1RelationsCheckType InRelationsCheckType, void* InQueryTag, bool InbCheckValidTarget, bool bTraceComplex, bool bReturnBlockedTargetIfNoTarget);
+
+	extern float DistX;
+	extern float DistY;
+	extern float DistZ;
+
 	extern bool TryResetAbilities;
+
+	bool __fastcall hkTestBeamHits(void* This, void* Start, void* Dir, void* Results, float Size);
 }

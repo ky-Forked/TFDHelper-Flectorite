@@ -181,8 +181,10 @@ ClassType* GetDefaultObjImpl()
 struct FUObjectItem final
 {
 public:
-	class UObject*                                Object;                                            // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
-	uint8                                         Pad_0[0x10];                                       // 0x0008(0x0010)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	class UObject* Object;
+	int Flags;
+	int ClusterRootIndex;
+	int SerialNumber;
 };
 
 class TUObjectArray
@@ -230,6 +232,20 @@ public:
 		if (!ChunkPtr) return nullptr;
 
 		return ChunkPtr[InChunkIdx].Object;
+	}
+
+	inline class FUObjectItem* GetItemByIndex(const int32 Index) const
+	{
+		const int32 ChunkIndex = Index / ElementsPerChunk;
+		const int32 InChunkIdx = Index % ElementsPerChunk;
+
+		if (ChunkIndex >= NumChunks || Index >= NumElements)
+			return nullptr;
+
+		FUObjectItem* ChunkPtr = GetDecrytedObjPtr()[ChunkIndex];
+		if (!ChunkPtr) return nullptr;
+
+		return ChunkPtr;
 	}
 };
 

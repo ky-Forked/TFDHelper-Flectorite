@@ -29,6 +29,13 @@ namespace TFD
 
 	tOnRep_CustomizeCharacterSkinData native_OnRep_CustomizeCharacterSkinData = nullptr;
 
+	tHandleInstantHitResult native_HandleInstantHitResult = nullptr;
+	tBP_FireInternal_Implementation native_BP_FireInternal_Implementation = nullptr;
+	tIsValidHit native_IsValidHit = nullptr;
+	tLineTraceMulti native_LineTraceMulti = nullptr;
+	tGetValidSystem native_GetValidSystem = nullptr;
+	tTestBeamHits nativeTestBeamHits = nullptr;
+
 	uintptr_t BASE = 0x0;
 	uintptr_t SIZE = 0x0;
 
@@ -1492,6 +1499,69 @@ namespace TFD
 			Func = Class->GetFunction("PlayerCameraManager", "StopAllCameraShakes");
 
 		PlayerCameraManager_StopAllCameraShakes Parms{};
+
+		Parms.bImmediately = bImmediately;
+
+		auto Flgs = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+
+		UObject::ProcessEvent(Func, &Parms);
+
+		Func->FunctionFlags = Flgs;
+	}
+
+	struct FTransform USceneComponent::GetSocketTransform(class FName InSocketName, bool TransformSpace) const
+	{
+		static class UFunction* Func = nullptr;
+
+		if (Func == nullptr)
+			Func = Class->GetFunction("SceneComponent", "GetSocketTransform");
+
+		SceneComponent_GetSocketTransform Parms{};
+
+		Parms.InSocketName = InSocketName;
+		Parms.TransformSpace = TransformSpace;
+
+		auto Flgs = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+
+		UObject::ProcessEvent(Func, &Parms);
+
+		Func->FunctionFlags = Flgs;
+
+		return Parms.ReturnValue;
+	}
+
+	class UWorldSubsystem* USubsystemBlueprintLibrary::GetWorldSubsystem(class UObject* ContextObject, TSubclassOf<class UWorldSubsystem> Class_0)
+	{
+		static class UFunction* Func = nullptr;
+
+		if (Func == nullptr)
+			Func = StaticClass()->GetFunction("SubsystemBlueprintLibrary", "GetWorldSubsystem");
+
+		SubsystemBlueprintLibrary_GetWorldSubsystem Parms{};
+
+		Parms.ContextObject = ContextObject;
+		Parms.Class_0 = Class_0;
+
+		auto Flgs = Func->FunctionFlags;
+		Func->FunctionFlags |= 0x400;
+
+		GetDefaultObj()->ProcessEvent(Func, &Parms);
+
+		Func->FunctionFlags = Flgs;
+
+		return Parms.ReturnValue;
+	}
+
+	void UM1PlayerVehicleHandlerComponent::ServerSpawnEquippedVehicle(bool bImmediately)
+	{
+		static class UFunction* Func = nullptr;
+
+		if (Func == nullptr)
+			Func = Class->GetFunction("M1PlayerVehicleHandlerComponent", "ServerSpawnEquippedVehicle");
+
+		M1PlayerVehicleHandlerComponent_ServerSpawnEquippedVehicle Parms{};
 
 		Parms.bImmediately = bImmediately;
 

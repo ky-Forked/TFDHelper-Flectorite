@@ -244,9 +244,40 @@ namespace TFD
 			else
 				std::cout << "[Cheat] Failed to find AM1Character::GetStringId! \n";
 
+			// 3F930B0
+			//uintptr_t HandleInstantHitResult = moduleBase + 0x3F930C0;
+			//if (MH_CreateHook(reinterpret_cast<void*>(HandleInstantHitResult), &Cheat::hkHandleInstantHitResult, reinterpret_cast<void**>(&native_HandleInstantHitResult)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(HandleInstantHitResult));
+			//}
+
+			////3F927C0
+			//uintptr_t FireInternal = moduleBase + 0x3F927D0;
+			//if (MH_CreateHook(reinterpret_cast<void*>(FireInternal), &Cheat::hkBP_FireInternal_Implementation, reinterpret_cast<void**>(&native_BP_FireInternal_Implementation)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(FireInternal));
+			//}
+
+			//uintptr_t IsValidHit = moduleBase + 0x3F96180;
+			//if (MH_CreateHook(reinterpret_cast<void*>(IsValidHit), &Cheat::hkIsValidHit, reinterpret_cast<void**>(&native_IsValidHit)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(IsValidHit));
+			//}
+
+			//uintptr_t LineTraceMulti = moduleBase + 0x3471670;
+			//if (MH_CreateHook(reinterpret_cast<void*>(LineTraceMulti), &Cheat::hkLineTraceMulti, reinterpret_cast<void**>(&native_LineTraceMulti)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(LineTraceMulti));
+			//}
+			////3A2F9C0
+			//native_GetValidSystem = (tGetValidSystem)(moduleBase + 0x3A2F9C0);
 
 
-
+			//uintptr_t testBeams = moduleBase + 0x3A2CB60;
+			//if (MH_CreateHook(reinterpret_cast<void*>(testBeams), &Cheat::hkTestBeamHits, reinterpret_cast<void**>(&nativeTestBeamHits)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(testBeams));
+			//}
 
 			Sleep(1000);
 

@@ -1732,7 +1732,7 @@ namespace Cheat
 
 	void AutoResupply()
 	{
-		if (!LocalPlayerController 
+		if (!LocalPlayerController
 			|| !LocalPlayerCharacter
 			|| !LocalPlayerCharacter->StatComponent
 			|| !LocalPlayerController->MultiSupplierObtainComponent)
@@ -1751,6 +1751,8 @@ namespace Cheat
 				LastResupplyTime = now;
 				ShouldResupply = true;
 			}
+			else
+				return;
 		}
 
 		if (!ShouldResupply && TryResetAbilities)
@@ -2027,4 +2029,196 @@ namespace Cheat
 #endif
 	}
 
+	void __fastcall hkBP_FireInternal_Implementation(TFD::UM1WeaponInstantHitComponent* This, float FireTime, SDK::FVector* FireLoc, float WeaponRange, TFD::FM1ScaledInteger PenetrationStat)
+	{
+		//std::cout << std::endl;
+		//std::cout << std::endl;
+		//std::cout << std::endl;
+		//std::cout << "FireLoc Before: (" << FireLoc->X << ", " << FireLoc->Y << ", " << FireLoc->Z << ")\n";
+		//if (Aimbot_Target)
+		//{
+		//	SDK::FVector FirePos = This->Weapon_Owner->WeaponMesh->GetSocketTransform(This->Weapon_Owner->VFXComponent->FireBone, false).Translation;
+		//	std::cout << "FirePos Pos: (" << FirePos.X << ", " << FirePos.Y << ", " << FirePos.Z << ")\n";
+			//FireLoc->X = FirePos.X;
+			//FireLoc->Y = FirePos.Y;
+			//FireLoc->Z = FirePos.Z;
+		//}
+
+		TFD::native_BP_FireInternal_Implementation(This, FireTime, FireLoc, WeaponRange, PenetrationStat);
+	}
+	void __fastcall hkHandleInstantHitResult(TFD::UM1WeaponInstantHitComponent* This, TFD::FM1WeaponInstantHitParams* Params, TFD::FM1WeaponInstantHitTraceResult_Multi_Penetration* Result)
+	{
+		//if (Aimbot_Target)
+		//{
+		//	TFD::AM1Character* Targ = static_cast<TFD::AM1Character*>(Aimbot_Target);
+		//	if (Targ->Mesh && Targ->Mesh->GetNumBones() > 0 && Targ->Mesh->BoneArray.IsValidIndex(Aimbot_BoneIndex))
+		//	{
+		//		SDK::FMatrix ComponentMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(Targ->Mesh->K2_GetComponentToWorld());
+		//		SDK::FTransform bone = Targ->Mesh->BoneArray[Aimbot_BoneIndex];
+		//		SDK::FMatrix BoneMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(bone);
+		//		SDK::FMatrix WorldMatrix = TFD::UKismetMathLibrary::Multiply_MatrixMatrix(BoneMatrix, ComponentMatrix);
+		//		SDK::FTransform WorldPosition = TFD::UKismetMathLibrary::Conv_MatrixToTransform(WorldMatrix);
+		//		SDK::FVector Target = WorldPosition.Translation;
+		//		for (int i = 0; i < Result->Traces.Num(); i++)
+		//		{
+		//			Result->Traces[i].FireEnd = Target;
+		//			Result->Traces[i].bBlocked = false;
+		//			for (int j = 0; j < Result->Traces[i].HitResults.Num(); j++)
+		//			{
+		//				Result->Traces[i].HitResults[j].ImpactPoint = Target;
+		//				Result->Traces[i].HitResults[j].ImpactNormal = (Target - Params->FireLoc).Normalize();
+		//				Result->Traces[i].HitResults[j].bBlockingHit = false;
+		//				Result->Traces[i].HitResults[j].HitObjectHandle.Actor.ObjectIndex = Targ->Index;
+		//				Result->Traces[i].HitResults[j].HitObjectHandle.Actor.ObjectSerialNumber = SDK::UObject::GObjects->GetItemByIndex(Targ->Index)->SerialNumber;
+		//				Result->Traces[i].HitResults[j].Component.ObjectIndex = Targ->Mesh->Index;
+		//				Result->Traces[i].HitResults[j].Component.ObjectSerialNumber = SDK::UObject::GObjects->GetItemByIndex(Targ->Mesh->Index)->SerialNumber;
+		//				Result->Traces[i].HitResults[j].BoneName = Targ->Mesh->GetBoneName(Aimbot_BoneIndex);
+		//			}
+		//		}
+		//	}
+		//}
+		TFD::native_HandleInstantHitResult(This, Params, Result);
+	}
+
+	bool __fastcall hkIsValidHit(TFD::UM1WeaponInstantHitComponent* This, float FireTime, SDK::FVector* FireLoc, SDK::FVector* FireDir, TFD::FHitResult* HitResult)
+	{
+		bool IsValid = TFD::native_IsValidHit(This, FireTime, FireLoc, FireDir, HitResult);
+		std::cout << "IsValidHit Return: (" << IsValid << ")\n";
+		std::cout << "IsValidHit FireLoc: (" << FireLoc->X << ", " << FireLoc->Y << ", " << FireLoc->Z << ")\n";
+		std::cout << "IsValidHit FireDir: (" << FireDir->X << ", " << FireDir->Y << ", " << FireDir->Z << ")\n";
+		std::cout << "IsValidHit HitResult ImpactPoint: (" << HitResult->ImpactPoint.X << ", " << HitResult->ImpactPoint.Y << ", " << HitResult->ImpactPoint.Z << ")\n";
+		return IsValid;
+	}
+
+
+	float DistX = 0.0f;
+	float DistY = 0.0f;
+	float DistZ = 0.0f;
+
+	bool __fastcall hkLineTraceMulti(SDK::TArray<TFD::FHitResult>* OutHits, TFD::AActor* InSrcActor, SDK::FVector* StartPos, SDK::FVector* EndPos, TFD::EM1RelationsCheckType InRelationsCheckType, void* InQueryTag, bool InbCheckValidTarget, bool bTraceComplex, bool bReturnBlockedTargetIfNoTarget)
+	{
+		if (Aimbot_Target)
+		{
+			TFD::AM1Character* Targ = static_cast<TFD::AM1Character*>(Aimbot_Target);
+			if (Targ->Mesh && Targ->Mesh->GetNumBones() > 0 && Targ->Mesh->BoneArray.IsValidIndex(Aimbot_BoneIndex))
+			{
+				SDK::FMatrix ComponentMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(Targ->Mesh->K2_GetComponentToWorld());
+				SDK::FTransform bone = Targ->Mesh->BoneArray[Aimbot_BoneIndex];
+				SDK::FMatrix BoneMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(bone);
+				SDK::FMatrix WorldMatrix = TFD::UKismetMathLibrary::Multiply_MatrixMatrix(BoneMatrix, ComponentMatrix);
+				SDK::FTransform WorldPosition = TFD::UKismetMathLibrary::Conv_MatrixToTransform(WorldMatrix);
+				SDK::FVector Target = WorldPosition.Translation;
+				SDK::FVector Start = *StartPos + SDK::FVector(DistX, DistY, DistZ);
+				//std::cout << "hkLineTraceMulti StartPos Before: (" << StartPos->X << ", " << StartPos->Y << ", " << StartPos->Z << ")\n";
+				//std::cout << "hkLineTraceMulti EndPos Before: (" << EndPos->X << ", " << EndPos->Y << ", " << EndPos->Z << ")\n\n";
+				*StartPos = Start;
+				*EndPos = Target;
+				//std::cout << "hkLineTraceMulti StartPos After: (" << StartPos->X << ", " << StartPos->Y << ", " << StartPos->Z << ")\n";
+				//std::cout << "hkLineTraceMulti EndPos After: (" << EndPos->X << ", " << EndPos->Y << ", " << EndPos->Z << ")\n\n";
+
+				InbCheckValidTarget = false;
+				bTraceComplex = false;
+
+				//bool Ret = TFD::native_LineTraceMulti(OutHits, InSrcActor, StartPos, EndPos, InRelationsCheckType, InQueryTag, InbCheckValidTarget, bTraceComplex, bReturnBlockedTargetIfNoTarget);
+				//if (Ret)
+				//{
+					//if (!OutHits)
+					//{
+					//	std::cout << "hkLineTraceMulti OutHits null?\n";
+					//	return Ret;
+					//}
+					//if (!OutHits->IsValid())
+					//{
+					//	std::cout << "hkLineTraceMulti OutHits " << OutHits->NumElements << " - " << OutHits->MaxElements << "\n";
+					//	if (OutHits->Data)
+					//		std::cout << "hkLineTraceMulti OutHits Data not null?\n";
+					//	return Ret;
+					//}
+					//for (int i = 0; i < OutHits->Num(); i++)
+					//{
+					//	TFD::FHitResult Res = (*OutHits)[i];
+					//	//std::cout << "hkLineTraceMulti OutHits Result " << i << " Actor Index: (" << Res.HitObjectHandle.Actor.ObjectIndex << ")\n";
+					//	std::cout << "hkLineTraceMulti OutHits Result " << i << " Actor bBlockingHit: (" << Res.bBlockingHit << ")\n";
+					//	std::cout << "hkLineTraceMulti OutHits Result " << i << " Distance: (" << Res.Distance << ")\n";
+					//	std::cout << "hkLineTraceMulti OutHits Result " << i << " Normal: (" << Res.Normal.X << ", " << Res.Normal.Y << ", " << Res.Normal.Z << ")\n";
+					//	std::cout << "hkLineTraceMulti OutHits Result " << i << " ImpactNormal: (" << Res.ImpactNormal.X << ", " << Res.ImpactNormal.Y << ", " << Res.ImpactNormal.Z << ")\n";
+					//}
+				//}
+
+				//return Ret;
+			}
+		}
+		return TFD::native_LineTraceMulti(OutHits, InSrcActor, StartPos, EndPos, InRelationsCheckType, InQueryTag, InbCheckValidTarget, bTraceComplex, bReturnBlockedTargetIfNoTarget);
+		//bool Ret = TFD::native_LineTraceMulti(OutHits, InSrcActor, StartPos, EndPos, InRelationsCheckType, InQueryTag, InbCheckValidTarget, bTraceComplex, bReturnBlockedTargetIfNoTarget);
+		//std::cout << "hkLineTraceMulti Return: (" << Ret << ")\n";
+		//if (Ret)
+		//{
+		//	if (!OutHits)
+		//	{
+		//		std::cout << "hkLineTraceMulti OutHits null?\n";
+		//		return false;
+		//	}
+		//	if (!OutHits->IsValid())
+		//	{
+		//		std::cout << "hkLineTraceMulti OutHits " << OutHits->NumElements << " - " << OutHits->MaxElements << "\n";
+		//		if(OutHits->Data)
+		//			std::cout << "hkLineTraceMulti OutHits Data not null?\n";
+		//		return false;
+		//	}
+		//	if (Aimbot_Target)
+		//	{
+		//		TFD::AM1Character* Targ = static_cast<TFD::AM1Character*>(Aimbot_Target);
+		//		if (Targ->Mesh && Targ->Mesh->GetNumBones() > 0 && Targ->Mesh->BoneArray.IsValidIndex(Aimbot_BoneIndex))
+		//		{
+		//			//std::cout << "hkLineTraceMulti trying to force valid hit\n";
+		//			SDK::FMatrix ComponentMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(Targ->Mesh->K2_GetComponentToWorld());
+		//			SDK::FTransform bone = Targ->Mesh->BoneArray[Aimbot_BoneIndex];
+		//			SDK::FMatrix BoneMatrix = TFD::UKismetMathLibrary::Conv_TransformToMatrix(bone);
+		//			SDK::FMatrix WorldMatrix = TFD::UKismetMathLibrary::Multiply_MatrixMatrix(BoneMatrix, ComponentMatrix);
+		//			SDK::FTransform WorldPosition = TFD::UKismetMathLibrary::Conv_MatrixToTransform(WorldMatrix);
+		//			SDK::FVector Target = WorldPosition.Translation;
+		//			for (int i = 0; i < OutHits->Num(); i++)
+		//			{
+		//				(*OutHits)[i].ImpactPoint = Target;
+		//				(*OutHits)[i].ImpactNormal = (Target - *StartPos).Normalize();
+		//				(*OutHits)[i].bBlockingHit = false;
+		//				(*OutHits)[i].HitObjectHandle.Actor.ObjectIndex = Targ->Index;
+		//				(*OutHits)[i].HitObjectHandle.Actor.ObjectSerialNumber = SDK::UObject::GObjects->GetItemByIndex(Targ->Index)->SerialNumber;
+		//				(*OutHits)[i].Component.ObjectIndex = Targ->Mesh->Index;
+		//				(*OutHits)[i].Component.ObjectSerialNumber = SDK::UObject::GObjects->GetItemByIndex(Targ->Mesh->Index)->SerialNumber;
+		//				(*OutHits)[i].BoneName = Targ->Mesh->GetBoneName(Aimbot_BoneIndex);
+		//			}
+		//			return true;
+		//		}
+		//	}
+		//}
+		/*if (Ret)
+		{
+			std::cout << std::endl;
+			std::cout << "hkLineTraceMulti Return: (" << Ret << ")\n";
+			if (OutHits && OutHits->IsValid())
+			{
+				std::cout << "hkLineTraceMulti OutHits: (" << OutHits->Num() << ")\n";
+				for (int i = 0; i < OutHits->Num(); i++)
+				{
+					TFD::FHitResult Res = (*OutHits)[i];
+					std::cout << "hkLineTraceMulti OutHits Result " << i << " Actor Index: (" << Res.HitObjectHandle.Actor.ObjectIndex << ")\n";
+				}
+			}
+			std::cout << "hkLineTraceMulti StartPos: (" << StartPos->X << ", " << StartPos->Y << ", " << StartPos->Z << ")\n";
+			std::cout << "hkLineTraceMulti EndPos: (" << EndPos->X << ", " << EndPos->Y << ", " << EndPos->Z << ")\n";
+			std::cout << "hkLineTraceMulti InRelationsCheckType: (" << (int)InRelationsCheckType << ")\n";
+			std::cout << "hkLineTraceMulti InbCheckValidTarget: (" << InbCheckValidTarget << ")\n";
+			std::cout << "hkLineTraceMulti bTraceComplex: (" << bTraceComplex << ")\n";
+			std::cout << "hkLineTraceMulti bReturnBlockedTargetIfNoTarget: (" << bReturnBlockedTargetIfNoTarget << ")\n";
+			std::cout << std::endl;
+		}*/
+	}
+
+	bool __fastcall hkTestBeamHits(void* This, void* Start, void* Dir, void* Results, float Size)
+	{
+		bool Pass = TFD::nativeTestBeamHits(This, Start, Dir, Results, Size);
+		std::cout << "Test beam: " << (int)Pass << "\n";
+		return Pass;
+	}
 }
