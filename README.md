@@ -38,7 +38,7 @@ To build the `Flectorite.dll` from the source code, please follow these steps:
 
 1.  Launch Extreme Injector and select "The First Descendant" process, then close the game.
 2.  In Extreme Injector, add the Flectorite DLL.
-3.  Configure the injection settings to **Manual Map** and **Auto-Inject**.
+3.  Configure the injection settings to **Standard Injection** and **Auto-Inject**.
 4.  Relaunch *The First Descendant*. The injector should automatically inject the DLL as the game starts and then close itself. You may need to pre-select M1-Win64-Shipping.exe from the processes by browsing your game files to TheFirstDescendant>M1>Binaries>Win64>M1-Win64-Shipping.exe
 
 You may see a "disconnected from server" error on the title screen; this is normal. Simply try to log in again. The menu, accessed with the **INSERT** key, will be available once you are fully in-game.
@@ -84,7 +84,6 @@ The included source code should allow you to build the solution without any init
 
 * **SDK Updates:** To update the SDK, use a tool like Dumper-7 to get a fresh dump from the game and compare class and struct sizes and offsets. Core engine classes rarely change, so focus on the M1 classes.
 * **Adding Functionality:** If you wish to add new features that rely on classes or structs not already in the project, you will need to modify the relevant areas. The project has been stripped down to the essentials.
-* **Troubleshooting Crashes:** If the game crashes on load after an update, the "No Spread" signature may need to be updated. Refer to the image for the specific area to look for.
 
 ## 📜 Credits
 
