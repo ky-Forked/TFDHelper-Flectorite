@@ -110,4 +110,8 @@ namespace Cheat
 	extern bool TryResetAbilities;
 
 	bool __fastcall hkTestBeamHits(void* This, void* Start, void* Dir, void* Results, float Size);
+
+	bool hkRequestProcessInteractionCheckA(void* This, int ID);
+	bool hkRequestProcessInteractionCheckB(void* This, TFD::AActor* NPC);
+	void hkServerRequestProcessInteraction(void* This, TFD::FM1TemplateId* ID, int ActorUniqueID, TFD::AActor* InNpc);
 }

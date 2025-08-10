@@ -244,6 +244,28 @@ namespace TFD
 			else
 				std::cout << "[Cheat] Failed to find AM1Character::GetStringId! \n";
 
+
+			//uintptr_t ProcessInteraction = moduleBase + 0x39C5448;
+			//// 39C5430 file offset 39C4A30
+			//if (MH_CreateHook(reinterpret_cast<void*>(ProcessInteraction), &Cheat::hkServerRequestProcessInteraction, reinterpret_cast<void**>(&ServerRequestProcessInteraction)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(ProcessInteraction));
+			//}
+			// IDA + 0xA00 8/9/25
+			//uintptr_t ProcessInteractionA = moduleBase + 0x39C5770;
+			//if (MH_CreateHook(reinterpret_cast<void*>(ProcessInteractionA), &Cheat::hkRequestProcessInteractionCheckA, reinterpret_cast<void**>(&RequestProcessInteractionCheckA)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(ProcessInteractionA));
+			//}
+			////39C5840
+			//uintptr_t ProcessInteractionB = moduleBase + 0x39C5840;
+			//if (MH_CreateHook(reinterpret_cast<void*>(ProcessInteractionB), &Cheat::hkRequestProcessInteractionCheckB, reinterpret_cast<void**>(&RequestProcessInteractionCheckB)) == MH_OK)
+			//{
+			//	MH_EnableHook(reinterpret_cast<void*>(ProcessInteractionB));
+			//}
+
+
+
 			// 3F930B0
 			//uintptr_t HandleInstantHitResult = moduleBase + 0x3F930C0;
 			//if (MH_CreateHook(reinterpret_cast<void*>(HandleInstantHitResult), &Cheat::hkHandleInstantHitResult, reinterpret_cast<void**>(&native_HandleInstantHitResult)) == MH_OK)

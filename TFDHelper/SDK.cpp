@@ -36,6 +36,11 @@ namespace TFD
 	tGetValidSystem native_GetValidSystem = nullptr;
 	tTestBeamHits nativeTestBeamHits = nullptr;
 
+	tRequestProcessInteractionCheckA RequestProcessInteractionCheckA = nullptr;
+	tRequestProcessInteractionCheckB RequestProcessInteractionCheckB = nullptr;
+	tServerRequestProcessInteraction ServerRequestProcessInteraction = nullptr;
+
+
 	uintptr_t BASE = 0x0;
 	uintptr_t SIZE = 0x0;
 
@@ -1477,18 +1482,25 @@ namespace TFD
 		return Parms.ReturnValue;
 	}
 
-	void UM1MultiSuppliierObtainComponent::ServerRequestProcessInteraction(const TFD::FM1TemplateId& InTemplateId, uint32 InObjectUniqueID)
+	void UM1MultiSuppliierObtainComponent::ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID, const class AActor* InNpcRelative)
 	{
-		static UFunction* Func = nullptr;
-		if (!Func)
+		static class UFunction* Func = nullptr;
+
+		if (Func == nullptr)
 			Func = Class->GetFunction("M1MultiSuppliierObtainComponent", "ServerRequestProcessInteraction");
-		M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction Params;
-		Params.InTemplateId = InTemplateId;
-		Params.InObjectUniqueID = InObjectUniqueID;
-		auto Flags = Func->FunctionFlags;
+
+		M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction Parms{};
+
+		Parms.InTemplateId = std::move(InTemplateId);
+		Parms.InObjectUniqueID = InObjectUniqueID;
+		Parms.InNpcRelative = InNpcRelative;
+
+		auto Flgs = Func->FunctionFlags;
 		Func->FunctionFlags |= 0x400;
-		UObject::ProcessEvent(Func, &Params);
-		Func->FunctionFlags = Flags;
+
+		UObject::ProcessEvent(Func, &Parms);
+		std::cout << "func called...\n";
+		Func->FunctionFlags = Flgs;
 	}
 
 	void APlayerCameraManager::StopAllCameraShakes(bool bImmediately)

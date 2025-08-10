@@ -48,7 +48,7 @@ namespace Render
 
 	struct rd_text : rd_cmd
 	{
-		char txt[32];
+		char txt[64];
 		float x, y;
 		float color[4];
 		bool bg;

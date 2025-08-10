@@ -33,6 +33,9 @@ namespace Cheat
 	int Aimbot_BoneIndex = 0;
 	TFD::UM1WeaponSlotControlComponent* WeaponSlot = nullptr;
 
+
+	TFD::ANPC_MultiSupply_C* ResupplyNPC = nullptr;
+
 	SDK::FLinearColor ColorWhite = { 1.0f, 1.0f, 1.0f, 1.0f };
 	SDK::FLinearColor ColorRed = { 1.0f, 0, 0, 1.0f };
 	SDK::FLinearColor ColorDarkRed = { 0.5f, 0.0f, 0.0f, 0.8f };
@@ -101,6 +104,7 @@ namespace Cheat
 		{
 			Render::R_End();
 			WeaponSlot = nullptr;
+			//ResupplyNPC = nullptr;
 			if (CFG::cfg_Customize_EnableAutoApplyCustomization && TryEquipCustomization == false)
 				TryEquipCustomization = true;
 			return oPostRender(self, canvas);
@@ -480,6 +484,31 @@ namespace Cheat
 						if (!Actor)
 							continue;
 
+						if (Actor->IsA(TFD::AStaticMeshActor::StaticClass()))
+							continue;
+
+						/*SDK::FVector2D ScreenPosb = { -1, -1 };
+						SDK::FVector WorldPositionb = Actor->K2_GetActorLocation();
+						if (WorldToScreen(WorldPositionb, &ScreenPosb))
+						{
+							Render::R_DrawText(ScreenPosb.X, ScreenPosb.Y, Actor->Class->GetName(), &ColorWhite, true);
+						}*/
+
+						/*if (Actor->IsA(TFD::AM1Npc::StaticClass()))
+						{
+							if (Actor->Class->GetName().contains("MultiSupply"))
+							{
+								SDK::FVector2D ScreenPosb = { -1, -1 };
+								SDK::FVector WorldPositionb = Actor->K2_GetActorLocation();
+								if (WorldToScreen(WorldPositionb, &ScreenPosb))
+								{
+									Render::R_DrawText(ScreenPosb.X, ScreenPosb.Y, Actor->Class->GetName(), &ColorGold, true);
+								}
+								ResupplyNPC = static_cast<TFD::ANPC_MultiSupply_C*>(Actor);
+							}
+							continue;
+						}*/
+
 						if (Actor->IsA(TFD::AM1MiniGameActor::StaticClass()))
 						{
 							GISystem = TFD::UM1LocalGameInstanceSubsystem::GetSystem(GWorld);
@@ -732,6 +761,11 @@ namespace Cheat
 						SDK::FVector2D ScreenPos = { -1, -1 };
 						SDK::FVector WorldPosition = Actor->K2_GetActorLocation();
 						bool OnScreen = WorldToScreen(WorldPosition, &ScreenPos);
+
+						//if (OnScreen)
+						//{
+						//	Render::R_DrawText(ScreenPos.X, ScreenPos.Y, Actor->Class->GetFullName(), &ColorWhite, true);
+						//}
 
 						if (Item->DropItemInfo.ItemBox.Type == TFD::EM1ItemType::Equipment
 							|| Item->DropItemInfo.ItemBox.Type == TFD::EM1ItemType::Consumable
@@ -989,7 +1023,6 @@ namespace Cheat
 									Item->K2_SetActorLocation(player, false, nullptr, true);
 							}
 						}
-
 					}
 				}
 			}
@@ -1460,9 +1493,11 @@ namespace Cheat
 		if (!WeaponControl)
 			return;
 
-		auto* Weapon = WeaponControl->ActivatedWeaponSlot.WeaponSlot.Weapon;
-		if (!Weapon)
+		auto* WeaponBase = WeaponControl->ActivatedWeaponSlot.WeaponSlot.Weapon;
+		if (!WeaponBase || !WeaponBase->IsA(TFD::AM1RangedWeapon::StaticClass()))
 			return;
+
+		TFD::AM1RangedWeapon* Weapon = static_cast<TFD::AM1RangedWeapon*>(WeaponBase);
 
 		if (CFG::cfg_Aim_RapidFire && Weapon->FireLoopComponent)
 		{
@@ -1779,10 +1814,15 @@ namespace Cheat
 		if (!ShouldResupply)
 		{
 			if (LocalPlayerCharacter->WeaponSlotControl
-				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon
-				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
+				&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon)
+				//&& LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent)
 			{
-				if (LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon->RoundsComponent->CurrentRounds < CFG::cfg_Abilities_AutomaticResupplyAmmo)
+				auto* WeaponBase = LocalPlayerCharacter->WeaponSlotControl->ActivatedWeaponSlot.WeaponSlot.Weapon;
+				if (!WeaponBase || !WeaponBase->IsA(TFD::AM1RangedWeapon::StaticClass()))
+					return;
+
+				TFD::AM1RangedWeapon* Weapon = static_cast<TFD::AM1RangedWeapon*>(WeaponBase);
+				if (Weapon->RoundsComponent->CurrentRounds < CFG::cfg_Abilities_AutomaticResupplyAmmo)
 					ShouldResupply = true;
 			}
 		}
@@ -1794,7 +1834,9 @@ namespace Cheat
 			static std::uniform_int_distribution<int> dis(100000, 999999);
 			int ObjectUniqueID = dis(gen);
 
-			LocalPlayerController->MultiSupplierObtainComponent->ServerRequestProcessInteraction({ 363100004 }, ObjectUniqueID);
+			//std::cout << "resupply......\n";
+			//if (ResupplyNPC)
+			//	LocalPlayerController->MultiSupplierObtainComponent->ServerRequestProcessInteraction({ 363100004 }, ObjectUniqueID, ResupplyNPC);
 
 		}
 	}
@@ -1963,7 +2005,8 @@ namespace Cheat
 
 	void __fastcall hkReceiveCustomizingCharacterSkin(TFD::UM1PrivateOnlineServiceCustomize* This, TFD::FM1TemplateId InTargetCharacterTid, TFD::FM1TemplateId InSkinTid, bool bEquip, TFD::EM1CustomizeReason InReason)
 	{
-		//std::cout << "Equip: " << bEquip << " - " << (int)InReason << std::endl;
+		//std::cout << "Equip: " << InTargetCharacterTid.ID << " - " << InSkinTid.ID << " - " << bEquip << " - " << (int)InReason << std::endl;
+		//std::cout << std::hex << static_cast<void*>(LocalPlayerCharacter->CustomizeComponent) << std::dec << std::endl;
 		//InReason = EM1CustomizeReason::Success;
 		// 282000003 - 282100000 = Head		// Slot 0
 		// 282100001 - 282200000 = Body		// Slot 1
@@ -1976,55 +2019,55 @@ namespace Cheat
 		// 282009001 - 282109000 = Default Head
 		// 282109001 - 282109110 = Default Body
 
-		if (CFG::cfg_Customize_EnableCustomizationBypass)
-		{
-			if ((InSkinTid.ID >= 282000003 && InSkinTid.ID < 282100000) || (InSkinTid.ID >= 282009001 && InSkinTid.ID < 282109000)) // Head
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = 0;
-			}
-			else if ((InSkinTid.ID >= 282100001 && InSkinTid.ID < 282200000) || (InSkinTid.ID >= 282109001 && InSkinTid.ID < 282109110)) // Body
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = 0;
-			}
-			else if (InSkinTid.ID >= 282400001 && InSkinTid.ID < 282500000) // Back
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = 0;
-			}
-			else if (InSkinTid.ID >= 282500001 && InSkinTid.ID < 282600000) // Front
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = 0;
-			}
-			else if (InSkinTid.ID >= 284100001 && InSkinTid.ID < 284100030) // Spawn
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = 0;
-			}
-			else if (InSkinTid.ID >= 282600002 && InSkinTid.ID < 282700000) // Makeup
-			{
-				if (bEquip)
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = InSkinTid.ID;
-				else
-					LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = 0;
-			}
-			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, TFD::EM1CustomizeReason::Success);
-			TFD::native_OnRep_CustomizeCharacterSkinData(Cheat::LocalPlayerCharacter->CustomizeComponent);
-		}
-		else
-			TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, InReason);
+		//if (CFG::cfg_Customize_EnableCustomizationBypass)
+		//{
+		//	if ((InSkinTid.ID >= 282000003 && InSkinTid.ID < 282100000) || (InSkinTid.ID >= 282009001 && InSkinTid.ID < 282109000)) // Head
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[0].SkinTid.ID = 0;
+		//	}
+		//	else if ((InSkinTid.ID >= 282100001 && InSkinTid.ID < 282200000) || (InSkinTid.ID >= 282109001 && InSkinTid.ID < 282109110)) // Body
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[1].SkinTid.ID = 0;
+		//	}
+		//	else if (InSkinTid.ID >= 282400001 && InSkinTid.ID < 282500000) // Back
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[2].SkinTid.ID = 0;
+		//	}
+		//	else if (InSkinTid.ID >= 282500001 && InSkinTid.ID < 282600000) // Front
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[3].SkinTid.ID = 0;
+		//	}
+		//	else if (InSkinTid.ID >= 284100001 && InSkinTid.ID < 284100030) // Spawn
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[4].SkinTid.ID = 0;
+		//	}
+		//	else if (InSkinTid.ID >= 282600002 && InSkinTid.ID < 282700000) // Makeup
+		//	{
+		//		if (bEquip)
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = InSkinTid.ID;
+		//		else
+		//			LocalPlayerCharacter->CustomizeComponent->CustomizeCharacterSkinData.CustomizeSkinInfoArray[5].SkinTid.ID = 0;
+		//	}
+		//	TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, TFD::EM1CustomizeReason::Success);
+		//	TFD::native_OnRep_CustomizeCharacterSkinData(Cheat::LocalPlayerCharacter->CustomizeComponent);
+		//}
+		//else
+		TFD::native_ReceiveCustomizingCharacterSkin(This, InTargetCharacterTid, InSkinTid, bEquip, InReason);
 	}
 
 
@@ -2226,5 +2269,72 @@ namespace Cheat
 		bool Pass = TFD::nativeTestBeamHits(This, Start, Dir, Results, Size);
 		std::cout << "Test beam: " << (int)Pass << "\n";
 		return Pass;
+	}
+
+	void hkServerRequestProcessInteraction(void* This, TFD::FM1TemplateId* ID, int ActorUniqueID, TFD::AActor* InNpc)
+	{
+		std::cout << "interact: " << ID->ID << " - " << ActorUniqueID << " - " << std::hex << static_cast<void*>(InNpc) << std::dec << "\n";
+
+		return TFD::ServerRequestProcessInteraction(This, ID, ActorUniqueID, InNpc);
+	}
+
+#include <dbghelp.h>
+#pragma comment(lib, "Dbghelp.lib")
+	void PrintStackTrace()
+	{
+		void* stack[64];
+		USHORT frames = CaptureStackBackTrace(0, 64, stack, nullptr);
+
+		HANDLE process = GetCurrentProcess();
+
+		for (USHORT i = 0; i < frames; i++)
+		{
+			DWORD64 addr = (DWORD64)stack[i];
+
+			HMODULE hModule = NULL;
+			if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)addr, &hModule))
+			{
+				char moduleName[MAX_PATH];
+				if (GetModuleFileNameA(hModule, moduleName, MAX_PATH))
+				{
+					// Get offset from module base
+					DWORD64 base = (DWORD64)hModule;
+					DWORD64 offset = addr - base;
+
+					// Extract just the file name (optional)
+					const char* fileName = strrchr(moduleName, '\\');
+					if (!fileName) fileName = moduleName;
+					else fileName++;
+
+					std::cout << i << ": " << fileName
+						<< "!0x" << std::hex << offset << std::dec << "\n";
+				}
+				else
+				{
+					std::cout << i << ": [Unknown Module]!0x" << std::hex << addr << std::dec << "\n";
+				}
+			}
+			else
+			{
+				std::cout << i << ": [No Module]!0x" << std::hex << addr << std::dec << "\n";
+			}
+		}
+	}
+
+	bool hkRequestProcessInteractionCheckA(void* This, int ID)
+	{
+		PrintStackTrace();
+		if (ResupplyNPC != nullptr)
+			std::cout << "got npc\n";
+		std::cout << "hkRequestProcessInteractionCheckA\n";
+		return true;
+	}
+	bool hkRequestProcessInteractionCheckB(void* This, TFD::AActor* NPC)
+	{
+		PrintStackTrace();
+		if (ResupplyNPC != nullptr)
+			std::cout << "got npc\n";
+		std::cout << "hkRequestProcessInteractionCheckB\n";
+		return true;
 	}
 }

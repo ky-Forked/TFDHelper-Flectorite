@@ -1041,7 +1041,7 @@ namespace TFD
 		uint8 Pad_CustomizeEquipped[0x60];
 		struct FM1CustomizeInfos                      CustomizeEquipped;                                 // 0x0088(0x0330)(NativeAccessSpecifierPrivate)
 	};
-
+	// 0x03C8 (0x03F0 - 0x0028)
 	class UM1Account : public UObject
 	{
 	public:
@@ -1237,9 +1237,8 @@ namespace TFD
 		uint8 Pad_0910[0x088]; // 0x0910
 		//class UM1OutOfPlayableAreaEffectComponent* OutOfPlayableAreaEffectComponent;  // 0x0990 //uint8 Pad_0B20[0x160];class UM1InstanceDungeonComponent* InstanceDungeonComponent;uint8 Pad_0C88[0x130];
 		class UM1MultiSuppliierObtainComponent* MultiSupplierObtainComponent;        // 0x0998
-		uint8 Pad_09A0[0x178]; // 0x09A0
-		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent;                // 0x0B18
-		uint8 Pad_0B20[0x322]; // 0x0B20
+		uint8 Pad_09A0[0x180]; // 0x09A0
+		class UM1HeartbeatTesterComponent* HeartbeatTesterComponent;                // 0x0B20
 	public:
 		void ServerRequestFieldObjectDropItems(class AM1FieldInteractableActor* InActor);
 		//class UM1DroppedItemObtainComponent* GetDroppedItemObtainComponent() const;
@@ -1326,14 +1325,12 @@ namespace TFD
 	class AM1Character : public ACharacter
 	{
 	public:
-		uint8 Pad_InfoWidget[0x348]; // 0x4F8
-		class UM1CharacterInfoWidgetComponent* InfoWidgetComponent; // 0x0840(0x0008) Need this
-		uint8 Pad_StatComponent[0x18]; // 0x848
-		class UM1StatComponent* StatComponent; // 0x0860(0x0008)
-		class UM1AbilityComponent* AbilityComponent;                                  // 0x0868(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
-		uint8 Pad_CharacterAttribute[0x18]; // 0x870
-		class UM1CharacterAttribute* CharacterAttribute;// 0x0888(0x0008)
-		uint8 Pad_CharacterId[0x218]; // 0x890
+		uint8 Pad_StatComponent[0x370]; // 0x4F8
+		class UM1StatComponent* StatComponent; // 0x0868(0x0008)
+		class UM1AbilityComponent* AbilityComponent; // 0x0870(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		uint8 Pad_CharacterAttribute[0x18]; // 0x878
+		class UM1CharacterAttribute* CharacterAttribute;// 0x0890(0x0008)
+		uint8 Pad_CharacterId[0x210]; // 0x898
 		struct FM1TemplateId CharacterId; // 0x0AA8(0x0004) Need this
 		uint8 Pad_AM1CharClass[0x1C4]; // 0xAAC
 
@@ -1370,7 +1367,8 @@ namespace TFD
 
 	public:
 		//void OnRep_NextInteractionCoolTimes();
-		void ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID);
+		//void ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID);
+		void ServerRequestProcessInteraction(const struct FM1TemplateId& InTemplateId, uint32 InObjectUniqueID, const class AActor* InNpcRelative);
 
 	public:
 		static class UClass* StaticClass()
@@ -1416,20 +1414,36 @@ namespace TFD
 		uint8                                         Pad_15[0x3];                                       // 0x0015(0x0003)(Fixing Struct Size After Last Property [ Dumper-7 ])
 	};
 
-	// 0x00C0 (0x0188 - 0x00C8)
+	enum class EM1VehicleMeshSlotType : uint8
+	{
+		None = 0,
+		Body = 1,
+		FrontLeftAttachment = 2,
+		FrontRightAttachment = 3,
+		BackLeftAttachment = 4,
+		BackRightAttachment = 5,
+		SideLeftAttachment = 6,
+		SideRightAttachment = 7,
+		EM1VehicleMeshSlotType_MAX = 8,
+	};
+
+	// 0x00B8 (0x0180 - 0x00C8)
 	class UM1VehicleCustomizeComponent final : public UM1ActorComponent
 	{
 	public:
-		struct FM1CustomizeVehicleSkinData            VehicleSkinInfo;                                   // 0x00C8(0x0018)(Net, Transient, RepNotify, NativeAccessSpecifierPrivate)
-		uint8                                         Pad_E0[0xA0];                                      // 0x00E0(0x00A0)(Fixing Size After Last Property [ Dumper-7 ])
-		class AM1Vehicle* Vehicle_Owner;                                     // 0x0180(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_C8[0x40];                                      // 0x00C8(0x0040)(Fixing Size After Last Property [ Dumper-7 ])
+		struct FM1CustomizeVehicleSkinData            VehicleSkinData;                                   // 0x0108(0x0018)(Net, Transient, RepNotify, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_120[0x8];                                      // 0x0120(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
+		class AM1Vehicle* Vehicle_Owner;                                     // 0x0128(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		TMap<EM1VehicleMeshSlotType, class UMeshComponent*> CustomizingSkinComps;                        // 0x0130(0x0050)(Edit, ExportObject, EditConst, ContainsInstancedReference, NativeAccessSpecifierPrivate)
+
 	};
 
-	// 0x00E8 (0x0330 - 0x0248)
+	// 0x00F0 (0x0338 - 0x0248)
 	class AM1Actor : public AActor
 	{
 	public:
-		uint8 Pad_AM1Actor_Class[0xE8];
+		uint8 Pad_AM1Actor_Class[0xF0];
 
 	public:
 		static class UClass* StaticClass()
@@ -1438,7 +1452,7 @@ namespace TFD
 		}
 	};
 
-	// 0x04E8 (0x0818 - 0x0330)
+	// 0x04F0 (0x0828 - 0x0338)
 	class AM1Vehicle : public AM1Actor
 	{
 	public:
@@ -1467,7 +1481,9 @@ namespace TFD
 		uint8                                         Pad_6AC[0x4];                                      // 0x06AC(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
 		TArray<class FName>                           AbilityRowNames;                                   // 0x06B0(0x0010)(Edit, ZeroConstructor, DisableEditOnInstance, Protected, NativeAccessSpecifierProtected)
 		void* BodyCollision;                                     // 0x06C0(0x0008)(Edit, ExportObject, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class USceneComponent* MeshCenterComponent;
 		class USkeletalMeshComponent* Mesh;                                              // 0x06C8(0x0008)(Edit, ExportObject, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UCapsuleComponent* HiddenCheckCollision;
 		void* AkAudioData;                                       // 0x06D0(0x0008)(Edit, ExportObject, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, PersistentInstance, HasGetValueTypeHash, NativeAccessSpecifierProtected)
 		class UM1StatComponent* StatComponent;                                     // 0x06D8(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
 		void* VFXComponent;                                      // 0x06E0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
@@ -1525,7 +1541,7 @@ namespace TFD
 		struct FM1TemplateId                          MountedVehicleItemTid;                             // 0x00F8(0x0004)(Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		uint8                                         Pad_FC[0x4];                                       // 0x00FC(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
 		//struct FM1VehicleDriverAnimData               MountedVehicleDriverAnimData;                      // 0x0100(0x0048)(Transient, NoDestructor, NativeAccessSpecifierPrivate)
-		//uint8                                         Pad_148[0xA8];                                     // 0x0148(0x00A8)(Fixing Struct Size After Last Property [ Dumper-7 ])
+		//uint8                                         Pad_148[0x158];                                     // 0x0148(0x00A8)(Fixing Struct Size After Last Property [ Dumper-7 ])
 
 	public:
 		//void ClientNotifyVehicleRestriction();
@@ -1546,7 +1562,7 @@ namespace TFD
 		}
 	};
 
-	// 0x07A0 (0x1410 - 0x0C70)
+	// 0x0790 (0x1400 - 0x0C70)
 	class AM1Player : public AM1Character
 	{
 	public:
@@ -1554,17 +1570,17 @@ namespace TFD
 		class UM1TeleportHandlerComponent* TeleportHandler; // 0x0F20(0x0008)
 		uint8 Pad_WeaponSlotControl[0x10]; // 0xF28
 		class UM1WeaponSlotControlComponent* WeaponSlotControl; // 0x0F38(0x0008) Need this
-		uint8 Pad_RoundsComponent[0x38]; // 0x0F40
-		class UM1PlayerRoundsComponent* RoundsComponent; // 0x0F78(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8 Pad_RoundsComponent[0x30]; // 0x0F40
+		class UM1PlayerRoundsComponent* RoundsComponent; // 0x0F70(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		uint8 Pad_CustomizeComponent[0x10];	// 0x0F80
-		class UM1PlayerCustomizeComponent* CustomizeComponent; // 0x0F90(0x0008)
-		uint8 Pad_WireCaster[0x28];	// 0x0F98
-		class UM1PlayerVehicleHandlerComponent* VehicleHandlerComponent; // 0x0FC0(0x0008)
-		class AM1WireCaster* WireCaster; // 0x0FC8(0x0008)(Net, ZeroConstructor, RepNotify, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		class FString PlayerName; // 0x0FD0(0x0010)
-		uint8 Pad_bInAir[0x2F];	// 0x0FE0
-		bool bInAir; // 0x0100F(0x0001)(Net, ZeroConstructor, IsPlainOldData, RepNotify, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		uint8 Pad_AM1Player[0x400];	// 0x01010
+		class UM1PlayerCustomizeComponent* CustomizeComponent; // 0x0F88(0x0008)
+		uint8 Pad_WireCaster[0x20];	// 0x0F90
+		class UM1PlayerVehicleHandlerComponent* VehicleHandlerComponent; // 0x0FB0(0x0008)
+		class AM1WireCaster* WireCaster; // 0x0FB8(0x0008)(Net, ZeroConstructor, RepNotify, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		class FString PlayerName; // 0x0FC0(0x0010)
+		uint8 Pad_bInAir[0x2F];	// 0x0FD0
+		bool bInAir; // 0x0FFF(0x0001)(Net, ZeroConstructor, IsPlainOldData, RepNotify, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//uint8 Pad_AM1Player[0x400];	// 0x01010
 	public:
 		bool IsInAir() const;
 		bool IsMovingByWire() const;
@@ -1574,18 +1590,19 @@ namespace TFD
 			return StaticClassImpl<"M1Player">();
 		}
 	};
+
+	static_assert(offsetof(AM1Player, CustomizeComponent) == 0xF88, "Bad alignment");
 	// These show as errors but are correct when compiled
 	//static_assert(offsetof(AM1Player, Pad_WeaponSlot) == 0xBB0, "Bad alignment");
 	//static_assert(offsetof(AM1Player, WeaponSlotControl) == 0xDF8, "Bad alignment");
 	//static_assert(offsetof(AM1Player, PlayerName) == 0xE90, "Bad alignment");
 	//static_assert(offsetof(AM1Player, bPlayerInputEnabled) == 0xEE2, "Bad alignment");
 
-	// 0x0240 (0x0EB0 - 0x0C70)
-//#pragma pack(push, 0x1)
+	// 0x0260 (0x0ED0 - 0x0C70)
 	class AM1Monster : public AM1Character
 	{
 	public:
-		uint8 Pad_AM1Monster_Class[0x240]; // 0x0C60
+		uint8 Pad_AM1Monster_Class[0x260]; // 0x0C60
 		static class UClass* StaticClass()
 		{
 			return StaticClassImpl<"M1Monster">();
@@ -1803,8 +1820,9 @@ namespace TFD
 		bool bUpdateCustomizeInfoInProgress;
 		bool bInitWorkDone;
 		uint8 Pad_CustSkinComps[0x4];
-		TMap<EM1CharacterMeshSlotType, UMeshComponent*> CustomizingSkinComps;
+		TMap<EM1CharacterMeshSlotType, UMeshComponent*> CustomizingSkinComps; // 0x00140
 	};
+
 
 	// Class M1.M1AbilityComponent
 	// 0x0100 (0x0220 - 0x0120)
@@ -1832,17 +1850,17 @@ namespace TFD
 			return GetDefaultObjImpl<UM1AbilityComponent>();
 		}
 	};
-	// 0x0158 (0x0228 - 0x00D0)
+	// 0x0168 (0x0228 - 0x00D0)
 	class UM1WeaponSlotControlComponent final : public UM1CharacterComponent
 	{
 	public:
 		uint8 Pad_ActiveSlot[0x20]; //0xD0
 		struct FM1ActivatedWeaponSlot ActivatedWeaponSlot; // 0x00F0(0x0040)
-		uint8 Pad_Player_Owner[0x30];// 0x0180
-		class AM1Player* Player_Owner; // 0x01B0(0x0008)
-		class UM1AbilityComponent* Ability_Component;                                 // 0x01B8(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		class UM1PlayerStatComponent* PlayerStat_Component;                           // 0x01C0(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		uint8 Pad_UM1WeaponSlotControlComponent_Class[0x60];						  // 0x01C8
+		uint8 Pad_Player_Owner[0x40];// 0x0180
+		class AM1Player* Player_Owner; // 0x01C0(0x0008)
+		class UM1AbilityComponent* Ability_Component;                                 // 0x01C8(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		class UM1PlayerStatComponent* PlayerStat_Component;                           // 0x01D0(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//uint8 Pad_UM1WeaponSlotControlComponent_Class[0x60];						  // 0x01C8
 
 		static class UClass* StaticClass()
 		{
@@ -1924,18 +1942,78 @@ namespace TFD
 	{
 	public:
 		uint8                                         Pad_C8[0x8];                                       // 0x00C8(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
-		class AM1Weapon* Weapon_Owner;                                      // 0x00D0(0x0008)(ZeroConstructor, Transient, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		//class AM1Weapon* Weapon_Owner;                                      // 0x00D0(0x0008)(ZeroConstructor, Transient, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+	};
+
+	// 0x0118 (0x0450 - 0x0338)
+	class AM1Weapon : public AM1Actor
+	{
+	public:
+		uint8 Pad_CachedOwnerAsPlayer[0x110]; // 0x0338(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
+		class AM1Player* CachedOwnerAsPlayer; // 0x0448(0x0008)
+		//public:
+		//	class USkeletalMeshComponent* WeaponMesh; // 0x330
+		//	uint8 Pad_FireLoopComponent[0x10]; // 0x338
+		//	class UM1WeaponFireLoopComponent* FireLoopComponent; // 0x0348(0x0008)
+		//	uint8 Pad_RoundsComponent[0x10]; // 0x350
+		//	class UM1WeaponSprayPatternComponent* SprayPatternComponent; // 0x0360(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		//	class UM1WeaponRoundsComponent* RoundsComponent; // 0x0368(0x0008)
+		//	uint8 Pad_VFXComponent[0x28]; // 0x0370
+		//	class UM1WeaponVfxComponent* VFXComponent; // 0x0398(0x0008)
+		//	uint8 Pad_WeaponLevel[0x40]; // 0x03A0
+		//	uint32_t WeaponLevel; // 0x3E0 0x4
+		//	EM1FireState FireState; // 0x3E4 0x1
+		//	uint8 Pad_PlayerOwner[0xB]; // 0x3E5
+		//	class AM1Player* PlayerOwner; // 0x03F0(0x0008)
+		//	uint8 Pad_AM1Weapon[0xA0]; // 0x03F8
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1Weapon">();
+		}
+	};
+
+	class UM1RangedWeaponComponent : public UM1WeaponComponent
+	{
+	public:
+		class AM1RangedWeapon* Weapon_Owner;                                      // 0x00D0(0x0008)(ZeroConstructor, Transient, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1RangedWeaponComponent">();
+		}
+		static class UM1RangedWeaponComponent* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<UM1RangedWeaponComponent>();
+		}
+	};
+
+	class UM1MeleeWeaponComponent : public UM1WeaponComponent
+	{
+	public:
+		class AM1MeleeWeapon* Weapon_Owner;                                      // 0x00D0(0x0008)(ZeroConstructor, Transient, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1MeleeWeaponComponent">();
+		}
+		static class UM1MeleeWeaponComponent* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<UM1MeleeWeaponComponent>();
+		}
 	};
 
 	// 0x0300 (0x03D8 - 0x00D8)
-	class UM1WeaponVfxComponent final : public UM1WeaponComponent
+	class UM1WeaponVfxComponent final : public UM1RangedWeaponComponent
 	{
 	public:
 		uint8 Pad_FireBone[0x180];	// 0xD8
 		class FName FireBone;		// 0x0258(0x0008)
 	};
 
-	class UM1WeaponAttackComponent : public UM1WeaponComponent
+	class UM1WeaponAttackComponent : public UM1RangedWeaponComponent
 	{
 	public:
 		uint8                                         Pad_D8[0x20];                                      // 0x00D8(0x0020)(Fixing Struct Size After Last Property [ Dumper-7 ])
@@ -1945,32 +2023,73 @@ namespace TFD
 	{
 	};
 
-	// 0x0168 (0x0498 - 0x0330)
-	class AM1Weapon : public AM1Actor
+	class AM1RangedWeapon : public AM1Weapon
 	{
 	public:
-		class USkeletalMeshComponent* WeaponMesh; // 0x330
-		uint8 Pad_FireLoopComponent[0x10]; // 0x338
-		class UM1WeaponFireLoopComponent* FireLoopComponent; // 0x0348(0x0008)
-		uint8 Pad_RoundsComponent[0x10]; // 0x350
-		class UM1WeaponSprayPatternComponent* SprayPatternComponent; // 0x0360(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
-		class UM1WeaponRoundsComponent* RoundsComponent; // 0x0368(0x0008)
-		uint8 Pad_VFXComponent[0x28]; // 0x0370
-		class UM1WeaponVfxComponent* VFXComponent; // 0x0398(0x0008)
-		uint8 Pad_WeaponLevel[0x40]; // 0x03A0
-		uint32_t WeaponLevel; // 0x3E0 0x4
-		EM1FireState FireState; // 0x3E4 0x1
-		uint8 Pad_PlayerOwner[0xB]; // 0x3E5
-		class AM1Player* PlayerOwner; // 0x03F0(0x0008)
-		uint8 Pad_AM1Weapon[0xA0]; // 0x03F8
+		void* WeaponMesh;                                        // 0x0450(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* TimeDilationComponent;                             // 0x0458(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UM1WeaponFireLoopComponent* FireLoopComponent;                                 // 0x0460(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* AttackComponent;                                   // 0x0468(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* AimComponent;                                      // 0x0470(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UM1WeaponSprayPatternComponent* SprayPatternComponent;                             // 0x0478(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UM1WeaponRoundsComponent* RoundsComponent;                                   // 0x0480(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* ReloadComponent;                                   // 0x0488(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* ChargeComponent;                                   // 0x0490(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* PerkComponent;                                     // 0x0498(0x0008)(ExportObject, Net, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* CustomizeComponent;                                // 0x04A0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* MiscComponent;                                     // 0x04A8(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		class UM1WeaponVfxComponent* VFXComponent;                                      // 0x04B0(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* SoundComponent;                                    // 0x04B8(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		void* ValidationComponent;                               // 0x04C0(0x0008)(ExportObject, ZeroConstructor, InstancedReference, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		uint8                                         Pad_4C8[0xC];                                      // 0x04C8(0x000C)(Fixing Size After Last Property [ Dumper-7 ])
+		byte                          WeaponActionState;                                 // 0x04D4(0x0001)(ZeroConstructor, Transient, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
+		uint8                                         Pad_4D5[0xB];                                      // 0x04D5(0x000B)(Fixing Struct Size After Last Property [ Dumper-7 ])
+
 	public:
 		static class UClass* StaticClass()
 		{
-			return StaticClassImpl<"M1Weapon">();
+			return StaticClassImpl<"M1RangedWeapon">();
+		}
+		static class AM1RangedWeapon* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<AM1RangedWeapon>();
 		}
 	};
 
+	class AM1MeleeWeapon final : public AM1Weapon
+	{
+	public:
+		//TSubclassOf<class UM1SkeletalMeshComponentBudgeted> MeshComponentClass;                          // 0x0450(0x0008)(Edit, ZeroConstructor, DisableEditOnInstance, NoClear, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class USkeletalMesh* MeshAsset;                                         // 0x0458(0x0008)(Edit, ZeroConstructor, DisableEditOnInstance, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//TSubclassOf<class UAnimInstance>              AnimBlueprintClass;                                // 0x0460(0x0008)(Edit, ZeroConstructor, DisableEditOnInstance, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//struct FM1CharacterBasedWeaponAttachData      GrabAttachData;                                    // 0x0468(0x0058)(Edit, DisableEditOnInstance, NativeAccessSpecifierPrivate)
+		//struct FM1CharacterBasedWeaponAttachData      HangAttachData;                                    // 0x04C0(0x0058)(Edit, DisableEditOnInstance, NativeAccessSpecifierPrivate)
+		//bool                                          bIgnoreMeshScaling;                                // 0x0518(0x0001)(Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//EM1PlayerAnimType                             PlayerAnimType;                                    // 0x0519(0x0001)(Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//uint8                                         Pad_51A[0x6];                                      // 0x051A(0x0006)(Fixing Size After Last Property [ Dumper-7 ])
+		//struct FM1UpperBodyAnimClass                  PreviewUpperBodyAnimClass;                         // 0x0520(0x0010)(Edit, DisableEditOnInstance, NoDestructor, NativeAccessSpecifierPrivate)
+		//struct FM1GenderBasedPrivatePreviewAnim       PreviewIdleAnimSequence;                           // 0x0530(0x0010)(Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData, NoDestructor, NativeAccessSpecifierPrivate)
+		//struct FM1WeaponCrosshairClass                CrosshairInfo;                                     // 0x0540(0x0028)(Edit, DisableEditOnInstance, NoDestructor, NativeAccessSpecifierPrivate)
+		//struct FM1WeaponBottomHudInfo                 WeaponSlotInfo;                                    // 0x0568(0x0048)(Edit, DisableEditOnInstance, NativeAccessSpecifierPrivate)
+		//class UM1MeleeWeaponAttackComponent* AttackComponent;                                   // 0x05B0(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class UM1MeleeWeaponBlockComponent* BlockComponent;                                    // 0x05B8(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class UM1MeleeWeaponPerkComponent* PerkComponent;                                     // 0x05C0(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class UM1MeleeWeaponRoundsComponent* RoundsComponent;                                   // 0x05C8(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class UM1MeleeWeaponGaugeComponent* GaugeComponent;                                    // 0x05D0(0x0008)(ExportObject, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//class UM1SkeletalMeshComponentBudgeted* WeaponMeshComponent;                               // 0x05D8(0x0008)(BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, Transient, InstancedReference, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		//
+		uint8                                         Pad_5E0[0x198];                                      // 0x05E0(0x0008)(Fixing Struct Size After Last Property [ Dumper-7 ])
 
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1MeleeWeapon">();
+		}
+		static class AM1MeleeWeapon* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<AM1MeleeWeapon>();
+		}
+	};
 
 
 	struct FM1WeaponBurstFireParams
@@ -1994,7 +2113,7 @@ namespace TFD
 	};
 
 	// 0x0090 (0x0168 - 0x00D8)
-	class UM1WeaponFireLoopComponent : public UM1WeaponComponent
+	class UM1WeaponFireLoopComponent : public UM1RangedWeaponComponent
 	{
 	public:
 		uint8                                         Pad_110[0x48];                                     // 0x00D8
@@ -2012,7 +2131,7 @@ namespace TFD
 	};
 
 	// 0x0028 (0x0100 - 0x00D8)
-	class UM1WeaponRoundsComponent final : public UM1WeaponComponent
+	class UM1WeaponRoundsComponent final : public UM1RangedWeaponComponent
 	{
 	public:
 		uint8 Pad_CurrentRounds[0x14]; // 0x0D8
@@ -2023,7 +2142,7 @@ namespace TFD
 	};
 
 	// 0x0038 (0x0110 - 0x00D8)
-	class UM1WeaponSprayPatternComponent final : public UM1WeaponComponent
+	class UM1WeaponSprayPatternComponent final : public UM1RangedWeaponComponent
 	{
 	public:
 		uint8                                         Pad_CrosshairSizeBase[0xC];					  // 0x00D8
@@ -2138,7 +2257,7 @@ namespace TFD
 		bool bEnabled;					// 0x8A
 	};
 
-	// 0x0118 (0x0148 - 0x0030)
+	// 0x0120 (0x0150 - 0x0030)
 	class UM1LocalGameInstanceSubsystem final : public UGameInstanceSubsystem
 	{
 	public:
@@ -2172,7 +2291,8 @@ namespace TFD
 		void* RequestSupportSystem;                              // 0x0128(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		void* ClientSavedDataSystem;                             // 0x0130(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		void* RuntimeContext;                                    // 0x0138(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		void* AutoEquipmentReplacementSystem;                    // 0x0140(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		void* AgitSystem;                         // 0x0140
+		void* AutoEquipmentReplacementSystem;                    // 0x0148(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 
 	public:
 		static class UM1LocalGameInstanceSubsystem* GetSystem(const class UObject* WorldContextObject);
@@ -2515,7 +2635,9 @@ namespace TFD
 		Fellow = 12,
 		Medal = 13,
 		TuningBoardJewel = 14,
-		Max = 15,
+		Collectible = 15,
+		Vehicle = 16,
+		Max = 17,
 	};
 
 	struct FM1ItemTidBox final
@@ -2526,17 +2648,21 @@ namespace TFD
 		int32                                         TemplateId;                                        // 0x0004(0x0004)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 	};
 
+	// 0x0038 (0x0038 - 0x0000)
 	struct FM1DropItemInfo final
 	{
 	public:
 		bool                                          bPublicItem;                                       // 0x0000(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 		uint8                                         Pad_1[0x7];                                        // 0x0001(0x0007)(Fixing Size After Last Property [ Dumper-7 ])
 		class AActor* ItemOwner;                                         // 0x0008(0x0008)(ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		int32                                         Count;                                             // 0x0010(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-		struct FM1ItemTidBox                          ItemBox;                                           // 0x0014(0x0008)(NoDestructor, NativeAccessSpecifierPublic)
-		uint8                                         Pad_1C[0x4];                                       // 0x001C(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
+		bool                                          bInstantObtainReserved;                            // 0x0010(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_11[0x3];                                       // 0x0011(0x0003)(Fixing Size After Last Property [ Dumper-7 ])
+		int32                                         Count;                                             // 0x0014(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		struct FM1ItemTidBox                          ItemBox;                                           // 0x0018(0x0008)(NoDestructor, NativeAccessSpecifierPublic)
 		int64                                         ItemOid;                                           // 0x0020(0x0008)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 		int64                                         MonsterUid;                                        // 0x0028(0x0008)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		bool                                          bLucky;                                            // 0x0030(0x0001)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint8                                         Pad_31[0x7];                                       // 0x0031(0x0007)(Fixing Struct Size After Last Property [ Dumper-7 ])
 	};
 
 	// 0x0398 (0x05E0 - 0x0248)
@@ -2602,15 +2728,15 @@ namespace TFD
 		}
 	};
 
-	// 0x00A0 (0x0680 - 0x05E0)
+	// 0x00C0 (0x06A0 - 0x05E0)
 	class AM1DroppedItem : public AM1DropContainer
 	{
 	public:
-		uint8                                         Pad_DropItemInfo[0x40];
-		struct FM1DropItemInfo                        DropItemInfo; // 0x0620(0x0030)
-		uint8                                         Pad_ObtainRequested[0x20]; // 0x0650(0x0020)
-		bool                                          bObtainRequestedOnClient; // 0x0670(0x0001)
-		uint8                                         Pad_AM1DroppedItem_Class[0xF]; // 0x0671(0x000F)
+		uint8                                         Pad_DropItemInfo[0x48];
+		struct FM1DropItemInfo                        DropItemInfo; // 0x0628(0x0030)
+		uint8                                         Pad_ObtainRequested[0x28]; // 0x0660(0x0020)
+		bool                                          bObtainRequestedOnClient; // 0x0688(0x0001)
+		uint8                                         Pad_AM1DroppedItem_Class[0x17]; // 0x0689(0x000F)
 
 	public:
 		static class UClass* StaticClass()
@@ -2819,7 +2945,7 @@ namespace TFD
 		uint8                                         Pad_UM1MissionResult[0x2EE];                       // 0x006A
 	};
 
-	// 0x0730 (0x07D8 - 0x00A8)
+	// 0x0740 (0x07E8 - 0x00A8)
 	class UM1MissionControlComponent final : public UActorComponent
 	{
 	public:
@@ -2830,9 +2956,9 @@ namespace TFD
 		TArray<class AM1MissionActor*>                ActivatedMissions;                                 // 0x0218(0x0010)(Net, ZeroConstructor, RepNotify, NativeAccessSpecifierPrivate)
 		TArray<class AM1MissionActor*>                LastActivatedMissions;							 // 0x0228(0x0010)(Net, ZeroConstructor, RepNotify, NativeAccessSpecifierPrivate)
 		TWeakObjectPtr<class AM1MissionActor>         LastPlayedMissionActor;							 // 0x0238(0x0008)(ZeroConstructor, Transient, IsPlainOldData, NoDestructor, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		uint8                                         Pad_MissionResult[0x378];							 // 0x0240
-		class UM1MissionResult*						  MissionResult;                                     // 0x05B8(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-		uint8                                         Pad_UM1MissionControlComponent_Class[0x218];       // 0x05C0
+		uint8                                         Pad_MissionResult[0x388];							 // 0x0240
+		class UM1MissionResult*						  MissionResult;                                     // 0x05C8(0x0008)(ZeroConstructor, Transient, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+		uint8                                         Pad_UM1MissionControlComponent_Class[0x218];       // 0x05D0
 
 	public:
 		//void ClientCreateRSideWidgetForMission(const EM1UIGameRSideType& InType, class AActor* InActor);
@@ -3632,6 +3758,65 @@ namespace TFD
 		}
 	};
 
+	// 0x02A0 (0x07A0 - 0x0500)
+#pragma pack(push, 0x1)
+	class alignas(0x10) AM1Npc : public ACharacter
+	{
+	public:
+		uint8                                         Pad_4F8[0x2A0]; // 0x04F8(0x0058)
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"M1Npc">();
+		}
+		static class AM1Npc* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<AM1Npc>();
+		}
+	};
+#pragma pack(pop)
+	
+	// 0x0040 (0x07E0 - 0x07A0)
+#pragma pack(push, 0x1)
+	class alignas(0x10) ABP_NpcBase_C : public AM1Npc
+	{
+	public:
+		uint8                                         Pad_ABP_NpcBase_C[0x40]; // 0x0798(0x0008)
+
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticBPGeneratedClassImpl<"BP_NpcBase_C">();
+		}
+		static class ABP_NpcBase_C* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<ABP_NpcBase_C>();
+		}
+	};
+#pragma pack(pop)
+
+	class AStaticMeshActor : public AActor
+	{
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticClassImpl<"StaticMeshActor">();
+		}
+	};
+
+	class ANPC_MultiSupply_C final : public ABP_NpcBase_C
+	{
+	public:
+		static class UClass* StaticClass()
+		{
+			return StaticBPGeneratedClassImpl<"NPC_MultiSupply_C">();
+		}
+		static class ANPC_MultiSupply_C* GetDefaultObj()
+		{
+			return GetDefaultObjImpl<ANPC_MultiSupply_C>();
+		}
+	};
+
 	class UDataTable : public UObject
 	{
 	public:
@@ -4017,6 +4202,26 @@ namespace TFD
 	// FVector FireLoc -> set to actor/bone position of aim target
 	typedef void(__fastcall* tBP_FireInternal_Implementation)(UObject* This, float FireTime, FVector* FireLoc, float WeaponRange, FM1ScaledInteger PenetrationStat);
 	extern tBP_FireInternal_Implementation native_BP_FireInternal_Implementation;
+
+
+
+
+
+
+	typedef void(__fastcall* tServerRequestProcessInteraction)(void* This, FM1TemplateId* ID, int ActorUniqueID, AActor* InNpc);
+	extern tServerRequestProcessInteraction ServerRequestProcessInteraction;
+
+	typedef bool(__fastcall* tRequestProcessInteractionCheckA)(void* This, int ActorUniqueID);
+	extern tRequestProcessInteractionCheckA RequestProcessInteractionCheckA;
+
+	typedef bool(__fastcall* tRequestProcessInteractionCheckB)(void* This, AActor* NpcRelative);
+	extern tRequestProcessInteractionCheckB RequestProcessInteractionCheckB;
+
+
+
+
+
+
 
 	struct FM1WeaponInstantHitParams final
 	{
@@ -4637,8 +4842,9 @@ namespace TFD
 	struct M1MultiSuppliierObtainComponent_ServerRequestProcessInteraction final
 	{
 	public:
-		FM1TemplateId					InTemplateId;
-		uint32						InObjectUniqueID;
+		struct FM1TemplateId                          InTemplateId;                                      // 0x0000(0x0004)(ConstParm, Parm, ReferenceParm, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		uint32                                        InObjectUniqueID;                                  // 0x0004(0x0004)(Parm, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+		const class AActor* InNpcRelative;                                     // 0x0008(0x0008)(ConstParm, Parm, ZeroConstructor, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 	};
 
 	struct PlayerCameraManager_StopAllCameraShakes final
